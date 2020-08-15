@@ -4,32 +4,31 @@
 #include<sys/types.h>
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
 
-
-void solve(char filename[], struct stat stats){
+void solve(char filename[], struct stat stats) {
     signed int flags[] = {
             S_IRUSR, S_IWUSR, S_IXUSR,
             S_IRGRP, S_IWGRP, S_IXGRP,
             S_IROTH, S_IWOTH, S_IXOTH
     };
-    char * entity[] = {
+    char *entity[] = {
             "User", "User", "User",
             "Group", "Group", "Group",
             "Others", "Others", "Others"
     };
 
-    for(int i = 0; i < 9; i++)
-    {
+    for (int i = 0; i < 9; i++) {
         char verd[100];
-        if(stats.st_mode & flags[i]){
+        if (stats.st_mode & flags[i]) {
             strcpy(verd, "Yes");
         } else {
             strcpy(verd, "No");
         }
-        char per_type [100];
-        if(i % 3 == 0){
+        char per_type[100];
+        if (i % 3 == 0) {
             strcpy(per_type, "read");
-        } else if (i % 3 == 1){
+        } else if (i % 3 == 1) {
             strcpy(per_type, "write");
         } else {
             strcpy(per_type, "execute");
@@ -40,23 +39,34 @@ void solve(char filename[], struct stat stats){
 
     }
 
-
 }
 
 
 int main(int arg_no, char *args[]) {
+    if(arg_no < 4){
+        perror("Invalid Arguments");
+        exit(EXIT_FAILURE);
+    }
     struct stat stats_old, stats_new, stats_dir;
-    char* oldfile = args[0];
-    char *newfile = args[1];
-    char *dir = args[2];
-    stat(oldfile, &stats_old);
-    stat(newfile, &stats_new);
-    if (stat(dir, &stats_dir) == 0 && S_ISDIR(stats_dir.st_mode)) {
+    char *oldfile = args[1];
+    char *newfile = args[2];
+    char *dir = args[3];
+    //printf("%s", dir);
+    if (stat(oldfile, &stats_old) == -1) {
+        perror("old file");
+        exit(EXIT_FAILURE);
+    }
+    if (stat(newfile, &stats_new) == -1) {
+        perror("new file");
+        exit(EXIT_FAILURE);
+    }
+   // stat(newfile, &stats_new);
+    if (stat(dir, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
         char message[100];
         int size = sprintf(message, "Directory is created: Yes\n");
         write(1, message, size);
     } else {
-        char message [100];
+        char message[100];
         int size = sprintf(message, "Directory is created: No\n");
         write(1, message, size);
     }
@@ -64,6 +74,5 @@ int main(int arg_no, char *args[]) {
     solve("newfile", stats_new);
     solve("oldfile", stats_old);
     solve("directory", stats_dir);
-
 
 }

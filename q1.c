@@ -12,12 +12,18 @@ signed main(int argc, char *argv[])
     char* filename = pathname;
     struct stat sb;
     int file_desc_end = open(pathname,  O_RDWR);
-    stat(pathname, &sb);
-    int check_dir = mkdir("./Assignment", 0700);
+    if(stat(pathname, &sb) == -1){
+        perror("File does not exist");
+        _exit(1);
+    }
+    if (mkdir("./Assignment", S_IRUSR | S_IWUSR |S_IXUSR) == -1){
+        perror("Directory cannot be created");
+        _exit(1);
+    }
     char new_file[1000];
     strcpy(new_file, "./Assignment/");
     strcat(new_file, filename);
-    int file_desc_start = open(new_file,  O_WRONLY |O_CREAT, 0777 );
+    int file_desc_start = open(new_file,  O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR );
     int curr_location = sb.st_size - 1;
     int total_bytes = sb.st_size;
     int bytes_read = 0;
