@@ -43,4 +43,5 @@ signed main(int argc, char *argv[])
     int close(int fd);
     return 0;
 }
-
+// TODO IMPLEMENT ERROR HANDLING
+// No of bytes vs Size of file may be diff
