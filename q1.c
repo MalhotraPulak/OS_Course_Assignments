@@ -56,7 +56,7 @@ signed main(int argc, char *argv[]) {
     int file_desc_start = open(new_file, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     int total_bytes = file_stats.st_size;
     int bytes_read = 0;
-    int done_percent = -1;
+    float done_percent = -1;
     int read_speed =  (int)1e6; // reading 1 mb per second at max
     int curr_location = max(0, file_stats.st_size - read_speed);
     char buff[read_speed];
@@ -86,12 +86,12 @@ signed main(int argc, char *argv[]) {
         curr_location = max(0, curr_location);
         bytes_read += size;
         // calculate the percent done and print it as required
-        int done_percent_new = (int) ((1.0 * bytes_read) / (total_bytes) * 100.0);
+        float done_percent_new = ((1.0 * bytes_read) / (total_bytes) * 100.0);
 
-        if (done_percent_new > done_percent) {
+        if (done_percent_new - done_percent > 0.01) {
             fflush(stdout);
             char message[200];
-            int size2 = sprintf(message, "Progress = %d%%\r", done_percent_new);
+            int size2 = sprintf(message, "Progress = %0.2f%%\r", done_percent_new);
             write(1, message, size2);
             done_percent = done_percent_new;
         }
