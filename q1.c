@@ -20,21 +20,28 @@ void reverse_buffer(char buff[], int size) {
 int mini(int a, int b) {
     return (a < b) ? a : b;
 }
+
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
 signed main(int argc, char *argv[]) {
+    // make sure argument is supplied
     if (argc < 2) {
         perror("Invalid Arguments");
         _exit(1);
     }
-
+    // get path and filename
     char *pathname = argv[1];
-    char *filename = pathname;
+    char *filename = strchr(pathname, '/');
+    //perror(filename);
     struct stat file_stats;
     int file_desc_end = open(pathname, O_RDWR);
     if (stat(pathname, &file_stats) == -1) {
+        perror("File does not exist");
+        _exit(1);
+    }
+    if(!(file_stats.st_mode & S_IFREG)){
         perror("File does not exist");
         _exit(1);
     }
@@ -43,31 +50,47 @@ signed main(int argc, char *argv[]) {
         _exit(1);
     }
     char new_file[1000];
-    strcpy(new_file, "./Assignment/");
+    strcpy(new_file, "./Assignment");
     strcat(new_file, filename);
+    //perror(new_file);
     int file_desc_start = open(new_file, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     int total_bytes = file_stats.st_size;
     int bytes_read = 0;
     int done_percent = -1;
-    int read_speed = 5;
+    int read_speed =  (int)1e6; // reading 1 mb per second at max
     int curr_location = max(0, file_stats.st_size - read_speed);
-    char buff[read_speed + 1];
+    char buff[read_speed];
+
     while (bytes_read < total_bytes) {
-        lseek(file_desc_start, bytes_read, SEEK_SET);
-        lseek(file_desc_end, curr_location, SEEK_SET);
-        int to_read = mini(total_bytes - bytes_read , read_speed);
+        if(lseek(file_desc_end, curr_location, SEEK_SET) == -1){
+            perror("lseek on old file is invalid");
+            _exit(1);
+        }
+        int to_read = mini(total_bytes - bytes_read, read_speed);
         int size = read(file_desc_end, buff, to_read);
+        if(size == -1){
+            perror("Error reading the old file");
+            _exit(1);
+        }
         reverse_buffer(buff, size);
-        char str[32];
-        sprintf(str, "Bytes read : %d", size);
-        perror(str);
-        write(file_desc_start, buff, size);
+        // debug statement
+        /*char str[300];
+        sprintf(str, "%d %d %d %d", done_percent, to_read, total_bytes, bytes_read);
+        perror(str);*/
+        if(write(file_desc_start, buff, size) == -1){
+            perror("Writing to newfile failed");
+            _exit(1);
+        }
+        // change the read pointer
         curr_location -= size;
+        curr_location = max(0, curr_location);
         bytes_read += size;
-        int done_percent_new = (1.0 * bytes_read) / total_bytes * 100.0;
+        // calculate the percent done and print it as required
+        int done_percent_new = (int) ((1.0 * bytes_read) / (total_bytes) * 100.0);
+
         if (done_percent_new > done_percent) {
             fflush(stdout);
-            char message[100];
+            char message[200];
             int size2 = sprintf(message, "Progress = %d%%\r", done_percent_new);
             write(1, message, size2);
             done_percent = done_percent_new;
@@ -75,7 +98,4 @@ signed main(int argc, char *argv[]) {
     }
     return 0;
 }
-// TODO IMPLEMENT ERROR HANDLING
-// No of bytes vs Size of file may be diff
-// File name and file path separation
-// empty line
+// TODO IMPLEMENT ERROR HANDLING -> done almost
