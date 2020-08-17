@@ -1,10 +1,8 @@
 #include<unistd.h>
 #include<fcntl.h>
 #include<sys/stat.h>
-#include<sys/types.h>
 #include<stdio.h>
 #include<string.h>
-#include<stdlib.h>
 
 
 void solve(char filename[], struct stat stats) {
@@ -63,7 +61,7 @@ void reverse_buffer(char buff[], int size) {
 }
 
 int check(char *oldfile, char *newfile, int total_bytes) {
-    int read_speed = 50;
+    int read_speed = (int) 1e6;
     int reader = open(oldfile, O_RDONLY);
     int matcher = open(newfile, O_RDONLY);
     int bytes_read = 0;
@@ -77,7 +75,11 @@ int check(char *oldfile, char *newfile, int total_bytes) {
         }
         int size1 = read(reader, buff1, bytes_to_read);
         int size2 = read(matcher, buff2, bytes_to_read);
+        if (size1 != size2) {
+            perror("Fuck up in algorithm");
+        }
         reverse_buffer(buff1, size1);
+
         //char message[100];
         //int sd = sprintf(message, "%s ** %s ** %d %d\n", buff1, buff2, size1, size2);
         //write(1, message, sd);
@@ -89,13 +91,15 @@ int check(char *oldfile, char *newfile, int total_bytes) {
         }
         bytes_read += size1;
     }
+    close(reader);
+    close(matcher);
     return 1;
 }
 
 int main(int arg_no, char *args[]) {
     if (arg_no < 4) {
         perror("Invalid Arguments");
-        exit(EXIT_FAILURE);
+        _exit(1);
     }
     struct stat stats_old, stats_new, stats_dir;
     char *oldfile = args[1];
@@ -104,11 +108,11 @@ int main(int arg_no, char *args[]) {
 
     if (stat(oldfile, &stats_old) == -1) {
         perror("old file");
-        exit(EXIT_FAILURE);
+        _exit(1);
     }
     if (stat(newfile, &stats_new) == -1) {
         perror("new file");
-        exit(EXIT_FAILURE);
+        _exit(1);
     }
     if (stats_old.st_size == stats_new.st_size && check(oldfile, newfile, stats_new.st_size)) {
         char message[100];
@@ -124,17 +128,27 @@ int main(int arg_no, char *args[]) {
         char message[100];
         int size = sprintf(message, "Directory is created: Yes\n");
         write(1, message, size);
+        solve("newfile", stats_new);
+        solve("oldfile", stats_old);
+        solve("directory", stats_dir);
+
+
     } else {
         char message[100];
         int size = sprintf(message, "Directory is created: No\n");
         write(1, message, size);
-    }
+        solve("newfile", stats_new);
+        solve("oldfile", stats_old);
+        // solve("directory", stats_dir);
 
-    solve("newfile", stats_new);
-    solve("oldfile", stats_old);
-    solve("directory", stats_dir);
+        //if (mkdir(dir, S_IRUSR | S_IWUSR | S_IXUSR) == -1) {
+        //   perror("Directory cannot be created");
+        //  _exit(1);
+        //}
+    }
 
 }
 
 // something wrong for bigger read speed fix this shit
 // file names fucked up
+// another moodle update about dir fuckkkkk
