@@ -32,12 +32,21 @@ signed main(int argc, char *argv[]) {
     }
     // get path and filename
     char *pathname = argv[1];
-    char *filename = strchr(pathname, '/');
+    char *filename = NULL;
+    char name[1000];
+    strcpy(name , pathname);
+    for(int i = 0; pathname[i] != '\0'; i++){
+        if(pathname[i] == '/'){
+            strcpy(name, pathname + (i + 1));
+        }
+    }
+    filename = name;
+            //get_base_name(pathname);
+            // strchr(pathname, '/');
     if (filename == NULL) {
         perror("Not a valid filename");
         _exit(1);
     }
-    //perror(filename);
     struct stat file_stats;
     int file_desc_end = open(pathname, O_RDWR);
     if (stat(pathname, &file_stats) == -1) {
@@ -55,9 +64,8 @@ signed main(int argc, char *argv[]) {
         //_exit(1);
     }
     char new_file[1000];
-    strcpy(new_file, "./Assignment");
+    strcpy(new_file, "./Assignment/");
     strcat(new_file, filename);
-    //perror(new_file);
     remove(new_file);
     int file_desc_start = open(new_file, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     int total_bytes = file_stats.st_size;
@@ -110,3 +118,4 @@ signed main(int argc, char *argv[]) {
     return 0;
 }
 // Close the file descriptors
+// Extract file name
