@@ -4,7 +4,11 @@
 #include<stdio.h>
 #include<string.h>
 
-
+int print_pattern(){
+    char message[100];
+    int s = sprintf(message, "**********************\n");
+    write(1, message, s);
+}
 void solve(char filename[], struct stat stats) {
     signed int flags[] = {
             S_IRUSR, S_IWUSR, S_IXUSR,
@@ -37,8 +41,9 @@ void solve(char filename[], struct stat stats) {
         write(1, message, size);
 
     }
-
+    print_pattern();
 }
+
 
 int mini(int a, int b) {
     return (a < b) ? a : b;
@@ -67,10 +72,11 @@ int check(char *oldfile, char *newfile, int total_bytes) {
     int bytes_read = 0;
     char buff1[read_speed];
     char buff2[read_speed];
+    float done_percent = -1;
     while (bytes_read < total_bytes) {
         int bytes_to_read = mini(total_bytes - bytes_read, read_speed);
         if (lseek(matcher, max(total_bytes - bytes_read - read_speed, 0), SEEK_SET) == -1) {
-            printf("%d", total_bytes - bytes_read - read_speed);
+            //printf("%d", total_bytes - bytes_read - read_speed);
             perror("Wrong seek on matcher");
         }
         int size1 = read(reader, buff1, bytes_to_read);
@@ -90,6 +96,16 @@ int check(char *oldfile, char *newfile, int total_bytes) {
             }
         }
         bytes_read += size1;
+        float done_percent_new = (float) ((1.0 * bytes_read) / (total_bytes) * 100.0);
+
+        if (done_percent_new - done_percent > 0.01) {
+            fflush(stdout);
+            char message[200];
+            int size3 = sprintf(message, "Progress = %0.2f%%\r", done_percent_new);
+            write(1, message, size3);
+            done_percent = done_percent_new;
+        }
+
     }
     close(reader);
     close(matcher);
@@ -105,14 +121,15 @@ int main(int arg_no, char *args[]) {
     char *oldfile = args[1];
     char *newfile = args[2];
     char *dir = args[3];
+    int new = 1, old = 1, drr = 1;
 
     if (stat(oldfile, &stats_old) == -1) {
-        perror("old file");
-        _exit(1);
+        perror("Error :: old file does not exist");
+        old = 0;
     }
     if (stat(newfile, &stats_new) == -1) {
-        perror("new file");
-        _exit(1);
+        perror("Error :: new file does not exist");
+        new = 0;
     }
     if (stats_old.st_size == stats_new.st_size && check(oldfile, newfile, stats_new.st_size)) {
         char message[100];
@@ -128,25 +145,27 @@ int main(int arg_no, char *args[]) {
         char message[100];
         int size = sprintf(message, "Directory is created: Yes\n");
         write(1, message, size);
-        solve("newfile", stats_new);
-        solve("oldfile", stats_old);
-        solve("directory", stats_dir);
-
 
     } else {
         char message[100];
         int size = sprintf(message, "Directory is created: No\n");
         write(1, message, size);
-        solve("newfile", stats_new);
-        solve("oldfile", stats_old);
+        //solve("newfile", stats_new);
+        //solve("oldfile", stats_old);
         // solve("directory", stats_dir);
 
         //if (mkdir(dir, S_IRUSR | S_IWUSR | S_IXUSR) == -1) {
         //   perror("Directory cannot be created");
         //  _exit(1);
         //}
+        drr = 0;
     }
-
+    if (new)
+        solve("newfile", stats_new);
+    if (old)
+        solve("oldfile", stats_old);
+    if (drr)
+        solve("directory", stats_dir);
 }
 
 // something wrong for bigger read speed fix this shit

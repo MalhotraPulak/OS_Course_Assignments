@@ -59,13 +59,12 @@ signed main(int argc, char *argv[]) {
     }
     if (mkdir("./Assignment", S_IRUSR | S_IWUSR | S_IXUSR) == -1) {
         // perror("Directory cannot be created");
-        // TODO remove use the old directory
-        // Rewrite the file too if it exists what bull shit
         //_exit(1);
     }
     char new_file[1000];
     strcpy(new_file, "./Assignment/");
     strcat(new_file, filename);
+    // delete the file if it already exists
     remove(new_file);
     int file_desc_start = open(new_file, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     int total_bytes = file_stats.st_size;
