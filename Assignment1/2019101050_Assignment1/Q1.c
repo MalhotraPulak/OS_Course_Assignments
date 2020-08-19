@@ -3,9 +3,9 @@
 #include<sys/stat.h>
 #include<stdio.h>
 #include<string.h>
-
+#define ll long long
 void reverse_buffer(char buff[], int size) {
-    int l = 0, r = size - 1;
+    ll l = 0, r = size - 1;
     while (l < r) {
         char t = buff[l];
         buff[l] = buff[r];
@@ -16,11 +16,11 @@ void reverse_buffer(char buff[], int size) {
 
 }
 
-int mini(int a, int b) {
+ll mini(ll a, ll b) {
     return (a < b) ? a : b;
 }
 
-int max(int a, int b) {
+ll max(ll a, ll b) {
     return (a > b) ? a : b;
 }
 
@@ -34,15 +34,15 @@ signed main(int argc, char *argv[]) {
     char *pathname = argv[1];
     char *filename = NULL;
     char name[1000];
-    strcpy(name , pathname);
-    for(int i = 0; pathname[i] != '\0'; i++){
-        if(pathname[i] == '/'){
+    strcpy(name, pathname);
+    for (int i = 0; pathname[i] != '\0'; i++) {
+        if (pathname[i] == '/') {
             strcpy(name, pathname + (i + 1));
         }
     }
     filename = name;
-            //get_base_name(pathname);
-            // strchr(pathname, '/');
+    //get_base_name(pathname);
+    // strchr(pathname, '/');
     if (filename == NULL) {
         perror("Not a valid filename");
         _exit(1);
@@ -67,20 +67,21 @@ signed main(int argc, char *argv[]) {
     // delete the file if it already exists
     remove(new_file);
     int file_desc_start = open(new_file, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-    int total_bytes = file_stats.st_size;
-    int bytes_read = 0;
+    ll total_bytes = file_stats.st_size;
+    ll bytes_read = 0;
     float done_percent = -1;
-    int read_speed = (int) 1e6; // reading 1 mb per second at max
-    int curr_location = max(0, file_stats.st_size - read_speed);
+    ll read_speed = (int) 1e6; // reading 1 mb per second at max
+    ll curr_location = max(0, file_stats.st_size - read_speed);
     char buff[read_speed];
-
+    char msg[100];
+    sprintf(msg, "biits %lld", total_bytes);
     while (bytes_read < total_bytes) {
         if (lseek(file_desc_end, curr_location, SEEK_SET) == -1) {
             perror("lseek on old file is invalid");
             _exit(1);
         }
-        int to_read = mini(total_bytes - bytes_read, read_speed);
-        int size = read(file_desc_end, buff, to_read);
+        ll to_read = mini(total_bytes - bytes_read, read_speed);
+        ll size = read(file_desc_end, buff, to_read);
         if (size == -1) {
             perror("Error reading the old file");
             _exit(1);
@@ -111,6 +112,9 @@ signed main(int argc, char *argv[]) {
     }
     close(file_desc_end);
     close(file_desc_start);
+    char mee[200];
+    int size2 = sprintf(mee, "Progress = %0.2f%%\n", 100.0);
+    write(1, mee, size2);
     //char message_final[100];
     //int size_3 = sprintf(message_final, "Progress = 100%%");
     //write(1, message_final, size_3);

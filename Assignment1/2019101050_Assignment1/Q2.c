@@ -3,8 +3,8 @@
 #include<sys/stat.h>
 #include<stdio.h>
 #include<string.h>
-
-int print_pattern(){
+#define ll long long
+void print_pattern(){
     char message[100];
     int s = sprintf(message, "**********************\n");
     write(1, message, s);
@@ -45,11 +45,11 @@ void solve(char filename[], struct stat stats) {
 }
 
 
-int mini(int a, int b) {
+ll mini(ll a, ll b) {
     return (a < b) ? a : b;
 }
 
-int max(int a, int b) {
+ll max(ll a, ll b) {
     return (a > b) ? a : b;
 }
 
@@ -65,16 +65,16 @@ void reverse_buffer(char buff[], int size) {
 
 }
 
-int check(char *oldfile, char *newfile, int total_bytes) {
+int check(char *oldfile, char *newfile, ll total_bytes) {
     int read_speed = (int) 1e6;
     int reader = open(oldfile, O_RDONLY);
     int matcher = open(newfile, O_RDONLY);
-    int bytes_read = 0;
+    ll bytes_read = 0;
     char buff1[read_speed];
     char buff2[read_speed];
     float done_percent = -1;
     while (bytes_read < total_bytes) {
-        int bytes_to_read = mini(total_bytes - bytes_read, read_speed);
+        ll bytes_to_read = mini(total_bytes - bytes_read, read_speed);
         if (lseek(matcher, max(total_bytes - bytes_read - read_speed, 0), SEEK_SET) == -1) {
             //printf("%d", total_bytes - bytes_read - read_speed);
             perror("Wrong seek on matcher");
@@ -160,6 +160,7 @@ int main(int arg_no, char *args[]) {
         //}
         drr = 0;
     }
+    print_pattern();
     if (new)
         solve("newfile", stats_new);
     if (old)
