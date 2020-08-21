@@ -48,7 +48,7 @@ signed main(int argc, char *argv[]) {
         _exit(1);
     }
     struct stat file_stats;
-    int file_desc_end = open(pathname, O_RDWR);
+    int file_desc_end = open(pathname, O_RDONLY);
     if (stat(pathname, &file_stats) == -1) {
         perror("File does not exist");
         _exit(1);

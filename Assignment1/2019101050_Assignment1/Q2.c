@@ -77,12 +77,14 @@ int check(char *oldfile, char *newfile, ll total_bytes) {
         ll bytes_to_read = mini(total_bytes - bytes_read, read_speed);
         if (lseek(matcher, max(total_bytes - bytes_read - read_speed, 0), SEEK_SET) == -1) {
             //printf("%d", total_bytes - bytes_read - read_speed);
-            perror("Wrong seek on matcher");
+            perror("Wrong seek on matcher, Error reading file");
+            return 0;
         }
         int size1 = read(reader, buff1, bytes_to_read);
         int size2 = read(matcher, buff2, bytes_to_read);
         if (size1 != size2) {
-            perror("Fuck up in algorithm");
+            perror("Something is wrong");
+            return 0;
         }
         reverse_buffer(buff1, size1);
 
@@ -131,7 +133,7 @@ int main(int arg_no, char *args[]) {
         perror("Error :: new file does not exist");
         new = 0;
     }
-    if (stats_old.st_size == stats_new.st_size && check(oldfile, newfile, stats_new.st_size)) {
+    if (new && old && stats_old.st_size == stats_new.st_size && check(oldfile, newfile, stats_new.st_size)) {
         char message[100];
         int size = sprintf(message, "Whether file contents are reversed in newfile: Yes\n");
         write(1, message, size);
