@@ -35,16 +35,39 @@ char * getShellName(){
   return final_name;
 }
 
-void clearScreen()
-{
-  const char *CLEAR_SCREEN_ANSI = "\e[1;1H\e[2J";
-  write(STDOUT_FILENO, CLEAR_SCREEN_ANSI, 12);
+void clearScreen(){
+  printf("\e[1;1H\e[2J");
 }
+
+void printGreen(){
+  printf("%s", "\x1B[32m");
+}
+
+void resetColor(){
+  printf("%s", "\x1B[0m");
+}
+
+void processInput(char* input){
+   printf("%s\n", input);
+   char * tokens[100];
+   int num_tokens = 0;
+}
+
 
 int main(){
   clearScreen();
   char * shell_name = getShellName();
-  printf("%s", shell_name); 
+  char directory[500];
+  strcpy(directory, "~");
+  char buffer[100];
+  while(1){
+    printGreen();
+    printf("<%s%s>", shell_name, directory); 
+    resetColor();
+    char line[500];
+    scanf(" %499[^\n]%*c", line); 
+    processInput(line);
+  }
 
 }
 
