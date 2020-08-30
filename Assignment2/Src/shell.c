@@ -10,7 +10,7 @@
 #include <grp.h>
 #include <time.h>
 
-const int size_buff = 500;
+#define size_buff 500
 
 char *getShellName();
 
@@ -37,11 +37,11 @@ void updateShowDir() {
 }
 
 char *getShellName() {
-    const int max_len = 200;
+    const int max_len = 2000;
     char login[max_len];
     char hostname[max_len];
     // getlogin_r
-    if (getlogin_r(login, 100) == 0) {
+    if (getlogin_r(login, max_len) == 0) {
         // printf("%s\n", login);
     } else {
         perror("Cant get login name");
@@ -54,7 +54,7 @@ char *getShellName() {
         perror("Cant get system name");
     }
     // gethostname
-    if (gethostname(hostname, 100) == 0) {
+    if (gethostname(hostname, max_len) == 0) {
         // printf("%s\n", hostname);
     } else {
         perror("Cant get hostname");
@@ -91,8 +91,8 @@ void getParent(char *add) {
 
 }
 
-char *month_name(int no) {
-    char *name = malloc(5);
+char *month_name(int no, char * name) {
+    //char *name = malloc(5);
     no += 1;
     switch (no) {
         case 1:
@@ -131,6 +131,8 @@ char *month_name(int no) {
         case 12:
             strcpy(name, "Dec");
             break;
+        default:
+            break;
     }
     return name;
 }
@@ -139,10 +141,8 @@ char *month_name(int no) {
 void cleanupAddress(char *add) {
     char add2[size_buff];
     strcpy(add2, add);
-    char *refinedAddress = malloc(size_buff);
-    //char *parent_dir = malloc(size_buff);
+    char refinedAddress[size_buff];
     strcpy(refinedAddress, "/");
-    //strcpy(parent_dir, "/");
     char *dirname = strtok(add2, "/");
     if (dirname == NULL) return;
     while (dirname != NULL) {
@@ -191,34 +191,13 @@ void get_raw_address(char *new_address, char *cd_location) {
 }
 
 void cd_handler(char *token[]) {
-    char *cd_location = malloc(size_buff);
+    char cd_location[size_buff];
     strcpy(cd_location, token[1]);
     char new_address[size_buff];
-/*    if (cd_location[0] == '/') {
-        // Absolute address
-        strcpy(new_address, cd_location);
-    } else if (cd_location[0] == '~') {
-        strcpy(new_address, home_dir);
-        strcat(new_address, cd_location + 1);
-        //printf("%s", new_address);
-    } else {
-        // Relative address
-        // check if the file address has ./ or not
-        if (cd_location[0] == '.' && cd_location[1] == '/') {
-            cd_location++;
-            cd_location++;
-        }
-        // copy current directory in new address
-        strcpy(new_address, curr_dir);
-        // if no / at the end of curr_dir now there is
-        if (new_address[strlen(new_address) - 1] != '/')
-            strcat(new_address, "/");
-        strcat(new_address, cd_location);
-    }*/
     get_raw_address(new_address, cd_location);
     struct stat stats_dir;
     if (stat(new_address, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
-        printf("new address is %s\n", new_address);
+        //printf("new address is %s\n", new_address);
         cleanupAddress(new_address);
         strcpy(curr_dir, new_address);
         updateShowDir();
@@ -255,10 +234,6 @@ void permission_format(int mode, char *permission) {
 }
 
 void detail_print(char *add, char *name) {
-    // file mode number of links, owner name, group name, number of
-    //     bytes in the file, abbreviated month, day-of-month file was last modi-
-    //     fied, hour file last modified, minute file last modified, and the path-
-    //     name
     struct stat data;
     //printf("%s", add);
     if (stat(add, &data) == -1) {
@@ -285,13 +260,15 @@ void detail_print(char *add, char *name) {
         strcpy(permission, "-");
     }
     permission_format(data.st_mode, perm);
+    char monthName[5];
+    month_name(month, monthName);
     strcat(permission, perm);
-    printf("%s %5d %10s   %10s  %10lld  %s %02d %02d:%02d %s\n", permission, links, user_name, group_name, bytes,
-           month_name(month), day,
+    printf("%s%5d%10s%10s%10lld %s %02d %02d:%02d %s\n", permission, links, user_name, group_name, bytes,
+           monthName, day,
            hour, min, name);
 }
 
-void sort_names(char *name[], int n) {
+void sort_names(char name[][size_buff], int n) {
     char temp[size_buff];
     int i, j;
     for (i = 0; i < n - 1; i++) {
@@ -307,16 +284,23 @@ void sort_names(char *name[], int n) {
 
 void print_ls_data(const char *location, int hidden, int details) {
     struct dirent *dir_stuff;
+    if (details) {
+        struct stat tt;
+        if(stat(location, &tt) == -1){
+            printf("error\n");
+        };
+        printf("total = %lld\n", tt.st_blocks);
+        printf("total = %lld\n", tt.st_size);
+    }
     DIR *dir = opendir(location);
     int total = 0;
     while (readdir(dir) != NULL) {
         total++;
     }
-    char *names[total];
+    char names[total][size_buff];
     dir = opendir(location);
     int count = 0;
     while ((dir_stuff = readdir(dir)) != NULL) {
-        names[count] = malloc(size_buff);
         strcpy(names[count], dir_stuff->d_name);
         count++;
     }
@@ -335,6 +319,7 @@ void print_ls_data(const char *location, int hidden, int details) {
             detail_print(element_address, curr_name);
         }
     }
+    //free(names);
 }
 
 
@@ -354,7 +339,7 @@ void ls_handler(char *tokens[], int no) {
                 else if (tokens[i][j] == 'a')
                     hidden = 1;
                 else {
-                    printf("invalid flag only l and a supported\n");
+                    printf("ls : invalid flag only l and a supported\n");
                     return;
                 }
             }
@@ -380,8 +365,16 @@ void ls_handler(char *tokens[], int no) {
     } else {
         printf("ls : No such file or directory\n");
     }
+    printf("\n");
 }
 
+// echo "4324"
+void echo_handler(char *tokens[], int num) {
+    for (int i = 1; i < num; i++) {
+        printf("%s ", tokens[i]);
+    }
+    printf("\n");
+}
 
 void processInput(char *input) {
     //printf("%s\n", input);
@@ -406,16 +399,46 @@ void processInput(char *input) {
         pwd_handler();
     } else if (strcmp(tokens[0], "ls") == 0) {
         ls_handler(tokens, num_tokens);
+    } else if (strcmp(tokens[0], "echo") == 0) {
+        echo_handler(tokens, num_tokens);
+    } else if (strcmp(tokens[0], "exit") == 0) {
+        _exit(1);
     } else {
-        perror("Not a valid command");
+        printf("%s : Not a valid command\n", tokens[0]);
     }
+    //printf("hre");
 }
 
-// the directory from which shell is invoked is the home directory
-// opendir - get a pointer to directory stream
-// readdir - get next directory entry in directory stream
-// closedir - closes directory stream 
-// getcwd - get current working directory
+void get_commands(char *line){
+   // printf("%s--\n", line);
+    char * command;
+    char line2[size_buff];
+    strcpy(line2, line);
+    command = strtok(line, ";");
+    int c = 0;
+    while(command != NULL){
+        c++;
+        command = strtok(NULL , ";");
+    }
+    char * commands[c + 1];
+    int i = 0;
+    if(c <= 0) return;
+  //  printf("%s--\n", line2);
+    commands[0] = strtok(line2, ";");
+    while(commands[i] != NULL){
+      //  printf("%s", commands[i]);
+        i++;
+        commands[i] = strtok(NULL, ";");
+
+    }
+    for(int j = 0; j < c; j++){
+        processInput(commands[j]);
+    }
+    //free(commands);
+
+}
+
+
 int main() {
     clearScreen();
     shell_name = getShellName();
@@ -424,7 +447,6 @@ int main() {
     }
     strcat(home_dir, "/");
     strcpy(curr_dir, home_dir);
-    //printf("%s", home_dir);
     updateShowDir();
     while (1) {
         printGreen();
@@ -432,7 +454,8 @@ int main() {
         resetColor();
         char line[500];
         scanf(" %499[^\n]%*c", line);
-        processInput(line);
+        get_commands(line);
+        //processInput(line);
         //printf("%s", home_dir);
 
     }
