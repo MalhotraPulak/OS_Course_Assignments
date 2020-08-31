@@ -62,8 +62,6 @@ char *getShellName() {
 }
 
 
-
-
 void cd_handler(char *token[]) {
     char cd_location[size_buff];
     strcpy(cd_location, token[1]);
@@ -106,14 +104,16 @@ void processInput(char *input) {
     //printf("%s\n", input);
     char *tokens[100];
     int num_tokens = 0;
-    tokens[0] = strtok(input, " \t");
+    tokens[0] = strtok(input, " \t\n");
     while (tokens[num_tokens] != NULL) {
         tokens[++num_tokens] = strtok(NULL, " \t");
     }
     /* for (int i = 0; i < num_tokens; i++) {
          printf("%s\n", tokens[i]);
      }*/
-
+    /*for(int i = 0; i < num_tokens; i++){
+        printf("%s\n", tokens[i]);
+    }*/
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
             tokens[1] = malloc(size_buff);
@@ -162,6 +162,7 @@ void get_commands(char *line) {
 
     }
     for (int j = 0; j < c; j++) {
+        //printf("%s", commands[j]);
         processInput(commands[j]);
     }
     // everything gets automatically deallocated as strtok is in place
@@ -210,10 +211,18 @@ int main() {
         printGreen();
         printf("%s$ ", show_dir);
         resetColor();
-        char line[500];
-        scanf(" %499[^\n]%*c", line);
+        char *line = malloc(size_buff);
+        //size_t s = size_buff;
+        //scanf(" %[^\n]%*c", line);
+        fgets(line, size_buff, stdin);
+        size_t ln = strlen(line) - 1;
+        if (*line && line[ln] == '\n')
+            line[ln] = '\0';
+        //int n = getline(&line, &s, stdin);
+        //printf("%s", line);
         get_commands(line);
 
+        free(line);
         //printf("%s", home_dir);
 
     }

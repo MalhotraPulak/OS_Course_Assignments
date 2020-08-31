@@ -78,7 +78,7 @@ void detail_print(const char *add, char *name, int detail) {
     //printf("%s", add);
     if (stat(add, &data) == -1) {
         printf("%s\n", add);
-        perror("Error getting stat struct");
+        perror("Error getting stat structo");
         return;
     }
     int links = data.st_nlink;
@@ -138,20 +138,13 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     if (strcmp(outName, "") != 0)
         printf("%s :\n", outName);
     if (file == 1) {
-       // if (details)
-            detail_print(location, outName, details);
-    //      else
+        // if (details)
+        detail_print(location, outName, details);
+        //      else
         //    printf("%s\n", outName);
         return;
     }
-    if (details) {
-        struct stat tt;
-        if (stat(location, &tt) == -1) {
-            printf("error\n");
-        };
-        printf("total = %ld\n", tt.st_blocks);
-        printf("total = %ld\n", tt.st_size);
-    }
+    int total_blocks = 0;
     DIR *dir = opendir(location);
     int total = 0;
     while (readdir(dir) != NULL) {
@@ -163,8 +156,24 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     while ((dir_stuff = readdir(dir)) != NULL) {
         strcpy(names[count], dir_stuff->d_name);
         count++;
+        if (!hidden && (dir_stuff->d_name[0] == '.'))
+            continue;
+        char element_address[size_buff];
+        strcpy(element_address, location);
+        strcat(element_address, dir_stuff->d_name);
+        struct stat data;
+        //printf("%s", add);
+        if (stat(element_address, &data) == -1) {
+            printf("%s\n", element_address);
+            perror("Error getting stat structn");
+            continue;
+        }
+        total_blocks += data.st_blocks;
+
     }
     sort_names(names, total);
+    if (details)
+        printf("total %d\n", total_blocks);
     for (int i = 0; i < total; i++) {
         char *curr_name = names[i];
         if (curr_name[0] == '.' && hidden == 0) {
@@ -182,11 +191,8 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     //free(names);
 }
 
-// ls file = file
+
 // ls @ +
-// ls dir size is 4kb or whatever
-// 512 bytes shit
-// multiple dir for ls
 void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_dir) {
     char location[size_buff];
     int hidden = 0, details = 0;
