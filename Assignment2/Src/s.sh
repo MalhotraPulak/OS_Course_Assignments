@@ -1,1 +1,2 @@
-gcc shell.c && ./a.out
+make
+./shell

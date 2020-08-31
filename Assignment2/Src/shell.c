@@ -1,16 +1,9 @@
-#include<stdio.h>
-#include<unistd.h>
-#include<sys/utsname.h>
-#include<stdlib.h>
-#include<string.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
+#include "headers.h"
+#include "pinfo.h"
+#include "process_maker.h"
 
 #define size_buff 500
+
 
 char *getShellName();
 
@@ -18,6 +11,10 @@ char *shell_name;
 char show_dir[size_buff]; // has / in the end
 char home_dir[size_buff]; // has / in the end
 char curr_dir[size_buff]; // has / in the end
+
+
+
+
 void updateShowDir() {
     //printf("curr dir %s home dir %s show dir %s \n\n", curr_dir, home_dir, show_dir);
     int homeDirLen = strlen(home_dir);
@@ -91,8 +88,7 @@ void getParent(char *add) {
 
 }
 
-char *month_name(int no, char * name) {
-    //char *name = malloc(5);
+char *month_name(int no, char *name) {
     no += 1;
     switch (no) {
         case 1:
@@ -185,6 +181,9 @@ void get_raw_address(char *new_address, char *cd_location) {
         if (new_address[strlen(new_address) - 1] != '/')
             strcat(new_address, "/");
         strcat(new_address, cd_location);
+        if (new_address[strlen(new_address) - 1] != '/')
+            strcat(new_address, "/");
+
     }
 
 
@@ -198,8 +197,16 @@ void cd_handler(char *token[]) {
     struct stat stats_dir;
     if (stat(new_address, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
         //printf("new address is %s\n", new_address);
-        cleanupAddress(new_address);
-        strcpy(curr_dir, new_address);
+        // changing the currrent working directory as required
+        if (chdir(new_address) == -1) {
+            printf("cd : directory does not exist\n");
+        }
+        //cleanupAddress(new_address);
+        //strcpy(curr_dir, new_address);
+        if (getcwd(curr_dir, size_buff) == NULL) {
+            printf("cd : getcwd failed\n");
+        }
+        strcat(curr_dir, "/");
         updateShowDir();
     } else {
         printf("directory does not exist: %s\n", new_address);
@@ -233,10 +240,11 @@ void permission_format(int mode, char *permission) {
 
 }
 
-void detail_print(char *add, char *name) {
+void detail_print(const char *add, char *name) {
     struct stat data;
     //printf("%s", add);
     if (stat(add, &data) == -1) {
+        printf("%s\n", add);
         perror("Error getting stat struct");
     }
     int links = data.st_nlink;
@@ -282,11 +290,19 @@ void sort_names(char name[][size_buff], int n) {
     }
 }
 
-void print_ls_data(const char *location, int hidden, int details) {
+void print_ls_data(const char *location, int hidden, int details, int file, char *outName) {
     struct dirent *dir_stuff;
+    printf("%s :\n", outName);
+    if (file == 1) {
+        if (details)
+            detail_print(location, outName);
+        else
+            printf("%s\n", outName);
+        return;
+    }
     if (details) {
         struct stat tt;
-        if(stat(location, &tt) == -1){
+        if (stat(location, &tt) == -1) {
             printf("error\n");
         };
         printf("total = %lld\n", tt.st_blocks);
@@ -327,6 +343,7 @@ void print_ls_data(const char *location, int hidden, int details) {
 // ls @ +
 // ls dir size is 4kb or whatever
 // 512 bytes shit
+// multiple dir for ls
 void ls_handler(char *tokens[], int no) {
     char location[size_buff];
     int hidden = 0, details = 0;
@@ -349,23 +366,25 @@ void ls_handler(char *tokens[], int no) {
         }
     }
     if (i == no) {
-        get_raw_address(location, ".");
-    } else {
+        tokens[no] = strdup(".");
+        no++;
+    }
+    for (; i < no; i++) {
         get_raw_address(location, tokens[i]);
-    }
-    struct stat stats_dir;
+        struct stat stats_dir;
 
-    if (stat(location, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
-        printf("Dir address is %s\n", location);
-        cleanupAddress(location);
-        print_ls_data(location, hidden, details);
-    } else if (S_IFREG & stats_dir.st_mode) {
-        // same as ls dir but on one file
+        if (stat(location, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
+            print_ls_data(location, hidden, details, 0, tokens[i]);
+        } else if (S_IFREG & stats_dir.st_mode) {
+            // same as ls dir but on one file
+            print_ls_data(location, hidden, details, 1, tokens[i]);
 
-    } else {
-        printf("ls : No such file or directory\n");
+        } else {
+            printf("ls : No such file or directory\n");
+        }
+        printf("\n");
     }
-    printf("\n");
+
 }
 
 // echo "4324"
@@ -392,9 +411,9 @@ void processInput(char *input) {
         if (num_tokens == 1) {
             tokens[1] = malloc(size_buff);
             strcpy(tokens[1], "~");
-            printf("here");
         }
         cd_handler(tokens);
+        //free(tokens[1]);
     } else if (strcmp(tokens[0], "pwd") == 0) {
         pwd_handler();
     } else if (strcmp(tokens[0], "ls") == 0) {
@@ -403,41 +422,49 @@ void processInput(char *input) {
         echo_handler(tokens, num_tokens);
     } else if (strcmp(tokens[0], "exit") == 0) {
         _exit(1);
-    } else {
-        printf("%s : Not a valid command\n", tokens[0]);
-    }
-    //printf("hre");
+    } else if (strcmp(tokens[0], "clear") == 0) {
+        clearScreen();
+    } else if (strcmp(tokens[0], "pinfo") == 0) {
+        if (num_tokens == 1) {
+            tokens[1] = malloc(10);
+            sprintf(tokens[1], "%d", getpid());
+        }
+        pinfo_handler(tokens);
+    } else
+        make_process(tokens, num_tokens);
 }
+//printf("hre");
 
-void get_commands(char *line){
-   // printf("%s--\n", line);
-    char * command;
+
+void get_commands(char *line) {
+    // printf("%s--\n", line);
+    char *command;
     char line2[size_buff];
     strcpy(line2, line);
     command = strtok(line, ";");
     int c = 0;
-    while(command != NULL){
+    while (command != NULL) {
         c++;
-        command = strtok(NULL , ";");
+        command = strtok(NULL, ";");
     }
-    char * commands[c + 1];
+    char *commands[c + 1];
     int i = 0;
-    if(c <= 0) return;
-  //  printf("%s--\n", line2);
+    if (c <= 0) return;
     commands[0] = strtok(line2, ";");
-    while(commands[i] != NULL){
-      //  printf("%s", commands[i]);
+    while (commands[i] != NULL) {
         i++;
         commands[i] = strtok(NULL, ";");
 
     }
-    for(int j = 0; j < c; j++){
+    for (int j = 0; j < c; j++) {
         processInput(commands[j]);
     }
-    //free(commands);
-
+    // everything gets automatically deallocated as strtok is in place
 }
 
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 
 int main() {
     clearScreen();
@@ -445,7 +472,9 @@ int main() {
     if (getcwd(home_dir, size_buff) == NULL) {
         perror("getcwd failed");
     }
-    strcat(home_dir, "/");
+    if (home_dir[strlen(home_dir) - 1] != '/') {
+        strcat(home_dir, "/");
+    }
     strcpy(curr_dir, home_dir);
     updateShowDir();
     while (1) {
@@ -455,11 +484,12 @@ int main() {
         char line[500];
         scanf(" %499[^\n]%*c", line);
         get_commands(line);
-        //processInput(line);
         //printf("%s", home_dir);
 
     }
 
 }
+
+#pragma clang diagnostic pop
 
 
