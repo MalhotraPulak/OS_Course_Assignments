@@ -194,7 +194,7 @@ int main() {
     updateShowDir();
     while (1) {
         printGreen();
-        printf("%s%s", shell_name, show_dir);
+        printf("%s%s$ ", shell_name, show_dir);
         resetColor();
         char line[500];
         scanf(" %499[^\n]%*c", line);

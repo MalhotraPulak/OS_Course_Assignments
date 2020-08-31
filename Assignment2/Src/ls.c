@@ -79,6 +79,7 @@ void detail_print(const char *add, char *name) {
     if (stat(add, &data) == -1) {
         printf("%s\n", add);
         perror("Error getting stat struct");
+        return;
     }
     int links = data.st_nlink;
     struct passwd *pws = getpwuid(data.st_uid);
@@ -140,8 +141,8 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
         if (stat(location, &tt) == -1) {
             printf("error\n");
         };
-        printf("total = %lld\n", tt.st_blocks);
-        printf("total = %lld\n", tt.st_size);
+        printf("total = %ld\n", tt.st_blocks);
+        printf("total = %ld\n", tt.st_size);
     }
     DIR *dir = opendir(location);
     int total = 0;
@@ -181,8 +182,9 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
 void ls_handler(char *tokens[], int no, const char* curr_dir, const char * home_dir) {
     char location[size_buff];
     int hidden = 0, details = 0;
-    int i;
-    for (i = 1; i < no; i++) {
+    int dir[no + 1];
+    int dirs = 0;
+    for (int i = 1; i < no; i++) {
         if (tokens[i][0] == '-') {
             for (int j = 1; j < strlen(tokens[i]); j++) {
                 if (tokens[i][j] == 'l')
@@ -195,16 +197,20 @@ void ls_handler(char *tokens[], int no, const char* curr_dir, const char * home_
                 }
             }
         } else {
-            break;
-
+            dir[dirs] = i;
+            dirs++;
         }
     }
-    if (i == no) {
-        tokens[no] = strdup("");
+
+    if (dirs == 0) {
+        tokens[no] = strdup(".");
+        dir[dirs] = no;
+        dirs++;
         no++;
     }
 
-    for (; i < no; i++) {
+    for (int j = 0; j < dirs; j++) {
+        int i = dir[j];
         get_raw_address(location, tokens[i], curr_dir, home_dir);
         struct stat stats_dir;
         //printf("%s", location);

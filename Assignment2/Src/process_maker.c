@@ -3,7 +3,8 @@
 //
 #include "headers.h"
 #include "process_maker.h"
-
+#include <sys/types.h>
+#include <sys/wait.h>
 // ***** process handling *******
 // signal - send signal to a process
 // waitpid - makes the current process wait until the other is terminated
@@ -31,7 +32,7 @@ void make_process(char *tokens[], int num) {
         }
     } else {
         //int rc_wait = waitpid(rc, NULL, 0);
-        int rc_wait = wait(NULL);
+        int rc_wait = waitpid(rc, NULL, 0);
         printf("Control is back rc_wait = %d, current pid = %d  \n", rc_wait, (int) getpid());
     }
 
