@@ -30,3 +30,17 @@ void get_raw_address(char *new_address, char *cd_location,const char* curr_dir, 
 
 
 }
+void printGreen() {
+    printf("%s", "\x1B[32m");
+}
+
+void printBlue(){
+    printf("%s", "\x1B[34m");
+}
+
+void resetColor() {
+    printf("%s", "\x1B[0m");
+}
+void clearScreen() {
+    printf("\e[1;1H\e[2J");
+}

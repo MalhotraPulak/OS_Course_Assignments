@@ -73,7 +73,7 @@ void permission_format(int mode, char *permission) {
 
 }
 
-void detail_print(const char *add, char *name) {
+void detail_print(const char *add, char *name, int detail) {
     struct stat data;
     //printf("%s", add);
     if (stat(add, &data) == -1) {
@@ -98,16 +98,24 @@ void detail_print(const char *add, char *name) {
     char perm[100];
     if (data.st_mode & S_IFDIR) {
         strcpy(permission, "d");
+        printBlue();
     } else {
         strcpy(permission, "-");
+    }
+    if (!detail) {
+        printf("%s\n", name);
+        resetColor();
+        return;
     }
     permission_format(data.st_mode, perm);
     char monthName[5];
     month_name(month, monthName);
     strcat(permission, perm);
+
     printf("%s%5d%10s%10s%10lld %s %02d %02d:%02d %s\n", permission, links, user_name, group_name, bytes,
            monthName, day,
            hour, min, name);
+    resetColor();
 }
 
 void sort_names(char name[][size_buff], int n) {
@@ -130,10 +138,10 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     if (strcmp(outName, "") != 0)
         printf("%s :\n", outName);
     if (file == 1) {
-        if (details)
-            detail_print(location, outName);
-        else
-            printf("%s\n", outName);
+       // if (details)
+            detail_print(location, outName, details);
+    //      else
+        //    printf("%s\n", outName);
         return;
     }
     if (details) {
@@ -162,14 +170,14 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
         if (curr_name[0] == '.' && hidden == 0) {
             continue;
         }
-        if (!details)
-            printf("%s\n", curr_name);
-        else {
-            char element_address[size_buff];
-            strcpy(element_address, location);
-            strcat(element_address, curr_name);
-            detail_print(element_address, curr_name);
-        }
+        /*  if (!details)
+              printf("%s\n", curr_name);
+          else {*/
+        char element_address[size_buff];
+        strcpy(element_address, location);
+        strcat(element_address, curr_name);
+        detail_print(element_address, curr_name, details);
+
     }
     //free(names);
 }
@@ -179,7 +187,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
 // ls dir size is 4kb or whatever
 // 512 bytes shit
 // multiple dir for ls
-void ls_handler(char *tokens[], int no, const char* curr_dir, const char * home_dir) {
+void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_dir) {
     char location[size_buff];
     int hidden = 0, details = 0;
     int dir[no + 1];
@@ -206,7 +214,6 @@ void ls_handler(char *tokens[], int no, const char* curr_dir, const char * home_
         tokens[no] = strdup(".");
         dir[dirs] = no;
         dirs++;
-        no++;
     }
 
     for (int j = 0; j < dirs; j++) {

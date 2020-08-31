@@ -61,17 +61,7 @@ char *getShellName() {
     return final_name;
 }
 
-void clearScreen() {
-    printf("\e[1;1H\e[2J");
-}
 
-void printGreen() {
-    printf("%s", "\x1B[32m");
-}
-
-void resetColor() {
-    printf("%s", "\x1B[0m");
-}
 
 
 void cd_handler(char *token[]) {
@@ -177,6 +167,27 @@ void get_commands(char *line) {
     // everything gets automatically deallocated as strtok is in place
 }
 
+void zombie_process_check() {
+    int status;
+    int reaped_rc;
+    while ((reaped_rc = waitpid(-1, &status, WNOHANG)) > 0) {
+        char stat[200];
+        if (WIFEXITED(status)) {
+            int t = WEXITSTATUS(status);
+            sprintf(stat, "normally with status %d\n", t);
+        } else if (WIFSIGNALED(status)) {
+            int t = WTERMSIG(status);
+            sprintf(stat, "because of signal %d\n", t);
+        } else {
+            sprintf(stat, "exited somehow\n");
+        }
+
+        char text[size_buff];
+        int len = sprintf(text, "child process %d has exited %s\n", reaped_rc, stat);
+        // todo get name of process
+        write(2, text, len);
+    }
+}
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -193,12 +204,16 @@ int main() {
     strcpy(curr_dir, home_dir);
     updateShowDir();
     while (1) {
+        zombie_process_check();
+        printBlue();
+        printf("%s", shell_name);
         printGreen();
-        printf("%s%s$ ", shell_name, show_dir);
+        printf("%s$ ", show_dir);
         resetColor();
         char line[500];
         scanf(" %499[^\n]%*c", line);
         get_commands(line);
+
         //printf("%s", home_dir);
 
     }

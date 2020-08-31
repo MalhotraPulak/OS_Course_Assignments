@@ -6,15 +6,15 @@
 
 // parse the file in /proc/pid/stat, /proc/pid/status (easier) and /proc/pid/exe
 
-
 void pinfo_handler(char *tokens[]) {
     //printf("%s", tokens[i]);
     char add[size_buff];
     char exe[size_buff];
+    strcpy(exe, "defunct :");
     sprintf(add, "/proc/%s/stat", tokens[1]);
     FILE *ptr = fopen(add, "r");
     if (ptr == NULL) {
-        printf("Cannot access the process\n");
+        printf("Cannot access the process \n");
         return;
     }
     int pid;
@@ -27,14 +27,16 @@ void pinfo_handler(char *tokens[]) {
     int t = readlink(add, exe, size_buff);
     if (t != -1) {
         exe[t] = '\0';
+
     } else {
-        printf("Cannot access the process\n");
-        return;
+        //printf("Cannot access the process ii\n");
+        //return;
+        strcat(exe, exec_name);
     }
     sprintf(add, "/proc/%s/status", tokens[1]);
     ptr = fopen(add, "r");
     if (ptr == NULL) {
-        printf("Cannot access the process\n");
+        printf("Cannot access the process \n");
         return;
     }
     char word[size_buff];

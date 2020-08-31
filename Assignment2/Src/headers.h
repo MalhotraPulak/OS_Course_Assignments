@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <time.h>
 #define size_buff 500
 #endif //UNTITLED_HEADERS_H
