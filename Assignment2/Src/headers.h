@@ -15,4 +15,5 @@
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#define size_buff 500
 #endif //UNTITLED_HEADERS_H
