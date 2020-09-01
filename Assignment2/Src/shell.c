@@ -5,6 +5,7 @@
 #include "ls.h"
 #include <signal.h>
 #include "history_handler.h"
+#include "zombie_killer.h"
 
 char *getShellName();
 
@@ -109,12 +110,7 @@ void processInput(char *input) {
     while (tokens[num_tokens] != NULL) {
         tokens[++num_tokens] = strtok(NULL, " \t");
     }
-    /* for (int i = 0; i < num_tokens; i++) {
-         printf("%s\n", tokens[i]);
-     }*/
-    /*for(int i = 0; i < num_tokens; i++){
-        printf("%s\n", tokens[i]);
-    }*/
+
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
             tokens[1] = malloc(size_buff);
@@ -175,27 +171,6 @@ void get_commands(char *line) {
     // everything gets automatically deallocated as strtok is in place
 }
 
-void zombie_process_check() {
-    int status;
-    int reaped_rc;
-    while ((reaped_rc = waitpid(-1, &status, WNOHANG)) > 0) {
-        char stat[200];
-        if (WIFEXITED(status)) {
-            int t = WEXITSTATUS(status);
-            sprintf(stat, "normally with status %d", t);
-        } else if (WIFSIGNALED(status)) {
-            int t = WTERMSIG(status);
-            sprintf(stat, "because of signal %d", t);
-        } else {
-            sprintf(stat, "exited somehow");
-        }
-
-        char text[size_buff];
-        int len = sprintf(text, "\nchild process %d has exited %s", reaped_rc, stat);
-        // todo get name of process
-        write(2, text, len);
-    }
-}
 
 void rip_child(int signum) {
     if (signum == SIGCHLD)
@@ -252,21 +227,14 @@ int main() {
         printf("%s$ ", show_dir);
         resetColor();
         char *line = malloc(size_buff);
-        //size_t s = size_buff;
-        //scanf(" %[^\n]%*c", line);
         fgets(line, size_buff, stdin);
         size_t ln = strlen(line) - 1;
         if (*line && line[ln] == '\n')
             line[ln] = '\0';
-        //int n = getline(&line, &s, stdin);
-        //printf("%s", line);
-        //printf("%s\n", line);
         line = trim_whitespace(line);
-        //printf("%s\n", line);
         add_history(line);
         get_commands(line);
         //free(line);
-        //printf("%s", home_dir);
 
     }
 
@@ -275,3 +243,4 @@ int main() {
 #pragma clang diagnostic pop
 
 
+// TODO fix memory leaks
