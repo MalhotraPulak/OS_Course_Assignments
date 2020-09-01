@@ -3,6 +3,15 @@
 //
 #include "headers.h"
 #include "util.h"
+
+
+int max(int a, int b) {
+    return a > b? a : b;
+}
+int min(int a, int b)
+{
+    return  a< b ? a : b;
+}
 void get_raw_address(char *new_address, char *cd_location,const char* curr_dir, const char* home_dir) {
     if (cd_location[0] == '/') {
         // Absolute address

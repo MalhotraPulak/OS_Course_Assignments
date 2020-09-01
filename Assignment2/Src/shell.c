@@ -3,7 +3,8 @@
 #include "process_maker.h"
 #include "util.h"
 #include "ls.h"
-
+#include <signal.h>
+#include "history_handler.h"
 
 char *getShellName();
 
@@ -137,6 +138,12 @@ void processInput(char *input) {
             sprintf(tokens[1], "%d", getpid());
         }
         pinfo_handler(tokens);
+    } else if (strcmp(tokens[0], "history") == 0) {
+        if (num_tokens == 1) {
+            show_history(10);
+        } else {
+            show_history(atoi(tokens[1]));
+        }
     } else
         make_process(tokens, num_tokens);
 }
@@ -175,20 +182,52 @@ void zombie_process_check() {
         char stat[200];
         if (WIFEXITED(status)) {
             int t = WEXITSTATUS(status);
-            sprintf(stat, "normally with status %d\n", t);
+            sprintf(stat, "normally with status %d", t);
         } else if (WIFSIGNALED(status)) {
             int t = WTERMSIG(status);
-            sprintf(stat, "because of signal %d\n", t);
+            sprintf(stat, "because of signal %d", t);
         } else {
-            sprintf(stat, "exited somehow\n");
+            sprintf(stat, "exited somehow");
         }
 
         char text[size_buff];
-        int len = sprintf(text, "child process %d has exited %s\n", reaped_rc, stat);
+        int len = sprintf(text, "\nchild process %d has exited %s", reaped_rc, stat);
         // todo get name of process
         write(2, text, len);
     }
 }
+
+void rip_child(int signum) {
+    if (signum == SIGCHLD)
+        zombie_process_check();
+}
+
+char * trim_whitespace(char *line) {
+    // leading
+    int t = 0;
+    for (int i = 0; i < strlen(line); i++) {
+        if (line[i] == ' ' || line[i] == '\t' || line[i] == '\n') {
+            t++;
+        } else {
+            break;
+        }
+    }
+    //printf("%d\n", t);
+    for(int i = 0; i < t; i++){
+        line++;
+    }
+    //printf("%s\n", line);
+    // trailing
+    for (int i = strlen(line); i >= 0; i--) {
+        if (line[i] == ' ' || line[i] == '\t' || line[i] == '\n') {
+            line[i] = '\0';
+        } else {
+            break;
+        }
+    }
+    return line;
+}
+
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -202,10 +241,11 @@ int main() {
     if (home_dir[strlen(home_dir) - 1] != '/') {
         strcat(home_dir, "/");
     }
+    //setSignalHandler();
+    signal(SIGCHLD, rip_child);
     strcpy(curr_dir, home_dir);
     updateShowDir();
     while (1) {
-        zombie_process_check();
         printBlue();
         printf("%s", shell_name);
         printGreen();
@@ -220,9 +260,12 @@ int main() {
             line[ln] = '\0';
         //int n = getline(&line, &s, stdin);
         //printf("%s", line);
+        //printf("%s\n", line);
+        line = trim_whitespace(line);
+        //printf("%s\n", line);
+        add_history(line);
         get_commands(line);
-
-        free(line);
+        //free(line);
         //printf("%s", home_dir);
 
     }

@@ -173,7 +173,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     }
     sort_names(names, total);
     if (details)
-        printf("total %d\n", total_blocks);
+        printf("total %d\n", total_blocks/2);
     for (int i = 0; i < total; i++) {
         char *curr_name = names[i];
         if (curr_name[0] == '.' && hidden == 0) {
