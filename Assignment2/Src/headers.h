@@ -17,5 +17,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <stdbool.h>
 #define size_buff 5000
 #endif //UNTITLED_HEADERS_H

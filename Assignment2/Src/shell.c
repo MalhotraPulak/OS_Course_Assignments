@@ -6,6 +6,7 @@
 #include <signal.h>
 #include "history_handler.h"
 #include "zombie_killer.h"
+#include "nightswatch.h"
 
 char *getShellName();
 
@@ -140,6 +141,8 @@ void processInput(char *input) {
         } else {
             show_history(atoi(tokens[1]));
         }
+    } else if (strcmp(tokens[0], "nightswatch") == 0) {
+        nightswatch_handler(tokens, num_tokens);
     } else
         make_process(tokens, num_tokens);
 }
@@ -165,7 +168,7 @@ void get_commands(char *line) {
 
     }
     for (int j = 0; j < c; j++) {
-        //printf("%s", commands[j]);
+
         processInput(commands[j]);
     }
     // everything gets automatically deallocated as strtok is in place
@@ -177,7 +180,7 @@ void rip_child(int signum) {
         zombie_process_check();
 }
 
-char * trim_whitespace(char *line) {
+char *trim_whitespace(char *line) {
     // leading
     int t = 0;
     for (int i = 0; i < strlen(line); i++) {
@@ -188,7 +191,7 @@ char * trim_whitespace(char *line) {
         }
     }
     //printf("%d\n", t);
-    for(int i = 0; i < t; i++){
+    for (int i = 0; i < t; i++) {
         line++;
     }
     //printf("%s\n", line);

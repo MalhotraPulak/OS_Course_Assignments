@@ -11,6 +11,10 @@ void zombie_process_check() {
     // first get all the active pids
     struct dirent *dir_stuff;
     DIR *dir = opendir("/proc");
+    if(dir == NULL){
+        perror("cannot access /proc");
+        return;
+    }
     int pids[size_buff];
     char * namess[size_buff];
     int child = 0;

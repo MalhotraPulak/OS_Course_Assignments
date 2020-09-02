@@ -39,7 +39,7 @@ void add_history(char tokens[]) {
 
     char new[size_buff];
     sprintf(new, "%s\n", tokens);
-    if(strcmp(new, lines[i - 1]) == 0){
+    if(i == 0 || strcmp(new, lines[i - 1]) == 0){
 
     } else {
         fprintf(f, "%s", new);
