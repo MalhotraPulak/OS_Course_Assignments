@@ -34,7 +34,6 @@ void add_history(char tokens[]) {
     int  i;
     for ( i = max(0, n - 20); i < n; i++) {
         fprintf(f, "%s", lines[i]);
-        //printf("%s", lines[i]);
     }
 
     char new[size_buff];

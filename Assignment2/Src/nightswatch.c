@@ -19,7 +19,7 @@ void set_terminal_raw_mode() {
     memcpy(&new_termios, &orig_termios, sizeof(new_termios));
     atexit(reset_terminal_mode_to_canon); // incase some error occurs
     //cfmakeraw(&new_termios); // only standard on BSD systems, flips the ICANON AND ECHO flag
-    //new_termios.c_iflag &= ~(ICRNL | IXON); control key
+    new_termios.c_iflag &= ~(ICRNL | IXON); //control key
     new_termios.c_oflag &= ~(OPOST); // \n -> \r turn off output processing
     new_termios.c_lflag &= ~(ECHO | ICANON); // turn off echo and canonical mode in terminal
     tcsetattr(0, TCSANOW, &new_termios);
@@ -35,56 +35,80 @@ int getch() {
     }
 }
 
+void cpu_header() {
+    FILE *f;
+    f = fopen("/proc/interrupts", "r");
+    if (f == NULL)
+        return;
+    char *words[10000];
+    int n = 0;
+    //perror("ff");
+    if (f != NULL) {
+        words[n] = malloc(size_buff);
+        size_t s = size_buff;
+        while (fscanf(f, "%s ", words[n]) != -1) {
+            words[++n] = malloc(size_buff);
+        }
+    }
+    // get cpu cores
+    for (int i = 0; i < n; i++) {
+        if (isdigit(words[i][0])) {
+            break;
+        } else {
+            char a[100];
+            sprintf(a, "%10s ", words[i]);
+            write(2, a, strlen(a));
+        }
+    }
+    write(2, "\n", 2);
+}
+
 void cpu() {
-    char a[100];
-    strcpy(a, "cpu");
-    write(2, a, strlen(a));
-
-    
-
-
-
-
-
+    FILE *f;
+    f = fopen("/proc/interrupts", "r");
+    if (f == NULL)
+        return;
+    char *words[10000];
+    int n = 0;
+    //perror("ff");
+    if (f != NULL) {
+        words[n] = malloc(size_buff);
+        size_t s = size_buff;
+        while (fscanf(f, "%s ", words[n]) != -1) {
+            words[++n] = malloc(size_buff);
+        }
+    }
+    // get cpu cores
+    for (int i = 0; i < n; i++) {
+        if (words[i][0] == '1') {
+            for (int j = i + 1;; j++) {
+                if (!isdigit(words[j][0])) {
+                    break;
+                } else {
+                    char a[100];
+                    sprintf(a, "%10s ", words[j]);
+                    write(2, a, strlen(a));
+                }
+            }
+            break;
+        }
+    }
+    write(2, "\n", 2);
 
 
 }
 
 void new_born() {
-    struct dirent *dir_stuff;
-    DIR *dir = opendir("/proc");
-    time_t max_time = 0;
-    if (dir == NULL) {
-        perror("cannot access /proc");
-        return;
+    FILE *f = fopen("/proc/loadavg", "r");
+    if (f == NULL) {
+        perror("not found");
     }
-    char pids[size_buff];
-    strcpy(pids, "-1");
-    while ((dir_stuff = readdir(dir)) != NULL) {
-        if (isdigit(dir_stuff->d_name[0])) {
-            //write(2, "gre", 4);
-            char add[1000];
-            sprintf(add, "/proc/%s/stat", dir_stuff->d_name);
-            struct stat t;
-            if (stat(add, &t) == -1)
-                continue;
-            time_t tt = t.st_mtime;
-            if (max_time == 0) {
-                max_time = tt;
-                strcpy(pids, dir_stuff->d_name);
-            } else {
-                if (difftime(tt, max_time) > 0) {
-                    max_time = tt;
-                    strcpy(pids, dir_stuff->d_name);
-                }
-            }
-
-        }
+    char no[100];
+    for (int i = 0; i < 5; i++) {
+        fscanf(f, "%s\n", no);
     }
-    char a[100];
-    sprintf(a, "- %s\n", pids);
-    write(1, a, strlen(a));
-    closedir(dir);
+    write(1, no, strlen(no));
+    fclose(f);
 }
 
 int kbhit() {
@@ -109,30 +133,33 @@ void nightswatch_handler(char *tokens[], int no) {
     tokens[1]++;
     seconds = atoi(tokens[1]);
     //printf("%d", seconds);
-    while (true) {
-        if (strcmp(tokens[2], "interrupt") == 0) {
-            cpu();
-        } else if (strcmp(tokens[2], "newborn") == 0) {
-            new_born();
-        } else {
-            break;
-        }
-        set_terminal_raw_mode();
-        time_t secs = seconds; // 2 minutes (can be retrieved from user's input)
-        time_t startTime = time(NULL);
-        while (time(NULL) - startTime < secs && !kbhit()) {
-        }
-        //sleep(seconds);
-        if (kbhit()) {
-            if (getch() == 'q') {
-                reset_terminal_mode_to_canon();
-                return;
+    if (strcmp(tokens[2], "interrupt") == 0) {
+        cpu_header();
+        while (true) {
+            if (strcmp(tokens[2], "interrupt") == 0) {
+                cpu();
+            } else if (strcmp(tokens[2], "newborn") == 0) {
+                new_born();
+            } else {
+                break;
             }
+            set_terminal_raw_mode();
+            time_t secs = seconds; // 2 minutes (can be retrieved from user's input)
+            time_t startTime = time(NULL);
+            while (time(NULL) - startTime < secs && !kbhit()) {
+            }
+            //sleep(seconds);
+            if (kbhit()) {
+                if (getch() == 'q') {
+                    reset_terminal_mode_to_canon();
+                    return;
+                }
+            }
+            reset_terminal_mode_to_canon();
+            fflush(stdout);
         }
-        reset_terminal_mode_to_canon();
-        fflush(stdout);
-    }
 
+    }
 }
 
 // nightswatch -1 interrupt
