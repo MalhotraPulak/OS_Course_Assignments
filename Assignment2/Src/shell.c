@@ -137,6 +137,10 @@ void processInput(char *input) {
         if (num_tokens == 1) {
             show_history(10);
         } else {
+            if(tokens[1][0] != '-'){
+                printf("Second arg must be a flag\n");
+                return;
+            }
             tokens[1]++;
             if (atoi(tokens[1]) <= 0 || atoi(tokens[1]) > 15) {
                 printf("n > 0 && n <= 15\n");

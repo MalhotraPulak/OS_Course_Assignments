@@ -150,6 +150,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     while (readdir(dir) != NULL) {
         total++;
     }
+    closedir(dir);
     char names[total][size_buff];
     dir = opendir(location);
     int count = 0;
@@ -173,7 +174,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
     }
     sort_names(names, total);
     if (details)
-        printf("total %d\n", total_blocks/2);
+        printf("total %d\n", total_blocks / 2);
     for (int i = 0; i < total; i++) {
         char *curr_name = names[i];
         if (curr_name[0] == '.' && hidden == 0) {
@@ -188,6 +189,8 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
         detail_print(element_address, curr_name, details);
 
     }
+    closedir(dir);
+    free(dir_stuff);
     //free(names);
 }
 

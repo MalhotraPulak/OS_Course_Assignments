@@ -36,9 +36,10 @@ void zombie_process_check() {
                 namess[child] = strdup(name);
                 child++;
             }
-
+            fclose(f);
         }
     }
+    closedir(dir);
 
     while ((reaped_rc = waitpid(-1, &status, WNOHANG)) > 0) {
         char stat[200];

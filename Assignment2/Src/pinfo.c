@@ -34,6 +34,7 @@ void pinfo_handler(char *tokens[]) {
         strcat(exe, exec_name);
     }
     sprintf(add, "/proc/%s/status", tokens[1]);
+    fclose(ptr);
     ptr = fopen(add, "r");
     if (ptr == NULL) {
         printf("Cannot access the process \n");
@@ -46,6 +47,7 @@ void pinfo_handler(char *tokens[]) {
             break;
         }
     }
+    fclose(ptr);
     printf("pid -- %d\n", pid);
     printf("Process Status -- %c\n", st);
     printf("memory -- %s\n", word);

@@ -59,6 +59,7 @@ void cpu_header() {
         }
     }
     write(1, "\n", 2);
+    fclose(f);
 }
 
 void cpu() {
@@ -90,6 +91,7 @@ void cpu() {
             break;
         }
     }
+    fclose(f);
     write(1, "\n", 2);
 
 
