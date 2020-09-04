@@ -38,7 +38,7 @@ void make_process(char *tokens[], int num) {
     } else if (rc > 0) {
         if (!bg) {
             //printf("gonna wait \n");
-            int rc_wait = waitpid(rc, NULL, 0);
+            waitpid(rc, NULL, 0);
             //printf("Control is back rc_wait = %d, current pid = %d  \n", rc_wait, (int) getpid());
         } else {
 

@@ -20,8 +20,9 @@ void add_history(char tokens[]) {
     f = fopen(history_file, "r");
     char *lines[100];
     int n = 0;
-    //perror("ff");
+
     if (f != NULL) {
+
         lines[n] = malloc(size_buff);
         size_t s = size_buff;
         while (getline(&lines[n], &s, f) != -1) {
@@ -30,6 +31,7 @@ void add_history(char tokens[]) {
         }
     }
     fclose(f);
+
     f = fopen(history_file, "w");
     int  i;
     for ( i = max(0, n - 20); i < n; i++) {
@@ -38,12 +40,13 @@ void add_history(char tokens[]) {
 
     char new[size_buff];
     sprintf(new, "%s\n", tokens);
-    if(i == 0 || strcmp(new, lines[i - 1]) == 0){
-
-    } else {
+    if(i == 0 || strcmp(new, lines[i - 1]) != 0){
         fprintf(f, "%s", new);
     }
     fclose(f);
+    for(i = 0; i < n; i++) {
+        free(lines[i]);
+    }
 }
 
 
@@ -65,5 +68,6 @@ void show_history(int no) {
     fclose(f);
     for (int i = max(0, n - no); i < n; i++) {
         printf("%s\n", lines[i]);
+        free(lines[i]);
     }
 }

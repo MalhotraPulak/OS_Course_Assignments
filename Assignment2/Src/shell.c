@@ -11,15 +11,17 @@
 char *getShellName();
 
 char *shell_name;
-char show_dir[size_buff]; // has / in the end since they are directories
+char show_dir[size_buff];
 char home_dir[size_buff]; // has / in the end
 char curr_dir[size_buff]; // has / in the end
 
 void updateShowDir() {
-    //printf("curr dir %s home dir %s show dir %s \n\n", curr_dir, home_dir, show_dir);
     int homeDirLen = strlen(home_dir);
     if (strlen(curr_dir) < homeDirLen) {
         strcpy(show_dir, curr_dir);
+        if (show_dir[strlen(show_dir) - 1] == '/') {
+            show_dir[strlen(show_dir) - 1] = '\0';
+        }
         return;
     }
     for (int i = 0; i < homeDirLen; i++) {
@@ -30,7 +32,10 @@ void updateShowDir() {
     }
     strcpy(show_dir, "~/");
     strcat(show_dir, curr_dir + homeDirLen);
-    //printf("show dir %s\n", show_dir);
+    if (show_dir[strlen(show_dir) - 1] == '/') {
+        show_dir[strlen(show_dir) - 1] = '\0';
+    }
+
 }
 
 char *getShellName() {
@@ -39,20 +44,17 @@ char *getShellName() {
     char hostname[max_len];
     // getlogin_r
     if (getlogin_r(login, max_len) == 0) {
-        // printf("%s\n", login);
     } else {
         perror("Cant get login name");
     }
     // sysname
     struct utsname sys_name;
     if (uname(&sys_name) == 0) {
-        // printf("%s\n", sys_name.sysname);
     } else {
         perror("Cant get system name");
     }
-    // gethostname
+    // get hostname
     if (gethostname(hostname, max_len) == 0) {
-        // printf("%s\n", hostname);
     } else {
         perror("Cant get hostname");
     }
@@ -64,7 +66,7 @@ char *getShellName() {
     return final_name;
 }
 
-
+// handles cd
 void cd_handler(char *token[]) {
     char cd_location[size_buff];
     strcpy(cd_location, token[1]);
@@ -72,30 +74,27 @@ void cd_handler(char *token[]) {
     get_raw_address(new_address, cd_location, curr_dir, home_dir);
     struct stat stats_dir;
     if (stat(new_address, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
-        //printf("new address is %s\n", new_address);
-        // changing the currrent working directory as required
         if (chdir(new_address) == -1) {
             printf("cd : directory does not exist\n");
         }
-        //cleanupAddress(new_address);
-        //strcpy(curr_dir, new_address);
         if (getcwd(curr_dir, size_buff) == NULL) {
             printf("cd : getcwd failed\n");
         }
         strcat(curr_dir, "/");
         updateShowDir();
     } else {
-        printf("directory does not exist: %s\n", new_address);
+        printf("cd : directory does not exist: %s\n", token[1]);
     }
 
 }
 
+// pwd handler
 void pwd_handler() {
     printf("%s\n", curr_dir);
 }
 
 
-// echo "4324"
+// echo handler
 void echo_handler(char *tokens[], int num) {
     for (int i = 1; i < num; i++) {
         printf("%s ", tokens[i]);
@@ -103,9 +102,9 @@ void echo_handler(char *tokens[], int num) {
     printf("\n");
 }
 
+// separates a command by spaces and sends to appropriate handler
 void processInput(char *input) {
-    //printf("%s\n", input);
-    char *tokens[100];
+    char *tokens[1000];
     int num_tokens = 0;
     tokens[0] = strtok(input, " \t\n");
     while (tokens[num_tokens] != NULL) {
@@ -118,7 +117,6 @@ void processInput(char *input) {
             strcpy(tokens[1], "~");
         }
         cd_handler(tokens);
-        //free(tokens[1]);
     } else if (strcmp(tokens[0], "pwd") == 0) {
         pwd_handler();
     } else if (strcmp(tokens[0], "ls") == 0) {
@@ -126,7 +124,7 @@ void processInput(char *input) {
     } else if (strcmp(tokens[0], "echo") == 0) {
         echo_handler(tokens, num_tokens);
     } else if (strcmp(tokens[0], "exit") == 0) {
-        _exit(1);
+        _exit(0);
     } else if (strcmp(tokens[0], "clear") == 0) {
         clearScreen();
     } else if (strcmp(tokens[0], "pinfo") == 0) {
@@ -139,6 +137,11 @@ void processInput(char *input) {
         if (num_tokens == 1) {
             show_history(10);
         } else {
+            tokens[1]++;
+            if (atoi(tokens[1]) <= 0 || atoi(tokens[1]) > 15) {
+                printf("n > 0 && n <= 15\n");
+                return;
+            }
             show_history(atoi(tokens[1]));
         }
     } else if (strcmp(tokens[0], "nightswatch") == 0) {
@@ -147,8 +150,8 @@ void processInput(char *input) {
         make_process(tokens, num_tokens);
 }
 
+// separates commands by ;
 void get_commands(char *line) {
-    // printf("%s--\n", line);
     char *command;
     char line2[size_buff];
     strcpy(line2, line);
@@ -207,8 +210,7 @@ char *trim_whitespace(char *line) {
 }
 
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
+
 
 int main() {
     clearScreen();
@@ -227,7 +229,7 @@ int main() {
         printBlue();
         printf("%s", shell_name);
         printGreen();
-        printf("%s$ ", show_dir);
+        printf("%s $ ", show_dir);
         resetColor();
         char *line = malloc(size_buff);
         fgets(line, size_buff, stdin);
@@ -237,13 +239,13 @@ int main() {
         line = trim_whitespace(line);
         add_history(line);
         get_commands(line);
-        //free(line);
+        free(line);
 
     }
 
 }
 
-#pragma clang diagnostic pop
+
 
 
 // TODO fix memory leaks

@@ -3,7 +3,6 @@
 //
 #include "headers.h"
 #include "nightswatch.h"
-#include "util.h"
 #include <termios.h>
 #include <ctype.h>
 
@@ -45,7 +44,6 @@ void cpu_header() {
     //perror("ff");
     if (f != NULL) {
         words[n] = malloc(size_buff);
-        size_t s = size_buff;
         while (fscanf(f, "%s ", words[n]) != -1) {
             words[++n] = malloc(size_buff);
         }
@@ -57,10 +55,10 @@ void cpu_header() {
         } else {
             char a[100];
             sprintf(a, "%10s ", words[i]);
-            write(2, a, strlen(a));
+            write(1, a, strlen(a));
         }
     }
-    write(2, "\n", 2);
+    write(1, "\n", 2);
 }
 
 void cpu() {
@@ -73,7 +71,6 @@ void cpu() {
     //perror("ff");
     if (f != NULL) {
         words[n] = malloc(size_buff);
-        size_t s = size_buff;
         while (fscanf(f, "%s ", words[n]) != -1) {
             words[++n] = malloc(size_buff);
         }
@@ -87,13 +84,13 @@ void cpu() {
                 } else {
                     char a[100];
                     sprintf(a, "%10s ", words[j]);
-                    write(2, a, strlen(a));
+                    write(1, a, strlen(a));
                 }
             }
             break;
         }
     }
-    write(2, "\n", 2);
+    write(1, "\n", 2);
 
 
 }
@@ -107,6 +104,7 @@ void new_born() {
     for (int i = 0; i < 5; i++) {
         fscanf(f, "%s\n", no);
     }
+    sprintf(no, "%s\n", no);
     write(1, no, strlen(no));
     fclose(f);
 }
@@ -135,30 +133,29 @@ void nightswatch_handler(char *tokens[], int no) {
     //printf("%d", seconds);
     if (strcmp(tokens[2], "interrupt") == 0) {
         cpu_header();
-        while (true) {
-            if (strcmp(tokens[2], "interrupt") == 0) {
-                cpu();
-            } else if (strcmp(tokens[2], "newborn") == 0) {
-                new_born();
-            } else {
-                break;
-            }
-            set_terminal_raw_mode();
-            time_t secs = seconds; // 2 minutes (can be retrieved from user's input)
-            time_t startTime = time(NULL);
-            while (time(NULL) - startTime < secs && !kbhit()) {
-            }
-            //sleep(seconds);
-            if (kbhit()) {
-                if (getch() == 'q') {
-                    reset_terminal_mode_to_canon();
-                    return;
-                }
-            }
-            reset_terminal_mode_to_canon();
-            fflush(stdout);
+    }
+    while (true) {
+        if (strcmp(tokens[2], "interrupt") == 0) {
+            cpu();
+        } else if (strcmp(tokens[2], "newborn") == 0) {
+            new_born();
+        } else {
+            break;
         }
-
+        set_terminal_raw_mode();
+        time_t secs = seconds; // 2 minutes (can be retrieved from user's input)
+        time_t startTime = time(NULL);
+        while (time(NULL) - startTime < secs && !kbhit()) {
+        }
+        //sleep(seconds);
+        if (kbhit()) {
+            if (getch() == 'q') {
+                reset_terminal_mode_to_canon();
+                return;
+            }
+        }
+        reset_terminal_mode_to_canon();
+        fflush(stdout);
     }
 }
 

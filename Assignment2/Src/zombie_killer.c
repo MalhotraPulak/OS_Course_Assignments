@@ -8,7 +8,6 @@
 void zombie_process_check() {
     int status;
     int reaped_rc;
-    // first get all the active pids
     struct dirent *dir_stuff;
     DIR *dir = opendir("/proc");
     if(dir == NULL){
@@ -19,9 +18,7 @@ void zombie_process_check() {
     char * namess[size_buff];
     int child = 0;
     while ((dir_stuff = readdir(dir)) != NULL) {
-
         if(isdigit(dir_stuff->d_name[0])){
-            //write(2, "gre", 4);
             char  add[1000];
             sprintf(add, "/proc/%s/stat", dir_stuff->d_name);
             FILE* f = fopen(add, "r");
@@ -65,7 +62,6 @@ void zombie_process_check() {
             }
         }
         int len = sprintf(text, "\nchild process %s %d has exited %s", name, reaped_rc, stat);
-        // todo get name of process
         write(2, text, len);
     }
 }

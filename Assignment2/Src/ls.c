@@ -78,7 +78,7 @@ void detail_print(const char *add, char *name, int detail) {
     //printf("%s", add);
     if (stat(add, &data) == -1) {
         printf("%s\n", add);
-        perror("Error getting stat structo");
+        perror("Error getting stat struct");
         return;
     }
     int links = data.st_nlink;
