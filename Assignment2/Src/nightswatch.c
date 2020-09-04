@@ -142,10 +142,11 @@ void nightswatch_handler(char *tokens[], int no) {
         } else if (strcmp(tokens[2], "newborn") == 0) {
             new_born();
         } else {
+            printf("pinfo : invalid command \n");
             break;
         }
         set_terminal_raw_mode();
-        time_t secs = seconds; // 2 minutes (can be retrieved from user's input)
+        time_t secs = seconds;
         time_t startTime = time(NULL);
         while (time(NULL) - startTime < secs && !kbhit()) {
         }

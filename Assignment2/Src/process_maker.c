@@ -33,7 +33,7 @@ void make_process(char *tokens[], int num) {
             setpgid(0, 0);
         //printf("in child process pid = %d\n", (int) getpid());
         if (execvp(cmd, argv) == -1) {
-            perror("error while executing command");
+            perror("invalid command");
         }
     } else if (rc > 0) {
         if (!bg) {
