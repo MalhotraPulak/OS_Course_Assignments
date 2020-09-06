@@ -106,8 +106,9 @@ void new_born() {
     for (int i = 0; i < 5; i++) {
         fscanf(f, "%s\n", no);
     }
-    sprintf(no, "%s\n", no);
-    write(1, no, strlen(no));
+    char pr[1000];
+    sprintf(pr, "%s\n", no);
+    write(1, pr, strlen(pr));
     fclose(f);
 }
 

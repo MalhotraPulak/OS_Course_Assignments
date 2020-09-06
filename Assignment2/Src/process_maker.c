@@ -34,6 +34,7 @@ void make_process(char *tokens[], int num) {
         //printf("in child process pid = %d\n", (int) getpid());
         if (execvp(cmd, argv) == -1) {
             perror("invalid command");
+            exit(1);
         }
     } else if (rc > 0) {
         if (!bg) {

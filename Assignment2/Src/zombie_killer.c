@@ -62,7 +62,7 @@ void zombie_process_check() {
                 break;
             }
         }
-        int len = sprintf(text, "\nchild process %s %d has exited %s", name, reaped_rc, stat);
+        int len = sprintf(text, "\nchild process %s %d has exited %s\n", name, reaped_rc, stat);
         write(2, text, len);
     }
 }

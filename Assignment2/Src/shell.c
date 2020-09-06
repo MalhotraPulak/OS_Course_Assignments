@@ -137,7 +137,7 @@ void processInput(char *input) {
         if (num_tokens == 1) {
             show_history(10);
         } else {
-            if(tokens[1][0] != '-'){
+            if (tokens[1][0] != '-') {
                 printf("Second arg must be a flag\n");
                 return;
             }
@@ -214,8 +214,6 @@ char *trim_whitespace(char *line) {
 }
 
 
-
-
 int main() {
     clearScreen();
     shell_name = getShellName();
@@ -236,6 +234,7 @@ int main() {
         printf("%s $ ", show_dir);
         resetColor();
         char *line = malloc(size_buff);
+        char *line2 = line;
         fgets(line, size_buff, stdin);
         size_t ln = strlen(line) - 1;
         if (*line && line[ln] == '\n')
@@ -243,11 +242,10 @@ int main() {
         line = trim_whitespace(line);
         add_history(line);
         get_commands(line);
-        free(line);
-
+        free(line2);
     }
 
 }
 
 
-
+//TODO process maker support for strings
