@@ -133,9 +133,9 @@ void sort_names(char name[][size_buff], int n) {
 }
 
 
-void print_ls_data(const char *location, int hidden, int details, int file, char *outName) {
+void print_ls_data(const char *location, int hidden, int details, int file, char *outName, int detail) {
     struct dirent *dir_stuff;
-    if (strcmp(outName, "") != 0)
+    if (strcmp(outName, "") != 0 && detail)
         printf("%s :\n", outName);
     if (file == 1) {
         // if (details)
@@ -218,8 +218,9 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
             dirs++;
         }
     }
-
+    int detail = 1;
     if (dirs == 0) {
+        detail = 0;
         tokens[no] = strdup(".");
         dir[dirs] = no;
         dirs++;
@@ -233,11 +234,9 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
         if (stat(location, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
             if (location[strlen(location) - 1] != '/')
                 strcat(location, "/");
-            print_ls_data(location, hidden, details, 0, tokens[i]);
+            print_ls_data(location, hidden, details, 0, tokens[i], detail);
         } else if (S_IFREG & stats_dir.st_mode) {
-            // same as ls dir but on one file
-            //printf("%s", location);
-            print_ls_data(location, hidden, details, 1, tokens[i]);
+            print_ls_data(location, hidden, details, 1, tokens[i], detail);
 
         } else {
             printf("ls : No such file or directory\n");

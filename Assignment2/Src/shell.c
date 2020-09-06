@@ -124,7 +124,8 @@ void processInput(char *input) {
     } else if (strcmp(tokens[0], "echo") == 0) {
         echo_handler(tokens, num_tokens);
     } else if (strcmp(tokens[0], "exit") == 0) {
-        _exit(0);
+        printf("cya\n");
+        exit(0);
     } else if (strcmp(tokens[0], "clear") == 0) {
         clearScreen();
     } else if (strcmp(tokens[0], "pinfo") == 0) {
@@ -137,11 +138,11 @@ void processInput(char *input) {
         if (num_tokens == 1) {
             show_history(10);
         } else {
-            if (tokens[1][0] != '-') {
+            /*if (tokens[1][0] != '-') {
                 printf("Second arg must be a flag\n");
                 return;
             }
-            tokens[1]++;
+            tokens[1]++;*/
             if (atoi(tokens[1]) <= 0 || atoi(tokens[1]) > 15) {
                 printf("n > 0 && n <= 15\n");
                 return;
@@ -217,6 +218,7 @@ char *trim_whitespace(char *line) {
 int main() {
     clearScreen();
     shell_name = getShellName();
+    atexit(killbg);
     if (getcwd(home_dir, size_buff) == NULL) {
         perror("getcwd failed");
     }
@@ -249,3 +251,11 @@ int main() {
 
 
 //TODO process maker support for strings
+
+// parsing command redo
+// newline after nightswatch error message done
+// kill bg processes before exit done
+// nightswatch and history syntax done
+// nightswatch
+// ls done
+

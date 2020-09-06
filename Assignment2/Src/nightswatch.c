@@ -122,36 +122,39 @@ int kbhit() {
 }
 
 void nightswatch_handler(char *tokens[], int no) {
-    if (no != 3) {
-        printf("2 args required : -<int> <command>");
+    if (no != 4) {
+        printf("2 args required : -n  <int> <command>\n");
         return;
     }
     int seconds;
-    if (tokens[1][0] != '-') {
-        printf("2 args required : -<int> <command>");
-        return;
+    if (strcmp(tokens[1], "-n") != 0) {
+        printf("2 args required : -n  <int> <command>\n");
+
     }
-    tokens[1]++;
-    seconds = atoi(tokens[1]);
+    seconds = atoi(tokens[2]);
+    if (seconds <= 0) {
+        printf("n > 0\n");
+    }
     //printf("%d", seconds);
-    if (strcmp(tokens[2], "interrupt") == 0) {
+    char * func = tokens[3];
+    if (strcmp(func, "interrupt") == 0) {
         cpu_header();
     }
     while (true) {
-        if (strcmp(tokens[2], "interrupt") == 0) {
+        if (strcmp(func, "interrupt") == 0) {
             cpu();
-        } else if (strcmp(tokens[2], "newborn") == 0) {
+        } else if (strcmp(func, "newborn") == 0) {
             new_born();
         } else {
             printf("pinfo : invalid command \n");
             break;
         }
         set_terminal_raw_mode();
-        time_t secs = seconds;
-        time_t startTime = time(NULL);
-        while (time(NULL) - startTime < secs && !kbhit()) {
-        }
-        //sleep(seconds);
+        /*time_t secs = seconds;
+        time_t startTime = time(NULL);*/
+        /*  while (time(NULL) - startTime < secs && !kbhit()) {
+          }*/
+        sleep(seconds);
         if (kbhit()) {
             if (getch() == 'q') {
                 reset_terminal_mode_to_canon();

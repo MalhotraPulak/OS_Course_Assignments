@@ -29,22 +29,22 @@ void make_process(char *tokens[], int num) {
         perror("creating child process failed\n");
     } else if (rc == 0) {
         // if bg the child process is now in a new session with no terminal
-        if (bg)
+        if (bg) {
+
             setpgid(0, 0);
-        //printf("in child process pid = %d\n", (int) getpid());
+
+        }
         if (execvp(cmd, argv) == -1) {
-            perror("invalid command");
+            printf("invalid command\n");
             exit(1);
         }
     } else if (rc > 0) {
         if (!bg) {
             //printf("gonna wait \n");
             waitpid(rc, NULL, 0);
-            //printf("Control is back rc_wait = %d, current pid = %d  \n", rc_wait, (int) getpid());
+
         } else {
-
-            //printf("Continuing with pid = %d, child is %d\n", (int) getpid(), rc);
-
+            printf("child with pid [%d] sent to background\n", rc);
         }
     }
 
