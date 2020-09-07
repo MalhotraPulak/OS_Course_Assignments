@@ -12,13 +12,13 @@
 //
 
 
-void make_process(char *tokens[], int num) {
+void make_process(char *tokens[], int num, int bg) {
     char *cmd = strdup(tokens[0]);
-    int bg = 0;
+   /* int bg = 0;
     if (strcmp(tokens[num - 1], "&") == 0) {
         bg = 1;
         num -= 1;
-    }
+    }*/
     char *argv[num + 1];
     for (int i = 0; i < num; i++) {
         argv[i] = strdup(tokens[i]);

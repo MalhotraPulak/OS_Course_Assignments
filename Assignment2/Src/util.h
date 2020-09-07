@@ -9,7 +9,9 @@ void get_raw_address(char *new_address, char *cd_location,const char* curr_dir, 
 void printGreen();
 
 void printBlue();
-
+void printYellow();
+void printCyan();
+void welcomeMessage();
 void resetColor();
 void clearScreen();
 int max(int a, int b);

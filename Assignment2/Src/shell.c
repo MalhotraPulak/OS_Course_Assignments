@@ -103,7 +103,7 @@ void echo_handler(char *tokens[], int num) {
 }
 
 // separates a command by spaces and sends to appropriate handler
-void processInput(char *input) {
+void processInput(char *input, int bg) {
     char *tokens[1000];
     int num_tokens = 0;
     tokens[0] = strtok(input, " \t\n");
@@ -144,7 +144,7 @@ void processInput(char *input) {
             }
             tokens[1]++;*/
             if (atoi(tokens[1]) <= 0 || atoi(tokens[1]) > 15) {
-                printf("n > 0 && n <= 15\n");
+                printf("history <int n> \n n > 0 && n <= 15\n");
                 return;
             }
             show_history(atoi(tokens[1]));
@@ -152,32 +152,40 @@ void processInput(char *input) {
     } else if (strcmp(tokens[0], "nightswatch") == 0) {
         nightswatch_handler(tokens, num_tokens);
     } else
-        make_process(tokens, num_tokens);
+        make_process(tokens, num_tokens, bg);
 }
 
 // separates commands by ;
 void get_commands(char *line) {
     char *command;
-    char line2[size_buff];
+    char line2[size_buff], line3[size_buff];
     strcpy(line2, line);
-    command = strtok(line, ";");
+    strcpy(line3, line);
+    command = strtok(line, ";&");
     int c = 0;
     while (command != NULL) {
         c++;
-        command = strtok(NULL, ";");
+        command = strtok(NULL, ";&");
     }
     char *commands[c + 1];
     int i = 0;
     if (c <= 0) return;
-    commands[0] = strtok(line2, ";");
-    while (commands[i] != NULL) {
+    char *beg = line2;
+    commands[0] = strtok(line2, ";&");
+
+    while (commands[i] != NULL && strcmp(commands[i], "") != 0) {
+        //printf("%c\n", line3[strlen(commands[i]) + line2 - beg]);
+        //printf("%c\n", line3[strlen(commands[i]) + (commands[i] - beg)]);
         i++;
-        commands[i] = strtok(NULL, ";");
+        commands[i] = strtok(NULL, ";&");
 
     }
     for (int j = 0; j < c; j++) {
-
-        processInput(commands[j]);
+        bool bg = false;
+        if(line3[strlen(commands[j]) + (commands[j] - beg)] == '&') {
+           bg = true;
+        }
+        processInput(commands[j], bg);
     }
     // everything gets automatically deallocated as strtok is in place
 }
@@ -204,19 +212,21 @@ char *trim_whitespace(char *line) {
     }
     //printf("%s\n", line);
     // trailing
-    for (int i = strlen(line); i >= 0; i--) {
+    for (int i = strlen(line) - 1; i >= 0; i--) {
         if (line[i] == ' ' || line[i] == '\t' || line[i] == '\n') {
             line[i] = '\0';
         } else {
             break;
         }
     }
+    //printf("%s", line);
     return line;
 }
 
 
 int main() {
     clearScreen();
+    welcomeMessage();
     shell_name = getShellName();
     atexit(killbg);
     if (getcwd(home_dir, size_buff) == NULL) {
@@ -230,10 +240,12 @@ int main() {
     strcpy(curr_dir, home_dir);
     updateShowDir();
     while (1) {
-        printBlue();
+        printCyan();
         printf("%s", shell_name);
         printGreen();
-        printf("%s $ ", show_dir);
+        printf("%s ", show_dir);
+        printYellow();
+        printf("$ ");
         resetColor();
         char *line = malloc(size_buff);
         char *line2 = line;

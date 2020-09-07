@@ -42,18 +42,32 @@ void get_raw_address(char *new_address, char *cd_location, const char *curr_dir,
 
 }
 
+
 void printGreen() {
-    printf("%s", "\x1B[32m");
+    printf("%s", "\033[1m\033[32m");
 }
 
 void printBlue() {
-    printf("%s", "\x1B[34m");
+    printf("%s", "\033[1m\033[35m");
+}
+void printCyan() {
+    printf("%s", "\033[1m\033[36m");
+}
+void resetColor() {
+    printf("%s", "\033[1m\033[0m");
 }
 
-void resetColor() {
-    printf("%s", "\x1B[0m");
+void printYellow() {
+    printf("%s", "\033[1m\033[33m");
 }
 
 void clearScreen() {
     printf("\e[1;1H\e[2J");
+}
+void welcomeMessage(){
+    printf(" ---------------\n");
+    printf("|   Welcome     |\n");
+    printf("|     to        |\n");
+    printf("|  Boring Shell |\n");
+    printf(" ---------------\n");
 }

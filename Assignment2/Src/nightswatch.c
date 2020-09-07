@@ -17,10 +17,10 @@ void set_terminal_raw_mode() {
     tcgetattr(0, &orig_termios);
     memcpy(&new_termios, &orig_termios, sizeof(new_termios));
     atexit(reset_terminal_mode_to_canon); // incase some error occurs
-    //cfmakeraw(&new_termios); // only standard on BSD systems, flips the ICANON AND ECHO flag
-    new_termios.c_iflag &= ~(ICRNL | IXON); //control key
-    new_termios.c_oflag &= ~(OPOST); // \n -> \r turn off output processing
-    new_termios.c_lflag &= ~(ECHO | ICANON); // turn off echo and canonical mode in terminal
+    cfmakeraw(&new_termios); // only standard on BSD systems, flips the ICANON AND ECHO flag
+    //   new_termios.c_iflag &= ~(ICRNL | IXON); //control key
+    //   new_termios.c_oflag &= ~(OPOST); // \n -> \r turn off output processing
+    //  new_termios.c_lflag &= ~(ECHO | ICANON); // turn off echo and canonical mode in terminal
     tcsetattr(0, TCSANOW, &new_termios);
 }
 
@@ -72,19 +72,19 @@ void cpu() {
     //perror("ff");
     if (f != NULL) {
         words[n] = malloc(size_buff);
-        while (fscanf(f, "%s ", words[n]) != -1) {
+        while (fscanf(f, " \t%s", words[n]) != -1) {
             words[++n] = malloc(size_buff);
         }
     }
-    // get cpu cores
     for (int i = 0; i < n; i++) {
-        if (words[i][0] == '1') {
+        //printf("-%s-\n", words[i]);
+        if (strcmp(words[i], "1:") == 0) {
             for (int j = i + 1;; j++) {
-                if (!isdigit(words[j][0])) {
+                if (!(words[j][0] >= '0' && words[j][0] <= '9')) {
                     break;
                 } else {
                     char a[100];
-                    sprintf(a, "%10s ", words[j]);
+                    sprintf(a, "%10s", words[j]);
                     write(1, a, strlen(a));
                 }
             }
@@ -136,7 +136,7 @@ void nightswatch_handler(char *tokens[], int no) {
         printf("n > 0\n");
     }
     //printf("%d", seconds);
-    char * func = tokens[3];
+    char *func = tokens[3];
     if (strcmp(func, "interrupt") == 0) {
         cpu_header();
     }
@@ -150,11 +150,17 @@ void nightswatch_handler(char *tokens[], int no) {
             break;
         }
         set_terminal_raw_mode();
-        /*time_t secs = seconds;
-        time_t startTime = time(NULL);*/
-        /*  while (time(NULL) - startTime < secs && !kbhit()) {
-          }*/
-        sleep(seconds);
+        time_t secs = seconds;
+        time_t startTime = time(NULL);
+        while (time(NULL) - startTime < secs) {
+            if (kbhit()) {
+                if (getch() == 'q') {
+                    reset_terminal_mode_to_canon();
+                    return;
+                }
+            }
+        }
+        //sleep(seconds);
         if (kbhit()) {
             if (getch() == 'q') {
                 reset_terminal_mode_to_canon();
@@ -165,6 +171,7 @@ void nightswatch_handler(char *tokens[], int no) {
         fflush(stdout);
     }
 }
+
 
 // nightswatch -1 interrupt
 // nightswatch -1 newborn
