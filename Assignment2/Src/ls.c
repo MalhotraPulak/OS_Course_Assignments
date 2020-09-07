@@ -76,7 +76,7 @@ void permission_format(int mode, char *permission) {
 void detail_print(const char *add, char *name, int detail) {
     struct stat data;
     //printf("%s", add);
-    if (stat(add, &data) == -1) {
+    if (lstat(add, &data) == -1) {
         printf("%s\n", add);
         perror("Error getting stat struct");
         return;
@@ -99,7 +99,10 @@ void detail_print(const char *add, char *name, int detail) {
     if (data.st_mode & S_IFDIR) {
         strcpy(permission, "d");
         printBlue();
-    } else {
+    } else if (S_ISLNK(data.st_mode)) {
+        strcpy(permission, "l");
+        printYellow();
+    } else{
         strcpy(permission, "-");
     }
     if (!detail) {
@@ -166,7 +169,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
         //printf("%s", add);
         if (stat(element_address, &data) == -1) {
             printf("%s\n", element_address);
-            perror("Error getting stat structn");
+            perror("Error getting stat struct");
             continue;
         }
         total_blocks += data.st_blocks;

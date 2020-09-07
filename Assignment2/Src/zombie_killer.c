@@ -13,7 +13,7 @@ void zombie_process_check() {
     struct dirent *dir_stuff;
     DIR *dir = opendir("/proc");
     if(dir == NULL){
-        perror("cannot access /proc");
+        //perror("cannot access /proc");
         return;
     }
     int pids[size_buff];
