@@ -96,6 +96,9 @@ void detail_print(const char *add, char *name, int detail) {
     int hour = last_mod.tm_hour;
     char permission[100];
     char perm[100];
+    if(data.st_mode & S_IXUSR){
+        printGreen();
+    }
     if (data.st_mode & S_IFDIR) {
         strcpy(permission, "d");
         printBlue();

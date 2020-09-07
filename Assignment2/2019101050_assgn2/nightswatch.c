@@ -146,7 +146,7 @@ void nightswatch_handler(char *tokens[], int no) {
         } else if (strcmp(func, "newborn") == 0) {
             new_born();
         } else {
-            printf("pinfo : invalid command \n");
+            printf("nightswatch : invalid command \n");
             break;
         }
         set_terminal_raw_mode();

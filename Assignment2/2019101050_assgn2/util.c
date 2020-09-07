@@ -48,7 +48,7 @@ void printGreen() {
 }
 
 void printBlue() {
-    printf("%s", "\033[1m\033[35m");
+    printf("%s", "\033[1m\033[34m");
 }
 void printCyan() {
     printf("%s", "\033[1m\033[36m");

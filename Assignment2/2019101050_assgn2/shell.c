@@ -110,7 +110,8 @@ void processInput(char *input, int bg) {
     while (tokens[num_tokens] != NULL) {
         tokens[++num_tokens] = strtok(NULL, " \t");
     }
-
+    if(num_tokens == 0)
+        return;
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
             tokens[1] = malloc(size_buff);
@@ -182,10 +183,11 @@ void get_commands(char *line) {
     }
     for (int j = 0; j < c; j++) {
         bool bg = false;
-        if(line3[strlen(commands[j]) + (commands[j] - beg)] == '&') {
-           bg = true;
+        if (line3[strlen(commands[j]) + (commands[j] - beg)] == '&') {
+            bg = true;
         }
         processInput(commands[j], bg);
+
     }
     // everything gets automatically deallocated as strtok is in place
 }
@@ -264,10 +266,10 @@ int main() {
 
 //TODO process maker support for strings
 
-// parsing command redo
+// parsing command redo  done
 // newline after nightswatch error message done
 // kill bg processes before exit done
 // nightswatch and history syntax done
-// nightswatch
+// nightswatch done
 // ls done
 
