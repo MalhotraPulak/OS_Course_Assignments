@@ -8,53 +8,54 @@
 #include "zombie_killer.h"
 #include "nightswatch.h"
 
+
 char *getShellName();
 
-char *shell_name;
-char show_dir[size_buff];
-char home_dir[size_buff]; // has / in the end
-char curr_dir[size_buff]; // has / in the end
+char *shellName;
+char showDir[size_buff];
+char homeDir[size_buff]; // has / in the end
+char currDir[size_buff]; // has / in the end
 
 void updateShowDir() {
-    int homeDirLen = strlen(home_dir);
-    if (strlen(curr_dir) < homeDirLen) {
-        strcpy(show_dir, curr_dir);
-        if (show_dir[strlen(show_dir) - 1] == '/') {
-            show_dir[strlen(show_dir) - 1] = '\0';
+    int homeDirLen = (int) strlen(homeDir);
+    if (strlen(currDir) < homeDirLen) {
+        strcpy(showDir, currDir);
+        if (showDir[strlen(showDir) - 1] == '/') {
+            showDir[strlen(showDir) - 1] = '\0';
         }
         return;
     }
     for (int i = 0; i < homeDirLen; i++) {
-        if (home_dir[i] != curr_dir[i]) {
-            strcpy(show_dir, curr_dir);
+        if (homeDir[i] != currDir[i]) {
+            strcpy(showDir, currDir);
             return;
         }
     }
-    strcpy(show_dir, "~/");
-    strcat(show_dir, curr_dir + homeDirLen);
-    if (show_dir[strlen(show_dir) - 1] == '/') {
-        show_dir[strlen(show_dir) - 1] = '\0';
+    strcpy(showDir, "~/");
+    strcat(showDir, currDir + homeDirLen);
+    if (showDir[strlen(showDir) - 1] == '/') {
+        showDir[strlen(showDir) - 1] = '\0';
     }
 
 }
 
 char *getShellName() {
-    const int max_len = 2000;
-    char login[max_len];
-    char hostname[max_len];
+    const int maxLen = 2000;
+    char login[maxLen];
+    char hostname[maxLen];
     // getlogin_r
-    if (getlogin_r(login, max_len) == 0) {
+    if (getlogin_r(login, maxLen) == 0) {
     } else {
         perror("Cant get login name");
     }
     // sysname
-    struct utsname sys_name;
-    if (uname(&sys_name) == 0) {
+    struct utsname sysName;
+    if (uname(&sysName) == 0) {
     } else {
         perror("Cant get system name");
     }
     // get hostname
-    if (gethostname(hostname, max_len) == 0) {
+    if (gethostname(hostname, maxLen) == 0) {
     } else {
         perror("Cant get hostname");
     }
@@ -71,16 +72,16 @@ void cd_handler(char *token[]) {
     char cd_location[size_buff];
     strcpy(cd_location, token[1]);
     char new_address[size_buff];
-    get_raw_address(new_address, cd_location, curr_dir, home_dir);
+    get_raw_address(new_address, cd_location, currDir, homeDir);
     struct stat stats_dir;
     if (stat(new_address, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
         if (chdir(new_address) == -1) {
             printf("cd : directory does not exist\n");
         }
-        if (getcwd(curr_dir, size_buff) == NULL) {
+        if (getcwd(currDir, size_buff) == NULL) {
             printf("cd : getcwd failed\n");
         }
-        strcat(curr_dir, "/");
+        strcat(currDir, "/");
         updateShowDir();
     } else {
         printf("cd : directory does not exist: %s\n", token[1]);
@@ -90,7 +91,7 @@ void cd_handler(char *token[]) {
 
 // pwd handler
 void pwd_handler() {
-    printf("%s\n", curr_dir);
+    printf("%s\n", currDir);
 }
 
 
@@ -110,7 +111,7 @@ void processInput(char *input, int bg) {
     while (tokens[num_tokens] != NULL) {
         tokens[++num_tokens] = strtok(NULL, " \t");
     }
-    if(num_tokens == 0)
+    if (num_tokens == 0)
         return;
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
@@ -121,12 +122,14 @@ void processInput(char *input, int bg) {
     } else if (strcmp(tokens[0], "pwd") == 0) {
         pwd_handler();
     } else if (strcmp(tokens[0], "ls") == 0) {
-        ls_handler(tokens, num_tokens, curr_dir, home_dir);
+        ls_handler(tokens, num_tokens, currDir, homeDir);
     } else if (strcmp(tokens[0], "echo") == 0) {
         echo_handler(tokens, num_tokens);
     } else if (strcmp(tokens[0], "exit") == 0) {
+        killbg();
         printf("cya\n");
-        exit(0);
+        _exit(0);
+
     } else if (strcmp(tokens[0], "clear") == 0) {
         clearScreen();
     } else if (strcmp(tokens[0], "pinfo") == 0) {
@@ -144,8 +147,8 @@ void processInput(char *input, int bg) {
                 return;
             }
             tokens[1]++;*/
-            if (atoi(tokens[1]) <= 0 || atoi(tokens[1]) > 15) {
-                printf("history <int n> \n n > 0 && n <= 15\n");
+            if (strtol(tokens[1], NULL, 10) <= 0 || strtol(tokens[1], NULL, 10) > 20) {
+                printf("history <int n> \n n > 0 && n <= 20\n");
                 return;
             }
             show_history(atoi(tokens[1]));
@@ -198,6 +201,13 @@ void rip_child(int signum) {
         zombie_process_check();
 }
 
+void exit_2(int signum) {
+    if (signum == SIGINT) {
+        killbg();
+        _exit(0);
+    }
+}
+
 char *trim_whitespace(char *line) {
     // leading
     int t = 0;
@@ -229,23 +239,24 @@ char *trim_whitespace(char *line) {
 int main() {
     clearScreen();
     welcomeMessage();
-    shell_name = getShellName();
-    atexit(killbg);
-    if (getcwd(home_dir, size_buff) == NULL) {
+    shellName = getShellName();
+    //atexit(killbg);
+    if (getcwd(homeDir, size_buff) == NULL) {
         perror("getcwd failed");
     }
-    if (home_dir[strlen(home_dir) - 1] != '/') {
-        strcat(home_dir, "/");
+    if (homeDir[strlen(homeDir) - 1] != '/') {
+        strcat(homeDir, "/");
     }
     //setSignalHandler();
     signal(SIGCHLD, rip_child);
-    strcpy(curr_dir, home_dir);
+    signal(SIGINT, exit_2);
+    strcpy(currDir, homeDir);
     updateShowDir();
     while (1) {
         printCyan();
-        printf("%s", shell_name);
+        printf("%s", shellName);
         printGreen();
-        printf("%s ", show_dir);
+        printf("%s ", showDir);
         printYellow();
         printf("$ ");
         resetColor();
@@ -272,4 +283,5 @@ int main() {
 // nightswatch and history syntax done
 // nightswatch done
 // ls done
+
 

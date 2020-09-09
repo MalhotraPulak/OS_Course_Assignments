@@ -131,7 +131,7 @@ void nightswatch_handler(char *tokens[], int no) {
         printf("2 args required : -n  <int> <command>\n");
 
     }
-    seconds = atoi(tokens[2]);
+    seconds = (int)strtol(tokens[2], NULL, 10);
     if (seconds <= 0) {
         printf("n > 0\n");
     }
