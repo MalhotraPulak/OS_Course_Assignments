@@ -50,9 +50,11 @@ void printGreen() {
 void printBlue() {
     printf("%s", "\033[1m\033[34m");
 }
+
 void printCyan() {
     printf("%s", "\033[1m\033[36m");
 }
+
 void resetColor() {
     printf("%s", "\033[1m\033[0m");
 }
@@ -64,10 +66,33 @@ void printYellow() {
 void clearScreen() {
     printf("\e[1;1H\e[2J");
 }
-void welcomeMessage(){
+
+void welcomeMessage() {
     printf(" ---------------\n");
     printf("|   Welcome     |\n");
     printf("|     to        |\n");
     printf("|  Boring Shell |\n");
     printf(" ---------------\n");
+}
+
+char *trim_whitespace(char *line) {
+    int t = 0;
+    for (int i = 0; i < strlen(line); i++) {
+        if (line[i] == ' ' || line[i] == '\t' || line[i] == '\n') {
+            t++;
+        } else {
+            break;
+        }
+    }
+    for (int i = 0; i < t; i++) {
+        line++;
+    }
+    for (int i = strlen(line) - 1; i >= 0; i--) {
+        if (line[i] == ' ' || line[i] == '\t' || line[i] == '\n') {
+            line[i] = '\0';
+        } else {
+            break;
+        }
+    }
+    return line;
 }

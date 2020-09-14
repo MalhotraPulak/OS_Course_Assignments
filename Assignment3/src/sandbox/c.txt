@@ -1,0 +1,12 @@
+total 40
+-rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:38 a.txt
+-rw-rw-r--  1 forg1ven  staff  489 Sep 14 01:37 b.txt
+-rw-rw-r--  1 forg1ven  staff  489 Sep 14 01:37 c.txt
+-rw-rw-r--  1 forg1ven  staff   48 Sep 14 01:29 e.txt
+-rw-r--r--  1 forg1ven  staff    0 Sep 14 01:38 f.txt
+-rw-r--r--  1 forg1ven  staff    0 Sep 14 01:38 h.txt
+-rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:06 out
+-rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:07 out2
+-rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:07 out3
+-rw-rw-r--  1 forg1ven  staff  223 Sep 14 01:07 out4
+-rw-rw-r--  1 forg1ven  staff  223 Sep 14 01:09 out5

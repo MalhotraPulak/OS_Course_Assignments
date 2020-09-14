@@ -1,0 +1,20 @@
+redirecting 1 to another file[1m[32m[1m[34ma
+[1m[0ma-a
+[1m[0ma.txt
+[1m[0ma.txy
+[1m[0mb.txt
+[1m[0mc.txt
+[1m[0me.txt
+[1m[0mf.txt
+[1m[0mff.txt
+[1m[0mfile.txt
+[1m[0mh.txt
+[1m[0mls.txt
+[1m[0mn.txt
+[1m[0mout
+[1m[0mout2
+[1m[0mout3
+[1m[0mout4
+[1m[0mout5
+[1m[0ms.txt
+[1m[0m

@@ -16,5 +16,5 @@ void resetColor();
 void clearScreen();
 int max(int a, int b);
 int min(int a, int b);
-
+char * trim_whitespace(char *);
 #endif //UNTITLED_UTIL_H
