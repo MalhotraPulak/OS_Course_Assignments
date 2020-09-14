@@ -104,7 +104,7 @@ void echo_handler(char *tokens[], int num) {
 }
 
 
-void run_command(char **tokens, int num_tokens, int bg) {
+void run_command(char **tokens, int num_tokens, int bg, int *pipe) {
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
             tokens[1] = malloc(4);
@@ -148,7 +148,7 @@ void run_command(char **tokens, int num_tokens, int bg) {
     } else if (strcmp(tokens[0], "nightswatch") == 0) {
         nightswatch_handler(tokens, num_tokens);
     } else
-        make_process(tokens, num_tokens, bg);
+        make_process(tokens, num_tokens, bg, pipe);
 }
 
 // note
@@ -248,7 +248,7 @@ void fixInput(int in, int out) {
     dup(in);
 }
 
-void processInput(char *input, int bg) {
+void processInput(char *input, int bg, int *pipe) {
     char *tokens[1000];
     int num_tokens = 0;
     tokens[0] = strtok(input, " \t\n");
@@ -336,8 +336,8 @@ void processInput(char *input, int bg) {
             num_word_command++;
         }
     }
-    run_command(command_tokens, num_word_command, bg);
-    for(int i = 0; i < num_word_command; i++)
+    run_command(command_tokens, num_word_command, bg, pipe);
+    for (int i = 0; i < num_word_command; i++)
         free(command_tokens[i]);
     fixInput(backup_stdin, backup_stdout);
     close(backup_stdout);
@@ -346,20 +346,59 @@ void processInput(char *input, int bg) {
 
 }
 
-// separates a command by spaces and sends to appropriate handler
-/*void processInput(char *input, int bg) {
-    char *tokens[1000];
-    int num_tokens = 0;
-    tokens[0] = strtok(input, " \t\n");
-    while (tokens[num_tokens] != NULL) {
-        tokens[++num_tokens] = strtok(NULL, " \t");
-    }
-    if (num_tokens == 0)
-        return;
-    checkForRedirection(tokens, num_tokens, bg);
-    run_command(tokens, num_tokens, bg);
 
-}*/
+void pipechecker(char *cmd, int bg) {
+    int pipee = 0;
+    for (int i = 0; i < strlen(cmd); i++)
+        if (cmd[i] == '|')
+            pipee++;
+    if (pipee == 0) {
+        processInput(cmd, bg, NULL);
+        return;
+    } else if (cmd[0] == '|' || cmd[strlen(cmd) - 1] == '|') {
+        printf("Pipe does not have both ends \n");
+        return;
+    }
+    char *commands[1000];
+    int n = 0;
+    char *t = strtok(cmd, "|");
+    while (t != NULL) {
+        commands[n] = malloc(size_buff);
+        strcpy(commands[n], t);
+        t = strtok(NULL, "|");
+        n++;
+    }
+
+
+    int out = dup(STDOUT_FILENO);
+    int in = dup(STDIN_FILENO);
+    int prev_open = -1;
+    for (int i = 0; i < n - 1; i++) {
+        int pipes[2];
+        if (pipe(pipes) == -1) {
+            perror("cannot make pipe\n");
+            return;
+        }
+        if (prev_open != -1) {
+            dup2(prev_open, 0);
+            close(prev_open);
+        }
+        dup2(pipes[1], 1);
+        close(pipes[1]);
+        prev_open = pipes[0];
+        processInput(commands[i], bg, pipes);
+        free(commands[i]);
+    }
+    dup2(out, 1);
+    close(out);
+    if (prev_open != -1) {
+        dup2(prev_open, 0);
+        close(prev_open);
+    }
+    processInput(commands[n - 1], bg, NULL);
+    dup2(in, 0);
+    close(in);
+}
 
 // separates commands by ;
 void get_commands(char *line) {
@@ -391,8 +430,8 @@ void get_commands(char *line) {
         if (line3[strlen(commands[j]) + (commands[j] - beg)] == '&') {
             bg = true;
         }
-        processInput(commands[j], bg);
-
+        //processInput(commands[j], bg);
+        pipechecker(commands[j], bg);
     }
     // everything gets automatically deallocated as strtok is in place
 }

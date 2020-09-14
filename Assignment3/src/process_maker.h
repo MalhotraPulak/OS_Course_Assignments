@@ -5,5 +5,5 @@
 #ifndef UNTITLED_PROCESS_MAKER_H
 #define UNTITLED_PROCESS_MAKER_H
 
-void make_process(char *tokens[], int num, int bg);
+void make_process(char *tokens[], int num, int bg, int * pipe);
 #endif //UNTITLED_PROCESS_MAKER_H

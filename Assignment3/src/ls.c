@@ -247,7 +247,7 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
         } else {
             printf("ls : No such file or directory\n");
         }
-        printf("\n");
+        //printf("\n");
     }
 
 }
