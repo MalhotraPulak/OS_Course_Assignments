@@ -1,35 +1,20 @@
-/*
 //
-// Created by Pulak Malhotra on 14/09/20.
+// Created by Pulak Malhotra on 15/09/20.
 //
 
-#include "input_handler.h"
+#include "parser.h"
 #include "headers.h"
-#include "headers.h"
-#include "pinfo.h"
-#include "process_maker.h"
 #include "util.h"
 #include "ls.h"
+#include "pinfo.h"
+#include "zombie_killer.h"
+#include "process_maker.h"
 #include <signal.h>
 #include "history_handler.h"
-#include "zombie_killer.h"
 #include "nightswatch.h"
 
 
-// pwd handler
-void pwd_handler() {
-    printf("%s\n", currDir);
-}
-
-
-// echo handler
-void echo_handler(char *tokens[], int num) {
-    for (int i = 1; i < num; i++) {
-        printf("%s ", tokens[i]);
-    }
-    printf("\n");
-}
-void run_command(char **tokens, int num_tokens, int bg) {
+void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open) {
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
             tokens[1] = malloc(4);
@@ -59,13 +44,11 @@ void run_command(char **tokens, int num_tokens, int bg) {
         if (num_tokens == 1) {
             show_history(10);
         } else {
-            */
-/*if (tokens[1][0] != '-') {
+            /*if (tokens[1][0] != '-') {
                 printf("Second arg must be a flag\n");
                 return;
             }
-            tokens[1]++;*//*
-
+            tokens[1]++;*/
             if (strtol(tokens[1], NULL, 10) <= 0 || strtol(tokens[1], NULL, 10) > 20) {
                 printf("history <int n> \n n > 0 && n <= 20\n");
                 return;
@@ -75,7 +58,7 @@ void run_command(char **tokens, int num_tokens, int bg) {
     } else if (strcmp(tokens[0], "nightswatch") == 0) {
         nightswatch_handler(tokens, num_tokens);
     } else
-        make_process(tokens, num_tokens, bg);
+        make_process(tokens, num_tokens, bg, pipe, prev_open);
 }
 
 // note
@@ -123,12 +106,10 @@ int tokenize(const char *token, char *string, char *tokens[100]) {
     strcpy(tokens[count], string + start);
     count++;
 
-*/
 /*
     for (int i = 0; i < count; i++) {
         printf("%d--%s--\n", i, tokens[i]);
-    }*//*
-
+    }*/
     return count;
 }
 
@@ -170,14 +151,13 @@ void changeInput(char *token, char *file) {
 }
 
 void fixInput(int in, int out) {
-    //ftruncate(STDOUT_FILENO, lseek(STDOUT_FILENO, 0, SEEK_CUR));
-    close(STDOUT_FILENO);
-    dup(out);
-    close(STDIN_FILENO);
-    dup(in);
+    dup2(in, 0);
+    close(in);
+    dup2(out, 1);
+    close(out);
 }
 
-void processInput(char *input, int bg) {
+void processInput(char *input, int bg, int *pipe, int prev_open) {
     char *tokens[1000];
     int num_tokens = 0;
     tokens[0] = strtok(input, " \t\n");
@@ -198,11 +178,9 @@ void processInput(char *input, int bg) {
             free(new_tokens[j]);
         }
     }
-    */
-/*   for (int i = 0; i < n; i++) {
+    /*   for (int i = 0; i < n; i++) {
            printf("--%s--\n", tokens_append[i]);
-       }*//*
-
+       }*/
 
     // >
     char tokens_append_out[100][1000];
@@ -224,11 +202,9 @@ void processInput(char *input, int bg) {
 
         }
     }
-*/
 /*    for (int i = 0; i < n; i++) {
         printf("---%s---\n", tokens_append_out[i]);
-    }*//*
-
+    }*/
 
     // <
     char tokens_final[100][1000];
@@ -245,15 +221,13 @@ void processInput(char *input, int bg) {
         }
 
     }
-    */
-/*    for (int i = 0; i < n; i++) {
+    /*    for (int i = 0; i < n; i++) {
             printf("----%s----\n", tokens_final[i]);
-        }*//*
-
+        }*/
 
     //now we need to do the redirection
-    int backup_stdout = dup(STDOUT_FILENO);
-    int backup_stdin = dup(STDIN_FILENO);
+    //int backup_stdout = dup(STDOUT_FILENO);
+    //int backup_stdin = dup(STDIN_FILENO);
     char *command_tokens[1000];
     int num_word_command = 0;
     for (int i = 0; i < n; i++) {
@@ -271,12 +245,115 @@ void processInput(char *input, int bg) {
             num_word_command++;
         }
     }
-    run_command(command_tokens, num_word_command, bg);
+    run_command(command_tokens, num_word_command, bg, pipe, prev_open);
     for (int i = 0; i < num_word_command; i++)
         free(command_tokens[i]);
-    fixInput(backup_stdin, backup_stdout);
-    close(backup_stdout);
-    close(backup_stdin);
+    //backup making before function call so it doesnt interfere with piping
+    //fixInput(backup_stdin, backup_stdout);
+    //close(backup_stdout);
+    //close(backup_stdin);
 
 
-}*/
+}
+
+
+void pipechecker(char *cmd, int bg) {
+    int pipee = 0;
+    for (int i = 0; i < strlen(cmd); i++)
+        if (cmd[i] == '|')
+            pipee++;
+    if (pipee == 0) {
+        processInput(cmd, bg, NULL, -1);
+        return;
+    } else if (cmd[0] == '|' || cmd[strlen(cmd) - 1] == '|') {
+        printf("Pipe does not have both ends \n");
+        return;
+    }
+    char *commands[1000];
+    int n = 0;
+    char *t = strtok(cmd, "|");
+    while (t != NULL) {
+        commands[n] = malloc(size_buff);
+        strcpy(commands[n], t);
+        t = strtok(NULL, "|");
+        //printf("-%s-\n", commands[n]);
+        n++;
+    }
+
+
+    int out = dup(1);
+    int in = dup(0);
+    int prev_open = -1;
+    for (int i = 0; i < n - 1; i++) {
+        int pipes[2];
+        if (pipe(pipes) == -1) {
+            //perror("cannot open pipe");
+            return;
+        }
+        if (prev_open != -1) {
+            dup2(prev_open, 0);
+            //perror("connected prev input pipe");
+            close(prev_open);
+            //perror("closed prev input pipe");
+        }
+        dup2(pipes[1], 1);
+        //perror("connected new output pipe");
+        close(pipes[1]);
+        //perror("connected output pipe old fd");
+        processInput(commands[i], bg, pipes, prev_open);
+        prev_open = pipes[0];
+        free(commands[i]);
+    }
+    dup2(out, 1);
+    //perror("connected output to stdout");
+    close(out);
+    if (prev_open != -1) {
+        dup2(prev_open, 0);
+        //perror("connected prev input pipe");
+        close(prev_open);
+    }
+    processInput(commands[n - 1], bg, NULL, prev_open);
+    dup2(in, 0);
+    close(in);
+}
+
+// separates commands by ;
+void get_commands(char *line) {
+    char *command;
+    char line2[size_buff], line3[size_buff];
+    strcpy(line2, line);
+    strcpy(line3, line);
+    command = strtok(line, ";&");
+    int c = 0;
+    while (command != NULL) {
+        c++;
+        command = strtok(NULL, ";&");
+    }
+    char *commands[c + 1];
+    int i = 0;
+    if (c <= 0) return;
+    char *beg = line2;
+    commands[0] = strtok(line2, ";&");
+
+    while (commands[i] != NULL && strcmp(commands[i], "") != 0) {
+        //printf("%c\n", line3[strlen(commands[i]) + line2 - beg]);
+        //printf("%c\n", line3[strlen(commands[i]) + (commands[i] - beg)]);
+        i++;
+        commands[i] = strtok(NULL, ";&");
+
+    }
+    for (int j = 0; j < c; j++) {
+        bool bg = false;
+        if (line3[strlen(commands[j]) + (commands[j] - beg)] == '&') {
+            bg = true;
+        }
+        //processInput(commands[j], bg);
+        int backup_stdout = dup(STDOUT_FILENO);
+        int backup_stdin = dup(STDIN_FILENO);
+        pipechecker(commands[j], bg);
+        fixInput(backup_stdin, backup_stdout);
+
+    }
+    // everything gets automatically deallocated as strtok is in place
+}
+
