@@ -104,7 +104,7 @@ void echo_handler(char *tokens[], int num) {
 }
 
 
-void run_command(char **tokens, int num_tokens, int bg, int *pipe) {
+void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open) {
     if (strcmp(tokens[0], "cd") == 0) {
         if (num_tokens == 1) {
             tokens[1] = malloc(4);
@@ -148,7 +148,7 @@ void run_command(char **tokens, int num_tokens, int bg, int *pipe) {
     } else if (strcmp(tokens[0], "nightswatch") == 0) {
         nightswatch_handler(tokens, num_tokens);
     } else
-        make_process(tokens, num_tokens, bg, pipe);
+        make_process(tokens, num_tokens, bg, pipe, prev_open);
 }
 
 // note
@@ -241,14 +241,13 @@ void changeInput(char *token, char *file) {
 }
 
 void fixInput(int in, int out) {
-    //ftruncate(STDOUT_FILENO, lseek(STDOUT_FILENO, 0, SEEK_CUR));
-    close(STDOUT_FILENO);
-    dup(out);
-    close(STDIN_FILENO);
-    dup(in);
+    dup2(in, 0);
+    close(in);
+    dup2(out, 1);
+    close(out);
 }
 
-void processInput(char *input, int bg, int *pipe) {
+void processInput(char *input, int bg, int *pipe, int prev_open) {
     char *tokens[1000];
     int num_tokens = 0;
     tokens[0] = strtok(input, " \t\n");
@@ -317,8 +316,8 @@ void processInput(char *input, int bg, int *pipe) {
         }*/
 
     //now we need to do the redirection
-    int backup_stdout = dup(STDOUT_FILENO);
-    int backup_stdin = dup(STDIN_FILENO);
+    //int backup_stdout = dup(STDOUT_FILENO);
+    //int backup_stdin = dup(STDIN_FILENO);
     char *command_tokens[1000];
     int num_word_command = 0;
     for (int i = 0; i < n; i++) {
@@ -336,12 +335,13 @@ void processInput(char *input, int bg, int *pipe) {
             num_word_command++;
         }
     }
-    run_command(command_tokens, num_word_command, bg, pipe);
+    run_command(command_tokens, num_word_command, bg, pipe, prev_open);
     for (int i = 0; i < num_word_command; i++)
         free(command_tokens[i]);
-    fixInput(backup_stdin, backup_stdout);
-    close(backup_stdout);
-    close(backup_stdin);
+    //backup making before function call so it doesnt interfere with piping
+    //fixInput(backup_stdin, backup_stdout);
+    //close(backup_stdout);
+    //close(backup_stdin);
 
 
 }
@@ -353,7 +353,7 @@ void pipechecker(char *cmd, int bg) {
         if (cmd[i] == '|')
             pipee++;
     if (pipee == 0) {
-        processInput(cmd, bg, NULL);
+        processInput(cmd, bg, NULL, -1);
         return;
     } else if (cmd[0] == '|' || cmd[strlen(cmd) - 1] == '|') {
         printf("Pipe does not have both ends \n");
@@ -366,36 +366,43 @@ void pipechecker(char *cmd, int bg) {
         commands[n] = malloc(size_buff);
         strcpy(commands[n], t);
         t = strtok(NULL, "|");
+        //printf("-%s-\n", commands[n]);
         n++;
     }
 
 
-    int out = dup(STDOUT_FILENO);
-    int in = dup(STDIN_FILENO);
+    int out = dup(1);
+    int in = dup(0);
     int prev_open = -1;
     for (int i = 0; i < n - 1; i++) {
         int pipes[2];
         if (pipe(pipes) == -1) {
-            perror("cannot make pipe\n");
+            //perror("cannot open pipe");
             return;
         }
         if (prev_open != -1) {
             dup2(prev_open, 0);
+            //perror("connected prev input pipe");
             close(prev_open);
+            //perror("closed prev input pipe");
         }
         dup2(pipes[1], 1);
+        //perror("connected new output pipe");
         close(pipes[1]);
+        //perror("connected output pipe old fd");
+        processInput(commands[i], bg, pipes, prev_open);
         prev_open = pipes[0];
-        processInput(commands[i], bg, pipes);
         free(commands[i]);
     }
     dup2(out, 1);
+    //perror("connected output to stdout");
     close(out);
     if (prev_open != -1) {
         dup2(prev_open, 0);
+        //perror("connected prev input pipe");
         close(prev_open);
     }
-    processInput(commands[n - 1], bg, NULL);
+    processInput(commands[n - 1], bg, NULL, prev_open);
     dup2(in, 0);
     close(in);
 }
@@ -431,7 +438,11 @@ void get_commands(char *line) {
             bg = true;
         }
         //processInput(commands[j], bg);
+        int backup_stdout = dup(STDOUT_FILENO);
+        int backup_stdin = dup(STDIN_FILENO);
         pipechecker(commands[j], bg);
+        fixInput(backup_stdin, backup_stdout);
+
     }
     // everything gets automatically deallocated as strtok is in place
 }

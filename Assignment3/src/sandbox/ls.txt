@@ -1,14 +1,2 @@
-a
-a.txt
-a.txy
-b.txt
-c.txt
-e.txt
-f.txt
-file.txt
-h.txt
-out
-out2
-out3
-out4
-out5
+[1m[0mc.txt
+[1m[0mshell.c

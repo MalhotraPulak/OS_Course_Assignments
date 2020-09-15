@@ -1,12 +1,27 @@
-total 40
--rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:38 a.txt
--rw-rw-r--  1 forg1ven  staff  489 Sep 14 01:37 b.txt
--rw-rw-r--  1 forg1ven  staff  489 Sep 14 01:37 c.txt
--rw-rw-r--  1 forg1ven  staff   48 Sep 14 01:29 e.txt
--rw-r--r--  1 forg1ven  staff    0 Sep 14 01:38 f.txt
--rw-r--r--  1 forg1ven  staff    0 Sep 14 01:38 h.txt
--rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:06 out
--rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:07 out2
--rw-rw-r--  1 forg1ven  staff    0 Sep 14 01:07 out3
--rw-rw-r--  1 forg1ven  staff  223 Sep 14 01:07 out4
--rw-rw-r--  1 forg1ven  staff  223 Sep 14 01:09 out5
+total 84
+[1m[32m[1m[34mdrwxr-xr-x    1 parallels parallels       800 Sep 14 14:32 .
+[1m[0m[1m[32m[1m[34mdrwxr-xr-x    1 parallels parallels       832 Sep 14 14:36 ..
+[1m[0m[1m[32m[1m[34mdrwxr-xr-x    1 parallels parallels        64 Sep 14 01:40 a
+[1m[0m-rw-r--r--    1 parallels parallels        94 Sep 14 14:00 a-a
+[1m[0m-rw-rw-r--    1 parallels parallels        77 Sep 14 12:00 a.txt
+[1m[0m-rw-r--r--    1 parallels parallels       758 Sep 14 11:59 a.txy
+[1m[0m-rw-rw-r--    1 parallels parallels        77 Sep 14 12:13 b.txt
+[1m[0m-rw-rw-r--    1 parallels parallels       597 Sep 14 01:56 c.txt
+[1m[0m-rw-rw-r--    1 parallels parallels        48 Sep 14 01:29 e.txt
+[1m[0m-rw-r--r--    1 parallels parallels        45 Sep 14 12:05 f.txt
+[1m[0m-rw-rw-r--    1 parallels parallels       112 Sep 14 14:29 fdsf
+[1m[0m-rw-r--r--    1 parallels parallels       844 Sep 14 14:37 ff.txt
+[1m[0m-rw-rw-r--    1 parallels parallels       324 Sep 14 10:50 file.txt
+[1m[0m-rw-r--r--    1 parallels parallels       610 Sep 14 14:31 grep
+[1m[0m-rw-r--r--    1 parallels parallels      1194 Sep 14 14:33 h.txt
+[1m[0m-rw-r--r--    1 parallels parallels       610 Sep 14 14:31 k.txt
+[1m[0m-rw-r--r--    1 parallels parallels       597 Sep 14 14:32 kk.txt
+[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 14:08 ls.txt
+[1m[0m-rw-r--r--    1 parallels parallels       597 Sep 14 12:04 n.txt
+[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 01:06 out
+[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 01:07 out2
+[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 01:07 out3
+[1m[0m-rw-rw-r--    1 parallels parallels       223 Sep 14 01:07 out4
+[1m[0m-rw-rw-r--    1 parallels parallels       223 Sep 14 01:09 out5
+[1m[0m-rw-r--r--    1 parallels parallels       307 Sep 14 14:28 s.txt
+[1m[0m

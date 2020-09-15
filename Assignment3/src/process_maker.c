@@ -12,7 +12,7 @@
 //
 
 
-void make_process(char *tokens[], int num, int bg, int *pipe) {
+void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open) {
     char *cmd = strdup(tokens[0]);
     char *argv[num + 1];
     for (int i = 0; i < num; i++) {
@@ -25,8 +25,10 @@ void make_process(char *tokens[], int num, int bg, int *pipe) {
     } else if (rc == 0) {
         // if bg the child process is now in a new session with no terminal
         if (pipe != NULL) {
-            close(pipe[1]); // not required already closed
+            close(pipe[1]);// required
+            //perror("pipe1 close in child");
             close(pipe[0]); // should close the input (Not req ig)
+            //perror("pipe0 close in child");
         }
         if (bg) {
             setpgid(0, 0);
@@ -36,13 +38,16 @@ void make_process(char *tokens[], int num, int bg, int *pipe) {
             exit(1);
         }
     } else if (rc > 0) {
+        if (pipe != NULL) {
+            close(pipe[1]);
+            if (prev_open != -1)
+                close(prev_open);
+            //perror("pipe1 closed in parent");
 
+        }
         if (!bg) {
             waitpid(rc, NULL, 0);
-            if (pipe != NULL) {
-                close(pipe[1]);
-                //close(pipe[0]);
-            }
+
         } else {
             printf("child with pid [%d] sent to background\n", rc);
         }
