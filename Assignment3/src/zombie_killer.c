@@ -5,7 +5,7 @@
 #include "zombie_killer.h"
 #include "ctype.h"
 #include <signal.h>
-
+#include "process_maker.h"
 
 void zombie_process_check() {
     int status;
@@ -45,6 +45,7 @@ void zombie_process_check() {
 
     while ((reaped_rc = waitpid(-1, &status, WNOHANG)) > 0) {
         char stat[200];
+        remove_child(reaped_rc);
         if (WIFEXITED(status)) {
             int t = WEXITSTATUS(status);
             sprintf(stat, "normally with status %d", t);

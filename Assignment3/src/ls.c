@@ -77,7 +77,7 @@ void detail_print(const char *add, char *name, int detail) {
     struct stat data;
     //printf("%s", add);
     if (lstat(add, &data) == -1) {
-        printf("%s\n", add);
+        fprintf(stderr, "%s\n", add);
         perror("Error getting stat struct");
         return;
     }
@@ -97,20 +97,20 @@ void detail_print(const char *add, char *name, int detail) {
     char permission[100];
     char perm[100];
     if(data.st_mode & S_IXUSR){
-        printGreen();
+        //printGreen();
     }
     if (data.st_mode & S_IFDIR) {
         strcpy(permission, "d");
-        printBlue();
+        //printBlue();
     } else if (S_ISLNK(data.st_mode)) {
         strcpy(permission, "l");
-        printYellow();
+        //printYellow();
     } else{
         strcpy(permission, "-");
     }
     if (!detail) {
         printf("%s\n", name);
-        resetColor();
+        //resetColor();
         return;
     }
     permission_format(data.st_mode, perm);
@@ -121,7 +121,7 @@ void detail_print(const char *add, char *name, int detail) {
     printf("%s%5d%10s%10s%10lld %s %02d %02d:%02d %s\n", permission, links, user_name, group_name, bytes,
            monthName, day,
            hour, min, name);
-    resetColor();
+    //resetColor();
 }
 
 void sort_names(char name[][size_buff], int n) {
@@ -171,7 +171,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
         struct stat data;
         //printf("%s", add);
         if (stat(element_address, &data) == -1) {
-            printf("%s\n", element_address);
+            fprintf(stderr, "%s\n", element_address);
             perror("Error getting stat struct");
             continue;
         }
@@ -215,7 +215,7 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
                 else if (tokens[i][j] == 'a')
                     hidden = 1;
                 else {
-                    printf("ls : invalid flag only l and a supported\n");
+                    fprintf(stderr, "ls : invalid flag only l and a supported\n");
                     return;
                 }
             }
@@ -245,7 +245,7 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
             print_ls_data(location, hidden, details, 1, tokens[i], detail);
 
         } else {
-            printf("ls : No such file or directory\n");
+            fprintf(stderr, "ls : No such file or directory\n");
         }
         //printf("\n");
     }

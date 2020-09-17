@@ -7,7 +7,7 @@
 
 
 
-void get_commands(char *);
+void getIndividualCommands(char *);
 
 
 #endif //OS_ASSIGNMENTS_PARSER_H

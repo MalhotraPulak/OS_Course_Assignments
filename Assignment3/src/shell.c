@@ -1,9 +1,9 @@
 #include "headers.h"
 #include "util.h"
-#include <signal.h>
 #include "history_handler.h"
 #include "zombie_killer.h"
 #include "parser.h"
+#include <signal.h>
 
 char *shellName;
 
@@ -13,11 +13,22 @@ void rip_child(int signum) {
         zombie_process_check();
 }
 
-void exit_2(int signum) {
-    if (signum == SIGINT) {
-        killbg();
-        _exit(0);
-    }
+void interruptFg(int signum) {
+  /*  if (signum == SIGINT)
+        kill(0, SIGINT);*/
+}
+
+void sendToBg(int no) {
+   /* if (no == SIGSTOP) {
+        kill(0, SIGSTOP);
+    }*/
+   /*fprintf(stderr, "lmao");*/
+}
+
+void quit() {
+    killbg();
+    printf("cya\n");
+    _exit(0);
 }
 
 
@@ -32,7 +43,8 @@ int main() {
         strcat(homeDir, "/");
     }
     signal(SIGCHLD, rip_child);
-    signal(SIGINT, exit_2);
+    signal(SIGINT, interruptFg);
+    signal(SIGTSTP, sendToBg);
     strcpy(currDir, homeDir);
     updateShowDir();
     while (1) {
@@ -45,13 +57,16 @@ int main() {
         resetColor();
         char *line = malloc(size_buff);
         char *line2 = line;
-        fgets(line, size_buff, stdin);
+        if(fgets(line, size_buff, stdin) == NULL){
+            //fprintf(stderr, "NULL LOL \n");
+            quit();
+        }
         size_t ln = strlen(line) - 1;
         if (*line && line[ln] == '\n')
             line[ln] = '\0';
         line = trim_whitespace(line);
         add_history(line);
-        get_commands(line);
+        getIndividualCommands(line);
         free(line2);
     }
 
@@ -59,13 +74,5 @@ int main() {
 
 /*
  getenv setenv - get unset and fetch environment variables from host environment list
- signal - know already
- dup - duplicate and existing file descriptor
- dup2 - also used to duplicate
- strtok fork setpgid wait waitpid getpid kill execvp - know already
- getchar - reads a character from stdin
-
-other -
- pipe -
  */
 

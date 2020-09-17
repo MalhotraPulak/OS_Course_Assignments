@@ -21,8 +21,8 @@ int max(int a, int b);
 int min(int a, int b);
 char * trim_whitespace(char *);
 void pwd_handler();
-void echo_handler();
-void cd_handler();
+void echo_handler(char *tokens[], int num);
+void cd_handler(char * []);
 char * getShellName();
 void updateShowDir();
 

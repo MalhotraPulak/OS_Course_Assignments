@@ -1,44 +1,22 @@
-total 124
-[1m[32m[1m[34mdrwxr-xr-x    1 parallels parallels        64 Sep 14 01:40 a
-[1m[0m-rw-r--r--    1 parallels parallels        94 Sep 14 14:00 a-a
-[1m[0m-rw-rw-r--    1 parallels parallels       160 Sep 15 16:02 a.txt
-[1m[0m-rw-r--r--    1 parallels parallels       758 Sep 14 11:59 a.txy
-[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 15:43 adsf
-[1m[0m-rw-r--r--    1 parallels parallels         3 Sep 15 15:59 ans.txt
-[1m[0m-rw-r--r--    1 parallels parallels        16 Sep 14 15:43 asdf
-[1m[0m-rw-r--r--    1 parallels parallels        16 Sep 14 15:43 asdfa
-[1m[0m-rw-rw-r--    1 parallels parallels      1886 Sep 15 15:57 b.txt
-[1m[0m-rw-rw-r--    1 parallels parallels      1874 Sep 15 15:57 c.txt
-[1m[0m-rw-r--r--    1 parallels parallels         0 Sep 14 15:42 d
-[1m[0m-rw-rw-r--    1 parallels parallels        48 Sep 14 01:29 e.txt
-[1m[0m-rw-r--r--    1 parallels parallels      1874 Sep 15 15:54 f.txt
-[1m[0m-rw-r--r--    1 parallels parallels        16 Sep 14 15:42 fds
-[1m[0m-rw-rw-r--    1 parallels parallels       112 Sep 14 14:29 fdsf
-[1m[0m-rw-r--r--    1 parallels parallels      1874 Sep 14 14:37 ff.txt
-[1m[0m-rw-rw-r--    1 parallels parallels       324 Sep 14 10:50 file.txt
-[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 15:42 fsaf
-[1m[0m-rw-r--r--    1 parallels parallels       610 Sep 14 14:31 grep
-[1m[0m-rw-r--r--    1 parallels parallels         0 Sep 14 15:43 gsdfg
-[1m[0m-rw-r--r--    1 parallels parallels         0 Sep 14 15:43 gsdg
-[1m[0m-rw-r--r--    1 parallels parallels         0 Sep 14 15:43 gsfdg
-[1m[0m-rw-r--r--    1 parallels parallels        40 Sep 14 15:39 h.txt
-[1m[0m-rw-r--r--    1 parallels parallels      2752 Sep 14 15:55 in.txt
-[1m[0m-rw-r--r--    1 parallels parallels       610 Sep 14 14:31 k.txt
-[1m[0m-rw-r--r--    1 parallels parallels       597 Sep 14 14:32 kk.txt
-[1m[0m-rw-rw-r--    1 parallels parallels         2 Sep 14 20:44 lines.txt
-[1m[0m-rw-r--r--    1 parallels parallels       129 Sep 14 21:43 lpl
-[1m[0m-rw-rw-r--    1 parallels parallels        30 Sep 14 21:45 ls.txt
-[1m[0m-rw-r--r--    1 parallels parallels      2559 Sep 14 15:44 m.txt
-[1m[0m-rw-r--r--    1 parallels parallels       597 Sep 14 12:04 n.txt
-[1m[0m-rw-r--r--    1 parallels parallels      2865 Sep 14 15:58 oo.txt
-[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 01:06 out
-[1m[0m-rw-r--r--    1 parallels parallels      2752 Sep 14 16:00 out.txt
-[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 01:07 out2
-[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 01:07 out3
-[1m[0m-rw-rw-r--    1 parallels parallels       223 Sep 14 01:07 out4
-[1m[0m-rw-rw-r--    1 parallels parallels       223 Sep 14 01:09 out5
-[1m[0m-rw-r--r--    1 parallels parallels       307 Sep 14 14:28 s.txt
-[1m[0m-rw-r--r--    1 parallels parallels         0 Sep 14 15:42 sdf
-[1m[0m-rw-rw-r--    1 parallels parallels         0 Sep 14 21:41 shell.c
-[1m[0m-rw-r--r--    1 parallels parallels       124 Sep 14 15:56 sortedlines.txt
-[1m[0m-rw-r--r--    1 parallels parallels        20 Sep 14 15:39 t
+fsfaf af afasf ad   afaf asf asf a df d 
+
+a
+sfasdf 
+a
+sf
+ f
+ asf 
+af 
+as
+ 
+f asf a 
+ 
+as
+
+fa 
+f
+ a
+ 
+
+fasfasf af  afa sf f af asf sdasfa faf a af afasdfasfasoasdfas
+iasfasffasfasfafdas as

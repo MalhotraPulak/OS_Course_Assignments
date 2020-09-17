@@ -14,7 +14,7 @@ void pinfo_handler(char *tokens[]) {
     sprintf(add, "/proc/%s/stat", tokens[1]);
     FILE *ptr = fopen(add, "r");
     if (ptr == NULL) {
-        printf("Cannot access the process \n");
+        fprintf(stderr, "Cannot access the process \n");
         return;
     }
     int pid;
@@ -37,7 +37,7 @@ void pinfo_handler(char *tokens[]) {
     fclose(ptr);;
     ptr = fopen(add, "r");
     if (ptr == NULL) {
-        printf("Cannot access the process \n");
+        fprintf(stderr, "Cannot access the process \n");
         return;
     }
     char word[size_buff];

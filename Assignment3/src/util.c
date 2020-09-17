@@ -161,15 +161,15 @@ void cd_handler(char *token[]) {
     struct stat stats_dir;
     if (stat(new_address, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
         if (chdir(new_address) == -1) {
-            printf("cd : directory does not exist\n");
+           fprintf(stderr, "cd : directory does not exist\n");
         }
         if (getcwd(currDir, size_buff) == NULL) {
-            printf("cd : getcwd failed\n");
+           fprintf(stderr, "cd : getcwd failed\n");
         }
         strcat(currDir, "/");
         updateShowDir();
     } else {
-        printf("cd : directory does not exist: %s\n", token[1]);
+       fprintf(stderr, "cd : directory does not exist: %s\n", token[1]);
     }
 
 }

@@ -128,7 +128,7 @@ int kbhit() {
 
 void nightswatch_handler(char *tokens[], int no) {
     if (no != 4) {
-        printf("2 args required : -n  <int> <command>\n");
+        fprintf(stderr, "2 args required : -n  <int> <command>\n");
         return;
     }
     int seconds;
@@ -138,7 +138,7 @@ void nightswatch_handler(char *tokens[], int no) {
     }
     seconds = (int) strtol(tokens[2], NULL, 10);
     if (seconds <= 0) {
-        printf("n > 0\n");
+       fprintf(stderr, "n > 0\n");
     }
     //printf("%d", seconds);
     char *func = tokens[3];
@@ -151,7 +151,7 @@ void nightswatch_handler(char *tokens[], int no) {
         } else if (strcmp(func, "newborn") == 0) {
             new_born();
         } else {
-            printf("nightswatch : invalid command \n");
+           fprintf(stderr, "nightswatch : invalid command \n");
             break;
         }
         set_terminal_raw_mode();
