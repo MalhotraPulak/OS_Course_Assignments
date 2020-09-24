@@ -13,24 +13,20 @@ void rip_child(int signum) {
         zombie_process_check();
 }
 
-void interruptFg(int signum) {
-  /*  if (signum == SIGINT)
-        kill(0, SIGINT);*/
-}
-
-void sendToBg(int no) {
-   /* if (no == SIGSTOP) {
-        kill(0, SIGSTOP);
-    }*/
-   /*fprintf(stderr, "lmao");*/
-}
-
 void quit() {
     killbg();
     printf("cya\n");
     _exit(0);
 }
 
+void printExitCode() {
+    if (exit_code == 0) {
+        printf(":) ");
+    } else {
+        printf(":( ");
+    }
+    exit_code = 0;
+}
 
 int main() {
     clearScreen();
@@ -43,10 +39,11 @@ int main() {
         strcat(homeDir, "/");
     }
     signal(SIGCHLD, rip_child);
-    signal(SIGINT, interruptFg);
-    signal(SIGTSTP, sendToBg);
+    signal(SIGINT, SIG_IGN);
+    signal(SIGTSTP, SIG_IGN);
     strcpy(currDir, homeDir);
     updateShowDir();
+
     while (1) {
         printCyan();
         printf("%s", shellName);
@@ -56,11 +53,13 @@ int main() {
         printf("$ ");
         resetColor();
         char *line = malloc(size_buff);
+        size_t t = size_buff;
         char *line2 = line;
         if(fgets(line, size_buff, stdin) == NULL){
-            //fprintf(stderr, "NULL LOL \n");
-            quit();
-        }
+             //fprintf(stderr, "NULL LOL \n");
+             quit();
+         }
+        //getline(&line, &t, stdin);
         size_t ln = strlen(line) - 1;
         if (*line && line[ln] == '\n')
             line[ln] = '\0';
@@ -68,6 +67,9 @@ int main() {
         add_history(line);
         getIndividualCommands(line);
         free(line2);
+        printYellow();
+        printExitCode();
+        resetColor();
     }
 
 }

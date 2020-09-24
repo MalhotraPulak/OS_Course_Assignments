@@ -7,10 +7,10 @@
 char showDir[size_buff];
 char homeDir[size_buff]; // has / in the end
 char currDir[size_buff]; // has / in the end
-void get_raw_address(char *new_address, char *cd_location,const char* curr_dir, const char* home_dir);
+int get_raw_address(char *new_address, char *cd_location);
 
 void printGreen();
-
+int exit_code;
 void printBlue();
 void printYellow();
 void printCyan();

@@ -5,7 +5,7 @@
 #include "nightswatch.h"
 #include <termios.h>
 #include <ctype.h>
-
+#include "util.h"
 struct termios orig_termios;
 
 void reset_terminal_mode_to_canon() {
@@ -106,6 +106,7 @@ void new_born() {
     FILE *f = fopen("/proc/loadavg", "r");
     if (f == NULL) {
         perror("not found");
+        exit_code = 1;
     }
     char no[100];
     for (int i = 0; i < 5; i++) {
@@ -129,11 +130,13 @@ int kbhit() {
 void nightswatch_handler(char *tokens[], int no) {
     if (no != 4) {
         fprintf(stderr, "2 args required : -n  <int> <command>\n");
+        exit_code = 1;
         return;
     }
     int seconds;
     if (strcmp(tokens[1], "-n") != 0) {
         printf("2 args required : -n  <int> <command>\n");
+        exit_code = 1;
 
     }
     seconds = (int) strtol(tokens[2], NULL, 10);
@@ -152,6 +155,7 @@ void nightswatch_handler(char *tokens[], int no) {
             new_born();
         } else {
            fprintf(stderr, "nightswatch : invalid command \n");
+            exit_code = 1;
             break;
         }
         set_terminal_raw_mode();

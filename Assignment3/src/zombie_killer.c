@@ -45,13 +45,13 @@ void zombie_process_check() {
 
     while ((reaped_rc = waitpid(-1, &status, WNOHANG)) > 0) {
         char stat[200];
-        remove_child(reaped_rc);
+        int job = remove_child(reaped_rc);
         if (WIFEXITED(status)) {
             int t = WEXITSTATUS(status);
             sprintf(stat, "normally with status %d", t);
         } else if (WIFSIGNALED(status)) {
             int t = WTERMSIG(status);
-            sprintf(stat, "because of signal %d", t);
+            sprintf(stat, "with signal %d", t);
         } else {
             sprintf(stat, "exited somehow");
         }
@@ -65,7 +65,7 @@ void zombie_process_check() {
                 break;
             }
         }
-        int len = sprintf(text, "\nchild process %s %d has exited %s\n", name, reaped_rc, stat);
+        int len = sprintf(text, "\n-[%d]%s (%d) has exited %s\n", job, name, reaped_rc, stat);
         write(2, text, len);
     }
 }

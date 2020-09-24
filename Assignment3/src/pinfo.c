@@ -3,7 +3,7 @@
 //
 #include "headers.h"
 #include "pinfo.h"
-
+#include "util.h"
 // parse the file in /proc/pid/stat, /proc/pid/status (easier) and /proc/pid/exe
 
 void pinfo_handler(char *tokens[]) {
@@ -15,6 +15,7 @@ void pinfo_handler(char *tokens[]) {
     FILE *ptr = fopen(add, "r");
     if (ptr == NULL) {
         fprintf(stderr, "Cannot access the process \n");
+        exit_code = 1;
         return;
     }
     int pid;
@@ -38,6 +39,7 @@ void pinfo_handler(char *tokens[]) {
     ptr = fopen(add, "r");
     if (ptr == NULL) {
         fprintf(stderr, "Cannot access the process \n");
+        exit_code = 1;
         return;
     }
     char word[size_buff];

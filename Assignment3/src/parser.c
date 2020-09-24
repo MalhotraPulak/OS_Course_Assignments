@@ -15,7 +15,7 @@
 #include "env_var.h"
 
 // runs the commands / built ins
-void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open) {
+void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open, char * oldcommand) {
     char *first = tokens[0];
     if (strcmp(first, "cd") == 0) {
         if (num_tokens == 1) {
@@ -53,6 +53,7 @@ void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open
             tokens[1]++;*/
             if (strtol(tokens[1], NULL, 10) <= 0 || strtol(tokens[1], NULL, 10) > 20) {
                 fprintf(stderr, "history <int n> \n n > 0 && n <= 20\n");
+                exit_code = 1;
                 return;
             }
             show_history(atoi(tokens[1]));
@@ -76,7 +77,7 @@ void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open
     }else if (strcmp(first, "bg") == 0) {
         bg_handler(tokens, num_tokens);
     } else
-        make_process(tokens, num_tokens, bg, pipe, prev_open);
+        make_process(tokens, num_tokens, bg, pipe, prev_open, oldcommand);
 }
 
 // note
@@ -139,6 +140,7 @@ void changeInput(char *token, char *file) {
         // change stdout
         int new_fd;
         if ((new_fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1) {
+            exit_code = 1;
             perror("cannot redirect output");
         } else {
             close(STDOUT_FILENO);
@@ -150,6 +152,7 @@ void changeInput(char *token, char *file) {
         // change stdout
         int new_fd;
         if ((new_fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644)) == -1) {
+            exit_code = 1;
             perror("cannot redirect output");
         } else {
             close(STDOUT_FILENO);
@@ -163,6 +166,7 @@ void changeInput(char *token, char *file) {
         //printf("redirecting stdin to another file");
         if ((new_fd = open(file, O_RDONLY)) == -1) {
             perror("cannot redirect input");
+            exit_code = 1;
         } else {
             close(STDIN_FILENO);
             dup(new_fd);
@@ -184,6 +188,8 @@ void fixInput(int in, int out) {
 void redirectionHandler(char *input, int bg, int *pipe, int prev_open) {
     char *tokens[1000];
     int num_tokens = 0;
+    char input2[size_buff];
+    strcpy(input2, input);
     tokens[0] = strtok(input, " \t\n");
     while (tokens[num_tokens] != NULL) {
         tokens[++num_tokens] = strtok(NULL, " \t");
@@ -247,6 +253,7 @@ void redirectionHandler(char *input, int bg, int *pipe, int prev_open) {
         if (strcmp(word, ">") == 0 || strcmp(word, ">>") == 0 || strcmp(word, "<") == 0) {
             if (i + 1 == n || tokens_final[i + 1] == NULL) {
                 fprintf(stderr, "unexpected token after %s \n", word);
+                exit_code = 1;
                 return;
             }
             changeInput(word, tokens_final[i + 1]);
@@ -257,15 +264,10 @@ void redirectionHandler(char *input, int bg, int *pipe, int prev_open) {
             num_word_command++;
         }
     }
-    run_command(command_tokens, num_word_command, bg, pipe, prev_open);
+    run_command(command_tokens, num_word_command, bg, pipe, prev_open, input2);
     for (int i = 0; i < num_word_command; i++)
         free(command_tokens[i]);
-    //close(STDOUT_FILENO);
-    //close(STDIN_FILENO);
-    //backup making before function call so it doesnt interfere with piping
-    //fixInput(backup_stdin, backup_stdout);
-    //close(backup_stdout);
-    //close(backup_stdin);
+
 
 
 }
@@ -277,10 +279,12 @@ void pipeChecker(char *cmd, int bg) {
         if (cmd[i] == '|')
             pipee++;
     if (pipee == 0) {
+        exit_code = 0;
         redirectionHandler(cmd, bg, NULL, -1);
         return;
     } else if (cmd[0] == '|' || cmd[strlen(cmd) - 1] == '|') {
         fprintf(stderr, "Pipe does not have both ends \n");
+        exit_code = 1;
         return;
     }
     char *commands[1000];
@@ -326,6 +330,7 @@ void pipeChecker(char *cmd, int bg) {
         //perror("connected prev input pipe");
         close(prev_open);
     }
+    exit_code = 0;
     redirectionHandler(commands[n - 1], bg, NULL, prev_open);
     dup2(in, 0);
     close(in);

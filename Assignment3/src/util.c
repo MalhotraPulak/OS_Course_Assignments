@@ -13,14 +13,19 @@ int min(int a, int b) {
     return a < b ? a : b;
 }
 
+char *old_add;
 
 // handles relative and home and absolute addressing
-void get_raw_address(char *new_address, char *cd_location, const char *curr_dir, const char *home_dir) {
+int get_raw_address(char *new_address, char *cd_location) {
+    if (strcmp(cd_location, "-") == 0) {
+        strcpy(new_address, old_add);
+        return 911;
+    }
     if (cd_location[0] == '/') {
         // Absolute address
         strcpy(new_address, cd_location);
     } else if (cd_location[0] == '~') {
-        strcpy(new_address, home_dir);
+        strcpy(new_address, homeDir);
         strcat(new_address, cd_location + 1);
         //printf("%s", new_address);
     } else {
@@ -32,14 +37,14 @@ void get_raw_address(char *new_address, char *cd_location, const char *curr_dir,
              cd_location++;
          }*/
         // copy current directory in new address
-        strcpy(new_address, curr_dir);
+        strcpy(new_address, currDir);
         // if no / at the end of curr_dir now there is
         if (new_address[strlen(new_address) - 1] != '/')
             strcat(new_address, "/");
         strcat(new_address, cd_location);
     }
 
-
+    return 0;
 }
 
 
@@ -98,9 +103,6 @@ char *trim_whitespace(char *line) {
 }
 
 
-
-
-
 void updateShowDir() {
     int homeDirLen = (int) strlen(homeDir);
     if (strlen(currDir) < homeDirLen) {
@@ -153,23 +155,36 @@ char *getShellName() {
 }
 
 // handles cd
+
 void cd_handler(char *token[]) {
     char cd_location[size_buff];
     strcpy(cd_location, token[1]);
+    if (old_add == NULL) {
+        old_add = malloc(size_buff);
+        strcpy(old_add, homeDir);
+    }
     char new_address[size_buff];
-    get_raw_address(new_address, cd_location, currDir, homeDir);
+    int f = get_raw_address(new_address, cd_location);
     struct stat stats_dir;
+    char ol[size_buff];
+    strcpy(ol, currDir);
     if (stat(new_address, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
         if (chdir(new_address) == -1) {
-           fprintf(stderr, "cd : directory does not exist\n");
+            fprintf(stderr, "cd : directory does not exist\n");
+            exit_code = 1;
+        } else {
+            strcpy(old_add, ol);
         }
         if (getcwd(currDir, size_buff) == NULL) {
-           fprintf(stderr, "cd : getcwd failed\n");
+            fprintf(stderr, "cd : getcwd failed\n");
         }
         strcat(currDir, "/");
         updateShowDir();
+        if (f == 911)
+            pwd_handler();
     } else {
-       fprintf(stderr, "cd : directory does not exist: %s\n", token[1]);
+        fprintf(stderr, "cd : directory does not exist: %s\n", token[1]);
+        exit_code = 1;
     }
 
 }

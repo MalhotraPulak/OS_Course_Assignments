@@ -78,6 +78,7 @@ void detail_print(const char *add, char *name, int detail) {
     //printf("%s", add);
     if (lstat(add, &data) == -1) {
         fprintf(stderr, "%s\n", add);
+        exit_code = 1;
         perror("Error getting stat struct");
         return;
     }
@@ -173,6 +174,7 @@ void print_ls_data(const char *location, int hidden, int details, int file, char
         if (stat(element_address, &data) == -1) {
             fprintf(stderr, "%s\n", element_address);
             perror("Error getting stat struct");
+            exit_code = 1;
             continue;
         }
         total_blocks += data.st_blocks;
@@ -215,6 +217,7 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
                 else if (tokens[i][j] == 'a')
                     hidden = 1;
                 else {
+                    exit_code = 1;
                     fprintf(stderr, "ls : invalid flag only l and a supported\n");
                     return;
                 }
@@ -234,7 +237,7 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
 
     for (int j = 0; j < dirs; j++) {
         int i = dir[j];
-        get_raw_address(location, tokens[i], curr_dir, home_dir);
+        get_raw_address(location, tokens[i]);
         struct stat stats_dir;
         //printf("%s", location);
         if (stat(location, &stats_dir) == 0 && (S_IFDIR & stats_dir.st_mode)) {
@@ -245,6 +248,7 @@ void ls_handler(char *tokens[], int no, const char *curr_dir, const char *home_d
             print_ls_data(location, hidden, details, 1, tokens[i], detail);
 
         } else {
+            exit_code = 1;
             fprintf(stderr, "ls : No such file or directory\n");
         }
         //printf("\n");

@@ -4,18 +4,18 @@
 #include "headers.h"
 #include "process_maker.h"
 #include <signal.h>
-#include <errno.h>
+#include "util.h"
 
 // ***** process handling *******
 // signal - send signal to a process
 // waitpid - makes the current process wait until the other is terminated
 // getpid - get pid of the calling process
 // kill - can be used to send any signal to process or process group
-//
-//
+
 int stack[1000];
+char *commands[1000];
 int top = 1; // the next position to insert the process
-void waitForIt();
+
 
 int pid_to_job(int pid) {
     for (int i = 1; i < top; i++) {
@@ -39,6 +39,7 @@ int job_to_pid(int job) {
 void kjob_handler(char *tokens[], int n) {
     if (n != 3) {
         fprintf(stderr, "kjob <job number> <signal number>\n");
+        exit_code = 1;
         return;
     }
     int t = (int) strtol(tokens[1], NULL, 10);
@@ -46,23 +47,31 @@ void kjob_handler(char *tokens[], int n) {
     int signal = (int) strtol(tokens[2], NULL, 10);
     if (pid <= 0) {
         fprintf(stderr, "Job does not exist \n");
+        exit_code = 1;
         return;
     }
     if (signal < 0) {
         fprintf(stderr, "invalid signal \n");
+        exit_code = 1;
         return;
     }
-    if (kill(pid, signal) == -1)
+    if (kill(pid, signal) == -1) {
         perror("Signal Failed");
-
+        exit_code = 1;
+    }
 }
 
-void remove_child(int pid) {
+int remove_child(int pid) {
     int job = pid_to_job(pid);
     stack[job] = 0;
+    if (commands[job] != NULL) {
+        free(commands[job]);
+        commands[job] = NULL;
+    }
     while (top > 1 && stack[top - 1] == 0) {
         top -= 1;
     }
+    return job;
 }
 
 
@@ -70,10 +79,10 @@ void print_job_data(int pid) {
     int job = pid_to_job(pid);
     char location[size_buff];
     sprintf(location, "/proc/%d/cmdline", pid);
-    FILE *fg = fopen(location, "r");
-    char cmd_name[size_buff];
-    if (fg != NULL)
-        fgets(cmd_name, size_buff, fg);
+    //FILE *fg = fopen(location, "r");
+    //char cmd_name[size_buff];
+    /*if (fg != NULL)
+        fgets(cmd_name, size_buff, fg);*/
     sprintf(location, "/proc/%d/stat", pid);
     FILE *f = fopen(location, "r");
     if (f == NULL) {
@@ -96,11 +105,12 @@ void print_job_data(int pid) {
     else if (state == 'S')
         strcpy(statee, "Interruptible sleep");
     fclose(f);
-    if (fg != NULL)
+    /*if (fg != NULL)
         fclose(fg);
     else
-        strcpy(cmd_name, new_name);
-    printf("%c[%d] %s %s [%d]\n", state, job, statee, cmd_name, pid);
+        strcpy(cmd_name, new_name);*/
+    //strcpy(cmd_name, c)
+    printf("[%d] %s %s [%d]\n",  job, statee, commands[job], pid);
 }
 
 void job_printer() {
@@ -111,23 +121,53 @@ void job_printer() {
     }
 }
 
-int add_child(int pid) {
+int add_child(int pid, char *command) {
     if (top == 1) {
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; i++) {
             stack[i] = 0;
+            commands[i] = NULL;
+        }
     }
     if (top <= 0) {
         perror("Error adding child process to stack");
+        exit_code = 1;
         return -1;
     } else {
         stack[top] = pid;
+        //fprintf(stderr, "top %d", top);
+        if (commands[top] != NULL) {
+            free(commands[top]);
+            commands[top] = NULL;
+        }
+        commands[top] = malloc(size_buff);
+        strcpy(commands[top], command);
         top++;
         return top - 1;
     }
 }
 
+void wait_n_switch(int child_pid) {
+    signal(SIGTTIN, SIG_IGN);
+    signal(SIGTTOU, SIG_IGN);
+    tcsetpgrp(STDOUT_FILENO, child_pid);
+    kill(child_pid, SIGCONT);
+    int status;
+    waitpid(child_pid, &status, WUNTRACED);
+    if (tcsetpgrp(STDOUT_FILENO, getpgid(0)) == -1) {
+        //perror("cant get terminal back");
+    }
+    signal(SIGTTIN, SIG_DFL);
+    signal(SIGTTOU, SIG_DFL);
+    if (WIFEXITED(status)) {
+        remove_child(child_pid);
+        exit_code = WEXITSTATUS(status);
+    }
+    if (WIFSTOPPED(status)) {
+        exit_code = 1;
+    }
+}
 
-void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open) {
+void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open, char * oldcommand) {
     char *cmd = strdup(tokens[0]);
     char *argv[num + 1];
     for (int i = 0; i < num; i++) {
@@ -135,12 +175,14 @@ void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open) {
     }
     argv[num] = NULL;
     int rc = fork();
+
     if (rc < 0) {
         perror("creating child process failed\n");
+        exit_code = 1;
         return;
     }
 
-    add_child(rc);
+    int job = add_child(rc, oldcommand);
     if (rc == 0) {
         // if bg the child process is now in a new session with no terminal
         if (pipe != NULL) {
@@ -149,9 +191,7 @@ void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open) {
             close(pipe[0]); // should close the input (Not req ig)
             //perror("pipe0 close in child");
         }
-        if (bg) {
-            setpgid(0, 0);
-        }
+        setpgid(0, 0);
         if (execvp(cmd, argv) == -1) {
             fprintf(stderr, "invalid command : %s\n", cmd);
             exit(1);
@@ -165,74 +205,51 @@ void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open) {
 
         }
         if (!bg) {
-            //waitForIt();
-            int status;
-            waitpid(rc, &status, WUNTRACED);
-            if (WIFEXITED(status)) {
-                remove_child(rc);
-            }
-            /*printf("exited:    %d status: %d\n"
-                   "signalled: %d signal: %d\n"
-                   "stopped:   %d signal: %d\n"
-                   "continued: %d\n",
-                   WIFEXITED(status),
-                   WEXITSTATUS(status),
-                   WIFSIGNALED(status),
-                   WTERMSIG(status),
-                   WIFSTOPPED(status),
-                   WSTOPSIG(status),
-                   WIFCONTINUED(status));*/
-
+            wait_n_switch(rc);
 
         } else {
-            printf("child with pid [%d] sent to background\n", rc);
+            printf("+[%d] (%d)\n", job, rc);
         }
     }
 
 }
 
-/*void waitForIt() {
-
-}*/
-
 void bg_handler(char **tokens, int n) {
     if (n != 2) {
         fprintf(stderr, "bg <job number>\n");
+        exit_code = 1;
         return;
     }
     int t = (int) strtol(tokens[1], NULL, 10);
     int pid = job_to_pid(t);
     if (pid <= 0) {
+        exit_code = 1;
         fprintf(stderr, "Job does not exist \n");
         return;
     }
 
 
-
-    kill(pid, SIGCONT);
+    if (kill(pid, SIGCONT) == -1) {
+        exit_code = 1;
+    }
 
 }
 
 void fg_handler(char **tokens, int n) {
     if (n != 2) {
         fprintf(stderr, "fg <job number>\n");
+        exit_code = 1;
         return;
     }
     int t = (int) strtol(tokens[1], NULL, 10);
     int pid = job_to_pid(t);
     if (pid <= 0) {
         fprintf(stderr, "Job does not exist \n");
+        exit_code = 1;
+
         return;
     }
-    tcsetpgrp(STDOUT_FILENO, getpgid(pid));
-    setpgid(getpid(), pid);
-    kill(pid, SIGCONT);
-    int status;
-    waitpid(pid, &status, WUNTRACED);
-     
-    if (WIFEXITED(status)) {
-        remove_child(pid);
-    }
+    wait_n_switch(pid);
 }
 
 void overkill_handler(char **tokens, int n) {
