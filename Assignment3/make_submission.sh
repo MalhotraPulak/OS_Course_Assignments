@@ -1,0 +1,4 @@
+rm 2019101050/shell
+rm 2019101050/sd
+rm 2019101050_assgn3.tar.gz
+tar -czvf 2019101050_assgn3.tar.gz 2019101050/

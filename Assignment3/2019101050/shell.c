@@ -53,7 +53,7 @@ int main() {
         printf("$ ");
         resetColor();
         char *line = malloc(size_buff);
-        size_t t = size_buff;
+        //size_t t = size_buff;
         char *line2 = line;
         if(fgets(line, size_buff, stdin) == NULL){
              //fprintf(stderr, "NULL LOL \n");
