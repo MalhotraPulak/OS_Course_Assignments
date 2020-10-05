@@ -38,13 +38,16 @@ int main() {
     if (homeDir[strlen(homeDir) - 1] != '/') {
         strcat(homeDir, "/");
     }
-    signal(SIGCHLD, rip_child);
+    //signal(SIGCHLD, rip_child);
     signal(SIGINT, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
+    signal(SIGTTOU, SIG_IGN);
+    //signal(SIGTTIN, SIG_IGN);
     strcpy(currDir, homeDir);
     updateShowDir();
 
     while (1) {
+        rip_child(SIGCHLD);
         printCyan();
         printf("%s", shellName);
         printGreen();

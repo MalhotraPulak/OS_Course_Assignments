@@ -94,12 +94,15 @@ void run_command(char **tokens, int num_tokens, int bg, int *pipe, int prev_open
 // pipe uses pipe syscall to get the fds and sets stdin/stdout based on that
 
 // parses > < >>
+// what it does is take a token and separate all instaces
+// of tokens from the words
+// eg ls>a.txt => ls > a.txt with token >
 int tokenize(const char *token, char *string, char *tokens[100]) {
     int len_tok = strlen(token);
     int len_str = strlen(string);
     int count = 0;
     int start = 0;
-    for (int i = 0; i < len_str - len_tok;) {
+for (int i = 0; i < len_str - len_tok + 1;) {
         bool found = true;
         for (int j = 0; j < len_tok; j++) {
             if (token[j] != string[i + j]) {
@@ -127,10 +130,10 @@ int tokenize(const char *token, char *string, char *tokens[100]) {
     strcpy(tokens[count], string + start);
     count++;
 
-/*
-    for (int i = 0; i < count; i++) {
-        printf("%d--%s--\n", i, tokens[i]);
-    }*/
+
+//    for (int i = 0; i < count; i++) {
+//        printf("%d--%s---\n", i, tokens[i]);
+//    }
     return count;
 }
 
@@ -250,6 +253,7 @@ void redirectionHandler(char *input, int bg, int *pipe, int prev_open) {
     int num_word_command = 0;
     for (int i = 0; i < n; i++) {
         char *word = tokens_final[i];
+        //fprintf(stderr, "--%s--\n", word);
         if (strcmp(word, ">") == 0 || strcmp(word, ">>") == 0 || strcmp(word, "<") == 0) {
             if (i + 1 == n || tokens_final[i + 1] == NULL) {
                 fprintf(stderr, "unexpected token after %s \n", word);
@@ -336,7 +340,7 @@ void pipeChecker(char *cmd, int bg) {
     close(in);
 }
 
-// separates commands by ;
+// separates commands by ; &
 void getIndividualCommands(char *line) {
     char *command;
     char line2[size_buff], line3[size_buff];
@@ -366,6 +370,7 @@ void getIndividualCommands(char *line) {
         if (line3[strlen(commands[j]) + (commands[j] - beg)] == '&') {
             bg = true;
         }
+        commands[j] = trim_whitespace(commands[j]);
         //redirectionHandler(commands[j], bg);
         int backup_stdout = dup(STDOUT_FILENO);
         int backup_stdin = dup(STDIN_FILENO);

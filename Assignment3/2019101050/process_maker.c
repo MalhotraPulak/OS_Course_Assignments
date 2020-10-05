@@ -38,7 +38,7 @@ int job_to_pid(int job) {
 
 void kjob_handler(char *tokens[], int n) {
     if (n != 3) {
-        fprintf(stderr, "kjob <job number> <signal number>\n");
+        fprintf(stderr, "kjob : Invalid format : kjob <job number> <signal number>\n");
         exit_code = 1;
         return;
     }
@@ -46,12 +46,12 @@ void kjob_handler(char *tokens[], int n) {
     int pid = job_to_pid(t);
     int signal = (int) strtol(tokens[2], NULL, 10);
     if (pid <= 0) {
-        fprintf(stderr, "Job does not exist \n");
+        fprintf(stderr, "kjob : Job does not exist \n");
         exit_code = 1;
         return;
     }
     if (signal < 0) {
-        fprintf(stderr, "invalid signal \n");
+        fprintf(stderr, "kjob : invalid signal \n");
         exit_code = 1;
         return;
     }
@@ -103,14 +103,16 @@ void print_job_data(int pid) {
     else if (state == 'Z')
         strcpy(statee, "Zombie");
     else if (state == 'S')
-        strcpy(statee, "Interruptible sleep");
+        strcpy(statee, "Running");
+    else
+        strcpy(statee, "Unknown State");
     fclose(f);
     /*if (fg != NULL)
         fclose(fg);
     else
         strcpy(cmd_name, new_name);*/
     //strcpy(cmd_name, c)
-    printf("[%d] %s %s [%d]\n",  job, statee, commands[job], pid);
+    printf("[%d] %s %s (%d)\n", job, statee, commands[job], pid);
 }
 
 void job_printer() {
@@ -147,30 +149,43 @@ int add_child(int pid, char *command) {
 }
 
 void wait_n_switch(int child_pid) {
-    signal(SIGTTIN, SIG_IGN);
-    signal(SIGTTOU, SIG_IGN);
-    tcsetpgrp(STDOUT_FILENO, child_pid);
+    //signal(SIGTTIN, SIG_IGN);
+
+    tcsetpgrp(STDIN_FILENO, child_pid);
     kill(child_pid, SIGCONT);
     int status;
     waitpid(child_pid, &status, WUNTRACED);
-    if (tcsetpgrp(STDOUT_FILENO, getpgid(0)) == -1) {
+ /*   if (tcsetpgrp(STDOUT_FILENO, getpgid(getpid())) == -1) {
+        //perror("cant get terminal back");
+    }*/
+    if (tcsetpgrp(STDIN_FILENO, getpgid(getpid())) == -1) {
         //perror("cant get terminal back");
     }
-    signal(SIGTTIN, SIG_DFL);
-    signal(SIGTTOU, SIG_DFL);
+    //signal(SIGTTIN, SIG_DFL);
+    //signal(SIGTTOU, SIG_DFL);
     if (WIFEXITED(status)) {
         remove_child(child_pid);
         exit_code = WEXITSTATUS(status);
-    }
-    if (WIFSTOPPED(status)) {
+    } else if (WIFSTOPPED(status)) {
         exit_code = 1;
+        exit_code = WSTOPSIG(status);
+        printf("\n");
+        int job = pid_to_job(child_pid);
+        fprintf(stderr, "\n[%d] Stopped %s (%d)\n", job, commands[job], child_pid);
+        //print_job_data(child_pid);
+
+    } else if (WIFSIGNALED(status)) {
+        remove_child(child_pid);
+        exit_code = WTERMSIG(status);
     }
+
 }
 
-void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open, char * oldcommand) {
+void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open, char *oldcommand) {
     char *cmd = strdup(tokens[0]);
     char *argv[num + 1];
     for (int i = 0; i < num; i++) {
+        //fprintf(stderr, "--%d--\n", bg);
         argv[i] = strdup(tokens[i]);
     }
     argv[num] = NULL;
@@ -184,6 +199,9 @@ void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open, cha
 
     int job = add_child(rc, oldcommand);
     if (rc == 0) {
+        signal(SIGINT, SIG_DFL);
+        signal(SIGTSTP, SIG_DFL);
+        signal(SIGTTOU, SIG_DFL);
         // if bg the child process is now in a new session with no terminal
         if (pipe != NULL) {
             close(pipe[1]);// required
@@ -202,11 +220,10 @@ void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open, cha
             if (prev_open != -1)
                 close(prev_open);
             //perror("pipe1 closed in parent");
-
         }
         if (!bg) {
+            //perror("lolol");
             wait_n_switch(rc);
-
         } else {
             printf("+[%d] (%d)\n", job, rc);
         }
@@ -216,7 +233,7 @@ void make_process(char *tokens[], int num, int bg, int *pipe, int prev_open, cha
 
 void bg_handler(char **tokens, int n) {
     if (n != 2) {
-        fprintf(stderr, "bg <job number>\n");
+        fprintf(stderr, "bg: invalid format! bg <job number>\n");
         exit_code = 1;
         return;
     }
@@ -237,7 +254,7 @@ void bg_handler(char **tokens, int n) {
 
 void fg_handler(char **tokens, int n) {
     if (n != 2) {
-        fprintf(stderr, "fg <job number>\n");
+        fprintf(stderr, "fg: invalid format! correct format is fg <job number>\n");
         exit_code = 1;
         return;
     }

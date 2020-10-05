@@ -65,7 +65,7 @@ void zombie_process_check() {
                 break;
             }
         }
-        int len = sprintf(text, "\n-[%d]%s (%d) has exited %s\n", job, name, reaped_rc, stat);
+        int len = sprintf(text, "\n\033[1m\033[31m-[%d]%s (%d) has exited %s\n", job, name, reaped_rc, stat);
         write(2, text, len);
     }
 }
