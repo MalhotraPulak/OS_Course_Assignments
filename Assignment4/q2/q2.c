@@ -4,25 +4,44 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+int waitingStudents;
+
+int rand_num(int lower, int upper) {
+    return random() % (upper - lower + 1) + 1;
+}
 
 void Pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                   void *(*start_routine)(void *), void *arg) {
-    if(pthread_create(thread, attr,
-        start_routine, arg) != 0){
+                    void *(*start_routine)(void *), void *arg) {
+    if (pthread_create(thread, attr,
+                       start_routine, arg) != 0) {
         perror("Thread was not created");
     }
 }
 
-void Pthread_join(pthread_t thread, void **retval){
-    if(pthread_join(thread, retval) != 0){
-       perror("Thread could not join");
+void Pthread_join(pthread_t thread, void **retval) {
+    if (pthread_join(thread, retval) != 0) {
+        perror("Thread could not join");
     }
 
 }
-struct companyArgs{
+
+struct companyArgs {
     int id;
     double p;
 };
+struct studentArgs {
+    int id;
+    int vaccinations;
+};
+struct zoneArgs {
+    int id;
+    int slots;
+    int vaccines;
+    double p_success;
+};
+
 /*
  * COMPANY
  * p probability of vaccine working
@@ -32,9 +51,32 @@ struct companyArgs{
  * Signal vaccination zones vaccine is ready
  * Resumes when all its vaccines are used by the zone
  */
-void* company(void *ptr) {
+
+void createVaccine(const int id, const double probSuccess, int *batches, int *vaccinePerBatch) {
+    *batches = rand_num(1, 5);
+    int time = rand_num(2, 5);
+    *vaccinePerBatch = rand_num(10, 20);
+    printf("Pharmaceutical Company %d is preparing %d batches of vaccines which have success probability %0.2lf\n",
+           id,
+           *batches,
+           probSuccess);
+    sleep(time);
+    printf("Pharmaceutical Company %d has prepared %d batches of vaccines which have success probability %0.2lf. Waiting"
+           " for all the vaccines to be used to resume production\n",
+           id,
+           *batches,
+           probSuccess);
+
+}
+
+void *company(void *ptr) {
     struct companyArgs *args = ptr;
-    printf("company %d created with p = %lf\n", args-> id, args -> p);
+    int id = args->id;
+    double probSuccess = args->p;
+    int batches, vaccinePerBatch;
+    printf("company %d created with p = %lf\n", args->id, args->p);
+    createVaccine(id, probSuccess, &batches, &vaccinePerBatch);
+
     return NULL;
 }
 
@@ -47,9 +89,24 @@ void* company(void *ptr) {
  * It can only assign the free slots when it is done with vaccination phase
  * The vaccination zone should be on the lookout for new students
  */
-void* zone(void *ptr) {
-    int *x = ptr;
-    printf("zone %d created\n", *x);
+
+void getVaccines() {
+
+}
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+_Noreturn void *zone(void *ptr) {
+    struct zoneArgs *x = ptr;
+    printf("zone %d created\n", x->id);
+    while (true) {
+        if (x->vaccines == 0) {
+            getVaccines();
+        }
+        x->slots = min(8, min(x->vaccines, waitingStudents));
+    }
     return NULL;
 }
 
@@ -63,43 +120,52 @@ void* zone(void *ptr) {
  * at greater than 3 vaccinations he goes home
  */
 
-void* student(void *ptr) {
-    int *x = ptr;
-    printf("student %d created\n", *x);
+void *student(void *ptr) {
+    struct studentArgs *x = ptr;
+    printf("student %d created\n", x->id);
+
     return NULL;
 }
 
 
 int main() {
-    int num_company, num_zones, num_students;
-    num_zones = 4, num_students = 5;
-    num_company = 3;
-    double p_vaccine[num_company];
-    for (int i = 1; i < num_company + 1; i++) {
-        p_vaccine[i - 1] = i / 6.00;
+    srandom(time(0));
+    int numCompanies, numZones, numStudents;
+    numZones = 4, numStudents = 5;
+    numCompanies = 3;
+    double pVaccine[numCompanies];
+    for (int i = 1; i < numCompanies + 1; i++) {
+        pVaccine[i - 1] = i / 6.00;
     }
     /* Declaring the pthreads */
-    pthread_t students[num_students];
-    pthread_t zones[num_zones];
-    pthread_t companies[num_company];
+    pthread_t students[numStudents];
+    pthread_t zones[numZones];
+    pthread_t companies[numCompanies];
     /* Creating all the threads */
-    for (int i = 0; i < num_students; i++) {
-        int *k = malloc(sizeof(int));
-        *k = i;
-        Pthread_create(&students[i], NULL, &student, k);
+    /* Students */
+    for (int i = 0; i < numStudents; i++) {
+        struct studentArgs *sArg = malloc(sizeof(struct studentArgs));
+        sArg->id = i;
+        sArg->vaccinations = 0;
+        Pthread_create(&students[i], NULL, &student, sArg);
 
     }
-    for (int i = 0; i < num_zones; i++) {
-        int *k = malloc(sizeof(int));
-        *k = i;
-        Pthread_create(&zones[i], NULL, &zone, k);
+    /* Zones */
+    for (int i = 0; i < numZones; i++) {
+        struct zoneArgs *zArg = malloc(sizeof(struct zoneArgs));
+        zArg->id = i;
+        zArg->slots = 0;
+        zArg->vaccines = 0;
+        zArg->p_success = 0;
+        Pthread_create(&zones[i], NULL, &zone, zArg);
 
     }
-    for (int i = 0; i < num_company; i++) {
-        struct companyArgs *c_arg = malloc(sizeof(struct companyArgs));
-        c_arg -> id = i;
-        c_arg -> p = p_vaccine[i];
-        Pthread_create(&companies[i], NULL, &company, c_arg);
+    /* Companies */
+    for (int i = 0; i < numCompanies; i++) {
+        struct companyArgs *cArg = malloc(sizeof(struct companyArgs));
+        cArg->id = i;
+        cArg->p = pVaccine[i];
+        Pthread_create(&companies[i], NULL, &company, cArg);
 
     }
 
@@ -107,13 +173,13 @@ int main() {
 
 
     /* Waiting and joining the threads */
-    for(int i = 0; i < num_students; i++){
+    for (int i = 0; i < numStudents; i++) {
         Pthread_join(students[i], NULL);
     }
-    for(int i = 0; i < num_students; i++){
+    for (int i = 0; i < numCompanies; i++) {
         Pthread_join(companies[i], NULL);
     }
-    for(int i = 0; i < num_students; i++){
+    for (int i = 0; i < numZones; i++) {
         Pthread_join(zones[i], NULL);
     }
 
