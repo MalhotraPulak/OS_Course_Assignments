@@ -6,13 +6,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define MAX 10000
 
-int waitingStudents;
-
-
+/* wrapper functions */
 int randNum(int lower, int upper) {
     return random() % (upper - lower + 1) + lower;
+}
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
 }
 
 void Pthread_create(pthread_t *thread, const pthread_attr_t *attr,
@@ -48,12 +49,13 @@ void mutexUnlock(pthread_mutex_t *mutex) {
     }
 }
 
-void condBroadcast(pthread_cond_t *cv){
-    if(pthread_cond_broadcast(cv) != 0){
+void condBroadcast(pthread_cond_t *cv) {
+    if (pthread_cond_broadcast(cv) != 0) {
         perror("Cant broadcast");
     }
 }
 
+/* structs */
 struct companyArgs {
     int id;
     double p;
@@ -64,16 +66,26 @@ struct studentArgs {
 };
 struct zoneArgs {
     int id;
-    int slots;
-    int vaccines;
-    double p_success;
 };
 struct vaccineData {
-    int batches;
-    int batchSize;
+    int vaccineCount;
     int company;
-    int pSuccess;
+    double pSuccess;
 };
+
+/* Global data for all threads to access*/
+#define QUEUE_MAX 20000
+#define MAX 1000
+int waitingStudents;
+int numCompanies, numZones, numStudents;
+int vaccineUsed[MAX];
+struct vaccineData vaccineQueue[QUEUE_MAX];
+int readPosVaccine, writePosVaccine;
+int slotQueue[MAX];
+int zoneStudent[MAX][MAX];
+bool vaccinated[MAX];
+double vaccineGiven[MAX];
+//int readPosSlot, writePosSlot;
 
 /* Declaring the pthreads */
 pthread_t students[MAX];
@@ -84,30 +96,20 @@ pthread_t companies[MAX];
 pthread_cond_t vaccineNotUsed = PTHREAD_COND_INITIALIZER;
 pthread_cond_t noVaccineAvailable = PTHREAD_COND_INITIALIZER;
 pthread_cond_t noSlotsAvailable = PTHREAD_COND_INITIALIZER;
-
+pthread_cond_t vaccinatedWait = PTHREAD_COND_INITIALIZER;
 
 /* Mutex Locks */
-pthread_mutex_t studentMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t vaccineQueueMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t vaccineUsedLock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t vaccineQueueLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t slotQueueMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t studentMutex = PTHREAD_MUTEX_INITIALIZER;
+/* --------------------------------------------------------------------------------------------------------------*/
 
-
-/* Global data for all threads to access*/
-int vaccineUsed[MAX];
-#define QUEUE_MAX 20000
-int numCompanies, numZones, numStudents;
-struct vaccineData vaccineQueue[QUEUE_MAX];
-int readPosVaccine, writePosVaccine;
-int slotQueue[QUEUE_MAX];
-int readPosSlot, writePosSlot;
 
 int createVaccine(const int id, double probSuccess, int *bs) {
     int batches = randNum(1, 5);
     int time = randNum(2, 5);
     int batchSize = randNum(10, 20);
     *bs = batchSize;
-    //printf("**%d**", batchSize);
     printf("Pharmaceutical Company %d is preparing %d batches of vaccines which have success probability %0.2lf\n",
            id,
            batches,
@@ -130,66 +132,68 @@ int createVaccine(const int id, double probSuccess, int *bs) {
  * Signal vaccination zones vaccine is ready
  * Resumes when all its vaccines are used by the zone
  */
-void addToVaccineQueue(int id, int vaccines, int bs) {
-    mutexLock(&vaccineQueueMutex);
-    vaccineQueue[writePosVaccine].batchSize = bs;
-    vaccineQueue[writePosVaccine].batches = vaccines;
-    vaccineQueue[writePosVaccine].company = id;
+
+void addToVaccineQueue(int id, int vaccines, int bs, double probSuccess) {
+    mutexLock(&vaccineQueueLock);
+    for (int i = 0; i < bs; i++) {
+        vaccineQueue[writePosVaccine].vaccineCount = vaccines;
+        vaccineQueue[writePosVaccine].company = id;
+        vaccineQueue[writePosVaccine].pSuccess = probSuccess;
+    }
     writePosVaccine = (writePosVaccine + 1) % QUEUE_MAX;
     condBroadcast(&noVaccineAvailable);
-    mutexUnlock(&vaccineQueueMutex);
-    // TODO add overfill condition
+    mutexUnlock(&vaccineQueueLock);
 }
 
-
+int t = true;
 void *company(void *ptr) {
     struct companyArgs *args = ptr;
     int id = args->id;
     double probSuccess = args->p;
     int batchSize;
     printf("company %d created with p = %lf\n", args->id, args->p);
-    int vaccines = createVaccine(id, probSuccess, &batchSize);
-    addToVaccineQueue(id, vaccines, batchSize);
-    mutexLock(&vaccineUsedLock);
-    while (vaccineUsed[id] != vaccines) {
-        condWait(&vaccineNotUsed, &vaccineUsedLock);
+    while(true) {
+        int batches = createVaccine(id, probSuccess, &batchSize);
+        addToVaccineQueue(id, batches, batchSize, probSuccess);
+        mutexLock(&vaccineQueueLock);
+        while (vaccineUsed[id] != batches) {
+            condWait(&vaccineNotUsed, &vaccineQueueLock);
+        }
+        mutexUnlock(&vaccineQueueLock);
+        if(!t) {
+            break;
+        }
     }
-    mutexUnlock(&vaccineUsedLock);
     return NULL;
 }
 
 /* ---------------------------------------------------------------------------------------------------------------*/
-void addToSlotsQueue(int slots, int id) {
+void addToSlotsQueue(int vaccines, int id) {
     mutexLock(&slotQueueMutex);
-    for (int i = 0; i < slots; i++) {
-        slotQueue[writePosSlot] = id;
-        writePosSlot = (writePosSlot + 1) % QUEUE_MAX;
-    }
+    int slots = min(8, min(waitingStudents, vaccines));
+    assert(slotQueue[id] == 0);
+    slotQueue[id] = slots;
     printf("Vaccination Zone %d is ready to vaccinate with %d slots\n", id, slots);
     condBroadcast(&noSlotsAvailable);
     mutexUnlock(&slotQueueMutex);
 }
 
-void getFromVaccineQueue(int *vaccines, int *company) {
-    mutexLock(&vaccineQueueMutex);
+void getFromVaccineQueue(int *vaccines, int *company, double *pSuccess) {
+    mutexLock(&vaccineQueueLock);
     while (readPosVaccine == writePosVaccine) {
-        condWait(&noVaccineAvailable, &vaccineQueueMutex);
+        condWait(&noVaccineAvailable, &vaccineQueueLock);
     }
-    *vaccines = vaccineQueue[readPosVaccine].batchSize;
+    *vaccines = vaccineQueue[readPosVaccine].vaccineCount;
     *company = vaccineQueue[readPosVaccine].company;
-    vaccineQueue[readPosVaccine].batches -= 1;
-    if (vaccineQueue[readPosVaccine].batches == 0) {
-        readPosVaccine = (readPosVaccine + 1) % QUEUE_MAX;
-    }
-    mutexUnlock(&vaccineQueueMutex);
+    *pSuccess = vaccineQueue[readPosVaccine].pSuccess;
+    readPosVaccine = (readPosVaccine + 1) % QUEUE_MAX;
+    mutexUnlock(&vaccineQueueLock);
 }
 
 
-int min(int a, int b) {
-    return (a < b) ? a : b;
-}
 
-int check = true;
+
+
 
 /*
  * ZONE
@@ -200,34 +204,86 @@ int check = true;
  * It can only assign the free slots when it is done with vaccination phase
  * The vaccination zone should be on the lookout for new students
  */
+
 void *zone(void *ptr) {
     struct zoneArgs *x = ptr;
-    const int id = x->id;
-    printf("Zone %d created\n", id);
+    const int zoneId = x->id;
+    printf("Zone %d created\n", zoneId);
     int company, vaccines = 0;
-    while (check) {
-        getFromVaccineQueue(&vaccines, &company);
-        printf("Zone %d got %d vaccine from company %d\n", id, vaccines, company);
-        int slots = min(9, min(waitingStudents, vaccines));
-        addToSlotsQueue(slots, id);
-        sleep(10);
+    double pSuccess;
+    while(true) {
+        getFromVaccineQueue(&vaccines, &company, &pSuccess);
+        printf("Zone %d got %d vaccine from company %d\n", zoneId, vaccines, company);
+        while (true) {
+            addToSlotsQueue(vaccines, zoneId);
+            sleep(10); // give 10 seconds for students to register
+            int a[numStudents];
+            int studentCount = 0;
+            mutexLock(&slotQueueMutex);
+            while (zoneStudent[zoneId][studentCount] != 0) {
+                a[studentCount] = zoneStudent[zoneId][studentCount];
+                a[studentCount] = 0;
+                studentCount++;
+            }
+            slotQueue[zoneId] = 0;
+            printf("Zone %d is entering vaccination phase\n", zoneId);
+            mutexUnlock(&slotQueueMutex);
+            mutexLock(&studentMutex); // student mutex again
+            for (int i = 0; i < studentCount; i++) {
+                vaccinated[a[i]] = true;
+                vaccineGiven[a[i]] = pSuccess;
+                vaccines--;
+            }
+            condBroadcast(&vaccinatedWait);
+            mutexUnlock(&studentMutex);
+            /* Signal Company you used a batch*/
+            if (vaccines == 0) {
+                mutexLock(&vaccineQueueLock);
+                condBroadcast(&vaccineNotUsed);
+                vaccineUsed[company] += 1;
+                mutexUnlock(&vaccineQueueLock);
+                break;
+            } else {
+                continue;
+            }
+        }
+        // never runs
+        if(!t){
+            break;
+        }
     }
     return NULL;
 }
 
+
 /* --------------------------------------------------------------------------------------------------------- */
-int getASlot(int id) {
+int getVaccinated(int id) {
     mutexLock(&slotQueueMutex);
-    if (readPosSlot == writePosSlot) {
-        condWait(&noSlotsAvailable, &slotQueueMutex);
+    int zone = -1; // Zone not defined
+    while (zone == -1) {
+        for (int i = 0; i < numCompanies; i++) {
+            if (slotQueue[i] > 0) {
+                slotQueue[i]--; // remove that slot from slot queue
+                zone = i;
+                break;
+            }
+        }
+        if (zone == -1) {
+            condWait(&noSlotsAvailable, &slotQueueMutex); // wait until slots available
+        }
     }
-    int zone = slotQueue[readPosSlot];
-    readPosSlot = (readPosSlot + 1) % QUEUE_MAX;
+    waitingStudents--; // after getting slot reduce waiting students
     printf("Student %d got assigned vaccination zone %d\n", id, zone);
+    /* this mapping tells zone the assigned student */
+    for (int i = 0; i < numStudents; i++) {
+        if (zoneStudent[zone][i] == 0) {
+            zoneStudent[zone][i] = id;
+            break;
+        }
+    }
     mutexUnlock(&slotQueueMutex);
     return zone;
 }
-
 
 /*
  * STUDENT
@@ -240,17 +296,34 @@ int getASlot(int id) {
 
 void *student(void *ptr) {
     struct studentArgs *x = ptr;
-    int id = x->id;
-    printf("Student %d has arrived for his %d round of vaccination\n", id, x->vaccinations);
-    sleep(randNum(1, 10));
-    printf("Student %d is waiting to be allocated a vaccination zone\n", id);
-    mutexLock(&studentMutex);
-    waitingStudents++;
-    mutexUnlock(&studentMutex);
-    int zone = getASlot(id);
-
-
-    return NULL;
+    int studentId = x->id;
+    int vaccinations = 1;
+    while(true) {
+        printf("Student %d has arrived for his %d round of vaccination\n", studentId, vaccinations);
+        sleep(randNum(1, 10));
+        printf("Student %d is waiting to be allocated a vaccination zone\n", studentId);
+        /* changing waiting students depends on the slot queue */
+        mutexLock(&slotQueueMutex);
+        waitingStudents++;
+        mutexUnlock(&slotQueueMutex);
+        getVaccinated(studentId);
+        mutexLock(&studentMutex); // student MUTEX now, also in ZONE tho
+        while (!vaccinated[studentId]) {
+            condWait(&vaccinatedWait, &studentMutex);
+        }
+        vaccinated[studentId] = false; // make it false for next time
+        double s = (double) rand() / RAND_MAX;
+        if (s < vaccineGiven[studentId]) {
+            return NULL;
+        } else {
+            vaccinations++;
+            if(vaccinations >= 4){
+                printf("College gave up on %d", studentId);
+                return NULL;
+            }
+        }
+        mutexUnlock(&studentMutex);
+    }
 }
 
 
@@ -282,9 +355,6 @@ int main() {
     for (int i = 0; i < numZones; i++) {
         zoneData[i] = malloc(sizeof(struct zoneArgs));
         zoneData[i]->id = i;
-        zoneData[i]->slots = 0;
-        zoneData[i]->vaccines = 0;
-        zoneData[i]->p_success = 0;
         Pthread_create(&zones[i], NULL, &zone, zoneData[i]);
 
     }
@@ -296,36 +366,58 @@ int main() {
         Pthread_create(&companies[i], NULL, &company, companyData[i]);
 
     }
-
-
-
-
     /* Waiting and joining the threads */
     for (int i = 0; i < numStudents; i++) {
         Pthread_join(students[i], NULL);
     }
-    for (int i = 0; i < numCompanies; i++) {
-        Pthread_join(companies[i], NULL);
-    }
-    for (int i = 0; i < numZones; i++) {
-        Pthread_join(zones[i], NULL);
-    }
-
+    _exit(1);
 }
 
+// Problem
 /*
- * Problem
- * How does company knows its batches are consumed totally?
- * Vaccination zone tells company i just had a batch
- * Company does batches--
- * What if two vaccination zone at the same time?
- * Introduce global variable ig for the condition
- * If condition then increment pending or something ig
- * Or make the company wait on a different variable than the vaccination zone
- * And VZ signals from locked mutex as soon as signal is sent
- * Ahh this is getting confusing
- * If batches are zero then start creating again
- * When creating
- * Store the batches with batch size in a queue
- * Store the manufactured batches in the stack
+ * Company
+ * To create vaccines
+ * Lock in mutex for vaccineQueue
+ * ADD THE BATCH
+ * Signal Zones that newVaccineIsAdded
+ * Release the lock for vaccineQueue
+ * wait till medicine used
+ * only 1 Zone can signal for vaccineUsed at once
+ * Lock the student mutex
+ * wait for signal
+ * Unlock the student mutex
+ *
+ *
+ *
+ * Zones
+ * Lock in mutex for vaccineQueue
+ * Wait for newVaccine is added
+ * If condition is false now wait again we get some vaccines
+ * Unlock mutex
+ * Now make some slots available
+ * Add some slots to slots
+ * Notify students there are some slots
+ * Lock in slots
+ * Add slots to the queue
+ * Unlock the slots
+ * Sleep
+ * Lock slots
+ * Delete my slots
+ * Unlock slots
+ * Enter vaccination phase
+ * Lock the slots
+ * Give vaccine to students which are in my zone
+ * Unlock the slots
+ * Lock the student mutex
+ * Signal to Company that done
+ * Unlock the student mutex
+ * ...
+ *
+ *
+ *
+ * Student
+ * Wait till slotsAvailable
+ *
+ *
+ *
  */
