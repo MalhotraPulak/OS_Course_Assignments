@@ -38,7 +38,7 @@ int _gcd(int a, int b) {
 }
 
 void testcase() {
-    int n = 1000;
+    int n = 100000;
     cout << n << endl;
     for(int i = 0; i < n; i++){
         int x = rand();

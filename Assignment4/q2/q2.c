@@ -7,8 +7,8 @@
 
 
 /* Wrapper functions and Helper functions */
-int randNum(int lower, int upper) {
-    return random() % (upper - lower + 1) + lower;
+int randNum(long int lower, long int upper) {
+    return (int)(random() % (upper - lower + 1) + lower);
 }
 
 int min(int a, int b) {
@@ -171,8 +171,8 @@ void addToSlotsQueue(int vaccines, int id) {
 
 void getFromVaccineQueue(int *vaccines, int *company, double *pSuccess, int zoneId) {
     mutexLock(&vaccineQueueLock);
-    while (readPosVaccine == writePosVaccine) {
-        condBroadcast(&vaccineNotUsed);
+    while (readPosVaccine == writePosVaccine) { /* no vaccine available */
+        condBroadcast(&vaccineNotUsed); /* signal companies to check if all their batches have been used */
         condWait(&noVaccineAvailable, &vaccineQueueLock);
     }
     *vaccines = vaccineQueue[readPosVaccine].vaccineCount;
@@ -214,33 +214,33 @@ _Noreturn void *zone(void *ptr) {
             int registeredStudents[numStudents];
             int studentCount = 0;
             mutexLock(&slotQueueLock);
+            /* get registered students at this zone and close registrations*/
             while (zoneStudent[zoneId][studentCount] != -1) {
                 registeredStudents[studentCount] = zoneStudent[zoneId][studentCount];
                 zoneStudent[zoneId][studentCount] = -1;
                 studentCount++;
             }
-            slotQueue[zoneId] = 0;
-            if (studentCount != 0)
-                printf("Zone %d is entering vaccination phase with %d students \n", zoneId, studentCount);
+            slotQueue[zoneId] = 0; // no more registrations
             mutexUnlock(&slotQueueLock);
             if (studentCount == 0) {
-                printf("No body applied for slots on Zone %d\n", zoneId);
+                printf("Nobody applied for slots on Zone %d\n", zoneId);
                 continue;
             }
             /* Vaccination Phase */
-            mutexLock(&studentLock); // student mutex again
+            mutexLock(&studentLock);
+            printf("Zone %d is entering vaccination phase with %d students \n", zoneId, studentCount);
             for (int i = 0; i < studentCount; i++) {
-                vaccinated[registeredStudents[i]] = true;
-                vaccineGiven[registeredStudents[i]] = pSuccess;
-                vaccines--;
+                vaccinated[registeredStudents[i]] = true; // student is now vaccinated
+                vaccineGiven[registeredStudents[i]] = pSuccess; // prob of vaccination success
+                vaccines--; // zone lost one vaccine
                 printf("Student %d on Vaccination Zone %d has been vaccinated which has success probability %0.2lf\n",
                        registeredStudents[i],
                        zoneId, pSuccess);
             }
-            condBroadcast(&notVaccinated);
+            condBroadcast(&notVaccinated); // not vaccinated students should update
             printf("Zone %d has exited vaccination phase after vaccinating %d students\n", zoneId, studentCount);
             mutexUnlock(&studentLock);
-            /* Signal Company you used a batch*/
+            /* If no vaccines left get more vaccines else continue making slots*/
             if (vaccines == 0) {
                 mutexLock(&vaccineQueueLock);
                 vaccineUsed[company] += 1;
@@ -252,7 +252,6 @@ _Noreturn void *zone(void *ptr) {
             }
         }
     }
-    return NULL;
 }
 
 
@@ -336,7 +335,7 @@ void *student(void *ptr) {
         }
     }
 }
-
+/* --------------------------------------------------------------------------------------------- */
 
 int main() {
     srandom(time(0));
@@ -396,3 +395,5 @@ int main() {
     }
     printf("Simulation Over. Fate of everyone decided.\n");
 }
+
+// TODO add a cond variable that no student is waiting
