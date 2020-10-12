@@ -16,7 +16,6 @@
 #include <unordered_set>
 #include <cstring>
 
-#define int long long
 #define pb push_back
 #define mp make_pair
 #define vvpii vector <vector<pii>>
@@ -37,19 +36,20 @@ int _gcd(int a, int b) {
     return _gcd(b % a, a);
 }
 
-void testcase() {
-    int n = 100000;
+void testcase(int n) {
     cout << n << endl;
     for(int i = 0; i < n; i++){
-        int x = rand();
+        int x = rand() % ((int)1e9);
         cout << x << endl;
     }
 
 }
 
-signed main() {
+int main(int argc, char *argv[]) {
     fast_io();
-    //int t; cin >> t;while(t--)
-    testcase();
+    srand(time(0));
+    //int t; int cin >> t;while(t--)
+    int n = strtol(argv[1], NULL, 10);
+    testcase(n);
 
 }
