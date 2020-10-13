@@ -7,6 +7,8 @@
 #include <semaphore.h>
 #include <string.h>
 #include <sys/time.h>
+#include <errno.h>
+
 #define NAME_SIZE 100
 #define RED   "\x1B[31m"
 #define GRN   "\x1B[32m"
@@ -62,9 +64,15 @@ void mutexUnlock(pthread_mutex_t *mutex) {
     }
 }
 
+/*
 void condBroadcast(pthread_cond_t *cv) {
     if (pthread_cond_broadcast(cv) != 0) {
         perror("Cant broadcast");
+    }
+}*/
+void condSignal(pthread_cond_t *cv) {
+    if (pthread_cond_signal(cv) != 0) {
+        perror("Cant signal");
     }
 }
 
@@ -75,19 +83,21 @@ int tMin, tMax;
 int cordCount;
 int waitTime;
 int aStage, eStage;
-
-
+char *singerName;
+int performanceNoSigner = 0;
 
 /* semaphores */
-
+sem_t performing;
 
 /* mutex */
 pthread_mutex_t stageLock;
+pthread_mutex_t singingLock;
 
 /* CV */
 pthread_cond_t noAStage = PTHREAD_COND_INITIALIZER;
 pthread_cond_t noEStage = PTHREAD_COND_INITIALIZER;
 pthread_cond_t anyStage = PTHREAD_COND_INITIALIZER;
+pthread_cond_t anySinger = PTHREAD_COND_INITIALIZER;
 
 struct musicianData {
     int id;
@@ -98,110 +108,175 @@ struct musicianData {
     int stage;
 };
 
-struct timespec getTime(int timeInMs)
-{
+struct timespec getTime(int timeInMs) {
     struct timeval tv;
     struct timespec ts;
-
     gettimeofday(&tv, NULL);
     ts.tv_sec = time(NULL) + timeInMs / 1000;
     ts.tv_nsec = tv.tv_usec * 1000 + 1000 * 1000 * (timeInMs % 1000);
     ts.tv_sec += ts.tv_nsec / (1000 * 1000 * 1000);
     ts.tv_nsec %= (1000 * 1000 * 1000);
-
-   /* int n = pthread_cond_timedwait(&condition, &mutex, &ts);
-    if (n == 0)
-
-            else if (n == ETIMEDOUT)*/
-
     return ts;
 }
 
-void *musician(void *arg) {
-    struct musicianData *data = arg;
-    int id = data->id;
-    sleep(data->time);
-    printf(GRN "%s %c has arrived\n" RESET, data->name, data->iCode);
-    int stage = data->stage;
-    int time = randNum(tMin, tMax);
-    if (stage == ACOUSTIC) {
-        mutexLock(&stageLock);
-        while (aStage <= 0) {
-            //condWait(&noAStage, &stageLock);
-            struct timespec tt = getTime(waitTime * 1000);
-            int n = pthread_cond_timedwait(&noAStage, &stageLock, &tt);
-        }
-        printf(BLU "%s will perform %c on Acoustic Stage for %d seconds\n" RESET,
-               data->name,
-               data->iCode,
-               time);
-        mutexUnlock(&stageLock);
-        sleep(time);
-        mutexLock(&stageLock);
-        printf(CYN "%s performance %c on Acoustic Stage is finished\n" RESET,
+void perform(struct musicianData *data, int time) {
+    mutexLock(&singingLock);
+    struct timespec tt = getTime(time * 1000);
+    int rc = pthread_cond_timedwait(&anySinger, &singingLock, &tt);
+    if (rc != ETIMEDOUT) {
+        printf(RED "%s joined %s performance, performance extended by 2 secs\n" RESET,
+               singerName, data->name
+        );
+    }
+    mutexUnlock(&singingLock);
+}
+
+
+void waitForStage(pthread_cond_t *cv, pthread_mutex_t *lock, struct timespec *tt, struct musicianData *data) {
+    int rc = pthread_cond_timedwait(cv, lock, tt);
+    if (rc == ETIMEDOUT) {
+        printf(RED "%s %c left due to impatience\n" RESET,
                data->name,
                data->iCode);
-        condBroadcast(&noAStage);
-        condBroadcast(&anyStage);
-        aStage++;
-        mutexUnlock(&stageLock);
-    } else if (stage == ELECTRIC) {
-        mutexLock(&stageLock);
-        while (eStage <= 0) {
-            condWait(&noEStage, &stageLock);
-        }
+        mutexUnlock(lock);
+        pthread_exit(NULL);
+    }
+}
+
+void performAcoustic(struct musicianData *data) {
+    int time = randNum(tMin, tMax);
+    mutexLock(&stageLock);
+    struct timespec tt = getTime(waitTime * 1000);
+    while (aStage <= 0) {
+        waitForStage(&noAStage, &stageLock, &tt, data);
+    }
+    aStage--;
+    printf(BLU "%s will perform %c on Acoustic Stage for %d seconds\n" RESET,
+           data->name,
+           data->iCode,
+           time);
+    mutexUnlock(&stageLock);
+    perform(data, time);
+    mutexLock(&stageLock);
+    printf(CYN "%s performance %c on Acoustic Stage is finished\n" RESET,
+           data->name,
+           data->iCode);
+    condSignal(&noAStage);
+    condSignal(&anyStage);
+    aStage++;
+    mutexUnlock(&stageLock);
+}
+
+
+void performElectric(struct musicianData *data) {
+    int time = randNum(tMin, tMax);
+    mutexLock(&stageLock);
+    struct timespec tt = getTime(waitTime * 1000);
+    while (eStage <= 0) {
+        waitForStage(&noEStage, &stageLock, &tt, data);
+    }
+    eStage--;
+    printf(YEL "%s will perform %c on Electric Stage for %d seconds\n" RESET,
+           data->name,
+           data->iCode,
+           time);
+    mutexUnlock(&stageLock);
+    perform(data, time);
+    mutexLock(&stageLock);
+    printf(MAG "%s performance on Electric Stage is finished\n" RESET, data->name);
+    condSignal(&noEStage);
+    condSignal(&anyStage);
+    eStage++;
+    mutexUnlock(&stageLock);
+}
+
+void joinAMusician() {
+
+}
+
+void performBoth(struct musicianData *data) {
+    int time = randNum(tMin, tMax);
+    int stage;
+    mutexLock(&stageLock);
+    struct timespec tt = getTime(waitTime * 1000);
+    while (eStage + aStage <= 0) {
+
+        waitForStage(&anyStage, &stageLock, &tt, data);
+    }
+    if (eStage > 0) {
         printf(YEL "%s will perform %c on Electric Stage for %d seconds\n" RESET,
                data->name,
                data->iCode,
                time);
-        mutexUnlock(&stageLock);
-        sleep(time);
-        mutexLock(&stageLock);
-        printf(MAG "%s performance on Electric Stage is finished\n" RESET, data->name);
-        condBroadcast(&noEStage);
-        condBroadcast(&anyStage);
-        eStage++;
-        mutexUnlock(&stageLock);
+        eStage--;
+        stage = ELECTRIC;
     } else {
-        int t;
-        mutexLock(&stageLock);
-        while (eStage + aStage <= 0) {
-            condWait(&anyStage, &stageLock);
-        }
-        if (eStage > 0) {
-            printf(YEL "%s will perform %c on Electric Stage for %d seconds\n" RESET,
-                   data->name,
-                   data->iCode,
-                   time);
-            eStage--;
-            t = ELECTRIC;
+        printf(BLU"%s will perform %c on Acoustic Stage for %d seconds\n" RESET,
+               data->name,
+               data->iCode,
+               time);
+        aStage--;
+        stage = ACOUSTIC;
+    }
+    mutexUnlock(&stageLock);
+    perform(data, time);
+    mutexLock(&stageLock);
+    if (stage == ELECTRIC) {
+        printf(MAG "%s performance on Electric Stage is finished\n" RESET,
+               data->name);
+        condSignal(&noEStage);
+        eStage++;
+    } else {
+        printf(CYN "%s performance on Acoustic Stage is finished\n" RESET, data->name);
+        condSignal(&noAStage);
+        aStage++;
+    }
+    condSignal(&anyStage);
+    mutexUnlock(&stageLock);
+
+}
+
+void singersCase(struct musicianData *data) {
+    mutexLock(&stageLock);
+    if ((eStage >= 0 || aStage >= 0) && performanceNoSigner >= 0) {
+        int n = randNum(1, 2);
+        if (n == 1) {
+            joinAMusician();
         } else {
-            printf(BLU"%s will perform %c on Acoustic Stage for %d seconds\n" RESET,
-                   data->name,
-                   data->iCode,
-                   time);
-            aStage--;
-            t = ACOUSTIC;
+
         }
-        mutexUnlock(&stageLock);
-        sleep(time);
-        mutexLock(&stageLock);
-        if (t == ELECTRIC) {
-            printf(MAG "%s performance on Electric Stage is finished\n" RESET,
-                   data->name);
-            condBroadcast(&noEStage);
-            eStage++;
+    } else if (performanceNoSigner >= 0) {
+        joinAMusician();
+    } else {
+        //performBoth();
+    }
+    // TODO make a conditton variable for performanceNoSinger too
+    // TODO and signal it start of every performance and end of everyperformance
+    // TODO this motherfucker should wait on two variables???????????
+}
+
+void *musician(void *arg) {
+    struct musicianData *data = arg;
+    sleep(data->time);
+    printf(GRN "%s %c has arrived\n" RESET, data->name, data->iCode);
+    int stage = data->stage;
+    if (stage == ACOUSTIC) {
+        performAcoustic(data);
+    } else if (stage == ELECTRIC) {
+        performElectric(data);
+    } else {
+        if (data->singer) {
+            strcpy(singerName, data->name);
+            singersCase(data);
         } else {
-            printf(CYN "%s performance on Acoustic Stage is finished\n" RESET, data->name);
-            condBroadcast(&noAStage);
-            aStage++;
+            performBoth(data);
         }
-        condBroadcast(&anyStage);
-        mutexUnlock(&stageLock);
     }
 }
 
 int main() {
+    srandom(time(0));
+    singerName = malloc(NAME_SIZE);
     scanf("%d %d %d %d %d %d %d",
           &numberMusician,
           &numAcoustic,
@@ -222,6 +297,7 @@ int main() {
     }
     aStage = numAcoustic;
     eStage = numElectric;
+    sem_init(&performing, 0, numElectric + numAcoustic);
     pthread_t musicians[numberMusician];
     for (int i = 0; i < numberMusician; i++) {
         struct musicianData *mData = &musicianArgs[i];
