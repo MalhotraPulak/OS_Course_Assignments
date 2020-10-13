@@ -7,7 +7,7 @@
 #include <pthread.h>
 
 #define T_NOW ts.tv_nsec / (1e9) + ts.tv_sec;
-
+int shmId;
 
 /* wrapper function for pthread join*/
 void pthreadJoin(pthread_t thread, void **retval) {
@@ -34,8 +34,12 @@ long double getTime() {
 /* Shared memory for multi process mergeSort */
 int *shareMem(size_t size) {
     key_t memKey = IPC_PRIVATE;
-    int shmId = shmget(memKey, size, IPC_CREAT | 0666);
+    shmId = shmget(memKey, size, IPC_CREAT | 0666);
     return (int *) shmat(shmId, NULL, 0);
+}
+
+void freeSharedMemory(){
+    shmctl(shmId, IPC_RMID, NULL);
 }
 
 /* Implementation of Selection Sort */
@@ -210,7 +214,7 @@ long double runMultiProcess(int n, const int *a) {
     end = getTime();
     printArr(b, n);
     /* free up the shared memory */
-    shmdt(b);
+    freeSharedMemory();
     return end - start;
 
 }
@@ -256,10 +260,12 @@ void runSorts(int n, const int *a) {
     long double time2 = runMultiThread(n, a);
     long double time3 = runNormal(n, a);
 
-    printf("normal mergeSort ran:\n"
+   printf("normal mergeSort ran:\n"
            "\t[ %Lf ] times faster than concurrent mergeSort\n"
            "\t[ %Lf ] times faster than threaded mergeSort\n",
            time1 / time3, time2 / time3);
+   /* to output as CSV data */
+   fprintf(stderr, "%Lf, %Lf, %Lf\n", time1, time2, time3);
 }
 
 int main() {
@@ -272,3 +278,5 @@ int main() {
     runSorts(n, a);
     return 0;
 }
+
+// TODO output

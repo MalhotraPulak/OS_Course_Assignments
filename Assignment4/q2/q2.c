@@ -5,10 +5,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+#define BLU   "\x1B[34m"
+#define MAG   "\x1B[35m"
+#define CYN   "\x1B[36m"
+#define WHT   "\x1B[37m"
+#define RESET "\x1B[0m"
 
 /* Wrapper functions and Helper functions */
 int randNum(long int lower, long int upper) {
-    return (int)(random() % (upper - lower + 1) + lower);
+    return (int) (random() % (upper - lower + 1) + lower);
 }
 
 int min(int a, int b) {
@@ -54,6 +62,7 @@ void condBroadcast(pthread_cond_t *cv) {
     }
 }
 
+
 /* structs */
 struct companyArgs {
     int id;
@@ -71,25 +80,26 @@ struct vaccineData {
     double pSuccess;
 };
 
-#define QUEUE_MAX 20000
-#define MAX 1000
-
+#define QUEUE_MAX 200000
+#define ZONES_MAX 1000
+#define COMPANY_MAX 1000
+#define STUDENT_MAX 10000
 /* Global data for all threads to access*/
 int waitingStudents;
 int numCompanies, numZones, numStudents;
-int vaccineUsed[MAX];
+int vaccineUsed[COMPANY_MAX];
 struct vaccineData vaccineQueue[QUEUE_MAX];
 int readPosVaccine, writePosVaccine;
-int slotQueue[MAX];
-int zoneStudent[MAX][MAX];
-bool vaccinated[MAX] = {false};
-double vaccineGiven[MAX];
+int slotQueue[QUEUE_MAX];
+int zoneStudent[ZONES_MAX][STUDENT_MAX];
+bool vaccinated[STUDENT_MAX] = {false};
+double vaccineGiven[STUDENT_MAX];
 
 
 /* Declaring the pthreads */
-pthread_t students[MAX];
-pthread_t zones[MAX];
-pthread_t companies[MAX];
+pthread_t students[STUDENT_MAX];
+pthread_t zones[ZONES_MAX];
+pthread_t companies[COMPANY_MAX];
 
 /* Conditional Variables */
 pthread_cond_t vaccineNotUsed = PTHREAD_COND_INITIALIZER;
@@ -99,8 +109,8 @@ pthread_cond_t notVaccinated = PTHREAD_COND_INITIALIZER;
 
 /* Mutex Locks */
 pthread_mutex_t vaccineQueueLock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t slotQueueLock= PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t studentLock= PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t slotQueueLock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t studentLock = PTHREAD_MUTEX_INITIALIZER;
 
 /* --------------------------------------------------------------------------------------------------------------*/
 /*
@@ -143,7 +153,7 @@ _Noreturn void *company(void *ptr) {
     struct companyArgs *args = ptr;
     int companyId = args->id;
     double probSuccess = args->p;
-    printf("Company %d created with p = %0.2lf\n", companyId, probSuccess);
+    printf(GRN "Company %d created with p = %0.2lf\n" RESET, companyId, probSuccess);
     /* do  until all students exit */
     while (true) {
         const int batches = addToVaccineQueue(companyId, probSuccess);
@@ -151,7 +161,7 @@ _Noreturn void *company(void *ptr) {
         while (vaccineUsed[companyId] != batches) {
             condWait(&vaccineNotUsed, &vaccineQueueLock);
         }
-        printf("All the vaccines prepared by Pharmaceutical Company %d are emptied. Resuming production now.\n",
+        printf(MAG "All the vaccines prepared by Pharmaceutical Company %d are emptied. Resuming production now.\n" RESET,
                companyId);
         mutexUnlock(&vaccineQueueLock);
     }
@@ -160,13 +170,18 @@ _Noreturn void *company(void *ptr) {
 /* ---------------------------------------------------------------------------------------------------------------*/
 void addToSlotsQueue(int vaccines, int id) {
     mutexLock(&slotQueueLock);
-    int slots = min(8, min(waitingStudents, vaccines));
-    //printf("waitingStudents %d, vaccines %d \n", waitingStudents, vaccines);
-    assert(slotQueue[id] == 0);
-    slotQueue[id] = slots;
-    printf("Vaccination Zone %d is ready to vaccinate with %d slots\n", id, slots);
-    condBroadcast(&noSlotsAvailable);
+    int newSlots = min(8, min(waitingStudents, vaccines));
+    if (newSlots != 0) {
+        assert(slotQueue[id] == 0);
+        slotQueue[id] = newSlots;
+        printf("Vaccination Zone %d is ready to vaccinate with %d newSlots\n", id, newSlots);
+        condBroadcast(&noSlotsAvailable);
+    }
     mutexUnlock(&slotQueueLock);
+    if(newSlots == 0){
+        sleep(3);
+        addToSlotsQueue(vaccines, id);
+    }
 }
 
 void getFromVaccineQueue(int *vaccines, int *company, double *pSuccess, int zoneId) {
@@ -207,7 +222,7 @@ _Noreturn void *zone(void *ptr) {
             getFromVaccineQueue(&vaccines, &company, &pSuccess, zoneId);
         }
         sleep(randNum(1, 2));
-        printf("Zone %d got %d vaccine from company %d\n", zoneId, vaccines, company);
+        printf(CYN "Zone %d got %d vaccine from company %d\n" RESET, zoneId, vaccines, company);
         while (true) {
             addToSlotsQueue(vaccines, zoneId);
             sleep(10); // give 10 seconds for students to register
@@ -227,13 +242,14 @@ _Noreturn void *zone(void *ptr) {
                 continue;
             }
             /* Vaccination Phase */
+            sleep(1);
             mutexLock(&studentLock);
-            printf("Zone %d is entering vaccination phase with %d students \n", zoneId, studentCount);
+            printf(CYN "Zone %d is entering vaccination phase with %d students \n" RESET, zoneId, studentCount);
             for (int i = 0; i < studentCount; i++) {
                 vaccinated[registeredStudents[i]] = true; // student is now vaccinated
                 vaccineGiven[registeredStudents[i]] = pSuccess; // prob of vaccination success
                 vaccines--; // zone lost one vaccine
-                printf("Student %d on Vaccination Zone %d has been vaccinated which has success probability %0.2lf\n",
+                printf(MAG "Student %d on Vaccination Zone %d has been vaccinated which has success probability %0.2lf\n" RESET,
                        registeredStudents[i],
                        zoneId, pSuccess);
             }
@@ -244,7 +260,7 @@ _Noreturn void *zone(void *ptr) {
             if (vaccines == 0) {
                 mutexLock(&vaccineQueueLock);
                 vaccineUsed[company] += 1;
-                printf("Vaccination Zone %d has run out of vaccines\n", zoneId);
+                printf(RED "Vaccination Zone %d has run out of vaccines\n" RESET, zoneId);
                 mutexUnlock(&vaccineQueueLock);
                 break;
             } else {
@@ -260,19 +276,20 @@ int getRegistered(int id) {
     mutexLock(&slotQueueLock);
     int zone = -1; // Zone not defined
     while (zone == -1) {
-        for (int i = 0; i < numCompanies; i++) {
-            if (slotQueue[i] > 0) {
-                slotQueue[i]--; // remove that slot from slot queue
-                zone = i;
+        for (int aZone = 0; aZone < numZones; aZone++) {
+            if (slotQueue[aZone] > 0) {
+                slotQueue[aZone]--; // remove that slot from slot queue
+                zone = aZone;
                 break;
             }
         }
         if (zone == -1) {
+
             condWait(&noSlotsAvailable, &slotQueueLock); // wait until slots available
         }
     }
     waitingStudents--; // after getting slot reduce waiting students
-    printf("Student %d got assigned vaccination zone %d\n", id, zone);
+    printf(BLU "Student %d got assigned vaccination zone %d\n" RESET, id, zone);
     /* this mapping tells zone the assigned student */
     for (int i = 0; i < numStudents; i++) {
         if (zoneStudent[zone][i] < 0) {
@@ -297,11 +314,12 @@ void *student(void *ptr) {
     struct studentArgs *x = ptr;
     int studentId = x->id;
     int vaccinations = 1;
+    sleep(randNum(1, 5));
     printf("Student %d has entered the college gate\n", studentId);
     sleep(randNum(1, 10));
     while (true) {
-        printf("Student %d has arrived for his %d round of vaccination\n", studentId, vaccinations);
-        printf("Student %d is waiting to be allocated a vaccination zone\n", studentId);
+        printf(GRN "Student %d has arrived for his %d round of vaccination\n" RESET, studentId, vaccinations);
+        printf(GRN "Student %d is waiting to be allocated a vaccination zone\n" RESET, studentId);
         /* changing waiting students depends on the slot queue */
         mutexLock(&slotQueueLock);
         waitingStudents++;
@@ -321,12 +339,12 @@ void *student(void *ptr) {
         sleep(randNum(0, 3));
         if (s < vaccineGiven[studentId]) {
             /* Test passed */
-            printf("Student %d has tested positive for antibodies! (%0.2lf)\n", studentId, s);
+            printf(YEL "Student %d has tested positive for antibodies! (%0.2lf)\n" RESET, studentId, s);
             pthread_exit(NULL);
         } else {
             /* Test failed */
             vaccinations++;
-            printf("Student %d has tested negative for antibodies\n", studentId);
+            printf(RED "Student %d has tested negative for antibodies\n" RESET, studentId);
             if (vaccinations > 3) {
                 /* Max vaccinate 3 times */
                 printf("College gave up on student %d, have fun in online classes!!\n", studentId);
@@ -335,6 +353,7 @@ void *student(void *ptr) {
         }
     }
 }
+
 /* --------------------------------------------------------------------------------------------- */
 
 int main() {
@@ -362,9 +381,9 @@ int main() {
     readPosVaccine = 0;
     /* Creating all the threads */
     /* args for all the threads */
-    struct companyArgs *companyData[MAX];
-    struct studentArgs *studentData[MAX];
-    struct zoneArgs *zoneData[MAX];
+    struct companyArgs *companyData[numCompanies];
+    struct studentArgs *studentData[numStudents];
+    struct zoneArgs *zoneData[numZones];
     /* Students */
 
     for (int i = 0; i < numStudents; i++) {
@@ -389,11 +408,12 @@ int main() {
 
     }
     /* Waiting for all students to return and exit*/
-    for (int i = 0; i < numStudents; i++) {
+    for (int i = 0; i < numStudents; i++)
         pthreadJoin(students[i], NULL);
-
-    }
     printf("Simulation Over. Fate of everyone decided.\n");
+    for (int i = 0; i < numCompanies; i++)
+        pthread_cancel(companies[i]);
+    for (int i = 0; i < numZones; i++)
+        pthread_cancel(zones[i]);
 }
 
-// TODO add a cond variable that no student is waiting

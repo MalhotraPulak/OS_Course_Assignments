@@ -20,6 +20,12 @@ int main(){
             &tMin,
             &tMax,
             &waitTime);
+    char *names[numberMusician];
+    char iCode[numberMusician];
+    int time[numberMusician];
+    for(int i = 0; i < numberMusician; i++) {
+
+    }
 
 
 }
