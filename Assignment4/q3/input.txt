@@ -1,4 +1,4 @@
-5 1 1 4 2 10 5
+5 1 1 1 2 10 5
 Tanvi p 0
 Sudh b 1 
 Manas g 0 

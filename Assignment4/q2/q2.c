@@ -363,6 +363,16 @@ int main() {
     numCompanies = 10;*/
     scanf("%d %d %d", &numCompanies, &numZones, &numStudents);
     /* stores all the pSuccess for companies */
+    if(numCompanies == 0){
+        printf("No companies\n");
+        return 0;
+    } else if(numZones == 0){
+        printf("No Zones\n");
+        return 0;
+    } else if(numStudents == 0){
+        printf("No Students\n");
+        return 0;
+    }
     double pVaccine[numCompanies];
     /* for (int i = 1; i < numCompanies + 1; i++) {
         pVaccine[i - 1] = (double) i / (numCompanies + 1);
@@ -379,13 +389,12 @@ int main() {
     /* write and read pointer for the vaccineQueue */
     writePosVaccine = 0;
     readPosVaccine = 0;
-    /* Creating all the threads */
     /* args for all the threads */
     struct companyArgs *companyData[numCompanies];
     struct studentArgs *studentData[numStudents];
     struct zoneArgs *zoneData[numZones];
+    /* Creating all the threads */
     /* Students */
-
     for (int i = 0; i < numStudents; i++) {
         studentData[i] = malloc(sizeof(struct studentArgs));
         studentData[i]->id = i;
