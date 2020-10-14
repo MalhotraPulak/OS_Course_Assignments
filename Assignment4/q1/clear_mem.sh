@@ -1,4 +1,4 @@
-for i in {65536..65567}
+for i in {14..76}
 do
   ipcrm -m $i
 done

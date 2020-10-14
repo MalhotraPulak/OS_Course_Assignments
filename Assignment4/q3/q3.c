@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #define NAME_SIZE 100
 #define QUEUE_SIZE 500
@@ -92,7 +93,7 @@ char singersQueue[QUEUE_SIZE][NAME_SIZE];
 int qReadPos, qWritePos;
 
 /* Semaphores */
-sem_t tShirtGuys;
+sem_t *tShirtGuys;
 
 /* Mutex */
 pthread_mutex_t stageLock = PTHREAD_MUTEX_INITIALIZER;
@@ -115,9 +116,9 @@ struct musicianData {
 
 void semInit(int val){
     char a[10] = "hi";
-    tShirtGuys = *sem_open(a, O_CREAT, 0644, val);
-    if (&tShirtGuys == SEM_FAILED) {
-        perror("Failed to open semaphore for empty");
+    tShirtGuys = sem_open(a, O_CREAT, 0644, val);
+    if (tShirtGuys == SEM_FAILED) {
+        perror("Failed to open semaphore");
         exit(-1);
     }
 }
@@ -167,11 +168,11 @@ bool perform(struct musicianData *data, int performTime) {
 
 void collectTShirt(struct musicianData *data){
     /* guarded by semaphore */
-    sem_wait(&tShirtGuys);
+    sem_wait(tShirtGuys);
     printf(CYN "%s collecting t-shirt\n" RESET, data->name);
     sleep(2);
     printf(CYN "%s got a t-shirt! Leaving now..\n" RESET, data->name);
-    sem_post(&tShirtGuys);
+    sem_post(tShirtGuys);
     pthread_exit(NULL);
 }
 
@@ -408,7 +409,7 @@ int main() {
         pthreadJoin(musicians[i], NULL);
     }
     /* destroy the only semaphore */
-    semDestroy(&tShirtGuys);
+    semDestroy(tShirtGuys);
     printf(RED "Finished\n" RESET);
 
 }
