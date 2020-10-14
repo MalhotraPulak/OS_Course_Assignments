@@ -82,10 +82,7 @@ void semDestroy(sem_t *sm){
 }
 
 /* Global variables */
-int numAcoustic, numElectric;
-int numberMusician;
 int tMin, tMax;
-int cordCount;
 int waitTime;
 int aStage, eStage;
 int performanceNoSigner = 0;
@@ -114,6 +111,7 @@ struct musicianData {
     int stage;
 };
 
+/* wrapper function for sem_ope */
 void semInit(int val){
     char a[10] = "hi";
     tShirtGuys = sem_open(a, O_CREAT, 0644, val);
@@ -154,7 +152,7 @@ bool perform(struct musicianData *data, int performTime) {
         performanceNoSigner--;
         singerJoined = true;
         mutexUnlock(&stageLock);
-        /* wait until performance is over */
+        /* wait until normal performance time is over */
         sleep(tt.tv_sec - time(NULL));
     }
     if (singerJoined) {
@@ -358,6 +356,7 @@ void *musician(void *arg) {
 int main() {
     srandom(time(0));
     /* input handling and declare some local variables */
+    int numAcoustic, numElectric, cordCount, numberMusician;
     scanf("%d %d %d %d %d %d %d",
           &numberMusician,
           &numAcoustic,
