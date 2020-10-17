@@ -88,6 +88,8 @@ int aStage, eStage;
 int performanceNoSigner = 0;
 char singersQueue[QUEUE_SIZE][NAME_SIZE];
 int qReadPos, qWritePos;
+int stageNoA[QUEUE_SIZE], stageNoE[QUEUE_SIZE];
+int numAcoustic, numElectric; 
 
 /* Semaphores */
 sem_t *tShirtGuys;
@@ -111,15 +113,29 @@ struct musicianData {
     int stage;
 };
 
-/* wrapper function for sem_ope */
+/* wrapper function for sem_open */
 void semInit(int val){
-    char a[10] = "hi";
-    tShirtGuys = sem_open(a, O_CREAT, 0644, val);
+    tShirtGuys = sem_open("hi", O_CREAT, 0644, val);
     if (tShirtGuys == SEM_FAILED) {
         perror("Failed to open semaphore");
         exit(-1);
     }
 }
+
+int getStageNo(int *stageA, int len){
+    for(int i = 0; i < len; i++){
+      if(stageA[i] == 0){
+        stageA[i] = 1;
+        return i + 1;
+      }
+    } 
+    return -1;
+}
+
+void removeStageNo(int *stageA, int no){
+    stageA[no - 1] = 0;
+}
+
 
 /* get current time in nanosecond accuracy */
 struct timespec getTime(int t) {
@@ -135,17 +151,16 @@ struct timespec getTime(int t) {
 }
 
 /* actual performance time for musician*/
-bool perform(struct musicianData *data, int performTime) {
+bool perform(struct musicianData *data, int performTime, char * name) {
     struct timespec tt = getTime(performTime * 1000);
     /* performance is waiting until the time or a singer to come */
     int rc = pthread_cond_timedwait(&anySinger, &stageLock, &tt);
     bool singerJoined = false;
     if (rc != ETIMEDOUT) {
         /* a singer comes in and joins */
-        char name[NAME_SIZE];
         /* get singers name from queue */
         strcpy(name, singersQueue[qReadPos++]);
-        printf(RED "%s joined %s performance, performance extended by 2 secs\n" RESET,
+        printf(RED "Singer %s joined %s's performance, performance extended by 2 secs\n" RESET,
                name,
                data->name
         );
@@ -153,12 +168,12 @@ bool perform(struct musicianData *data, int performTime) {
         singerJoined = true;
         mutexUnlock(&stageLock);
         /* wait until normal performance time is over */
-        sleep(tt.tv_sec - time(NULL));
+        sleep(tt.tv_sec - time(NULL) + 2);
+        mutexLock(&stageLock);
     }
     if (singerJoined) {
         /* wait two more seconds if singer joined */
-        sleep(2);
-        mutexLock(&stageLock);
+        //sleep(2);
     }
     return singerJoined;
 }
@@ -171,7 +186,6 @@ void collectTShirt(struct musicianData *data){
     sleep(2);
     printf(CYN "%s got a t-shirt! Leaving now..\n" RESET, data->name);
     sem_post(tShirtGuys);
-    pthread_exit(NULL);
 }
 
 
@@ -179,16 +193,21 @@ void performanceHandler(struct musicianData *data, const int stage) {
     /* get the duration to perform */
     const int durationToPerform = randNum(tMin, tMax);
     /* start the performance according to type */
+    int stageNo = 0;
     if (stage == ELECTRIC) {
-        printf(YEL "%s will perform %c on Electric Stage for %d seconds\n" RESET,
+        stageNo = getStageNo(stageNoE, numElectric);
+        printf(YEL "%s will perform %c on Electric Stage %d for %d seconds\n" RESET,
                data->name,
                data->iCode,
+               stageNo,
                durationToPerform);
         eStage--;
     } else if (stage == ACOUSTIC) {
-        printf(BLU"%s will perform %c on Acoustic Stage for %d seconds\n" RESET,
+        stageNo = getStageNo(stageNoA, numAcoustic);
+        printf(BLU"%s will perform %c on Acoustic Stage %d for %d seconds\n" RESET,
                data->name,
                data->iCode,
+               stageNo,
                durationToPerform);
         aStage--;
     }
@@ -197,16 +216,27 @@ void performanceHandler(struct musicianData *data, const int stage) {
     condSignal(&stageOrPerf);
 
     /* do the actual performance */
-    bool singer = perform(data, durationToPerform);
+    char singerName[NAME_SIZE];
+    bool singer = perform(data, durationToPerform, singerName);
     //printf("%ld", time(NULL));
 
     /* end the performance according to stage type */
     if (stage == ELECTRIC) {
-        printf(YEL "%s performance on Electric Stage is finished\n" RESET, data->name);
+        removeStageNo(stageNoE, stageNo);
+        if(!singer)
+          printf(YEL "%s performance on Electric Stage %d is finished\n" RESET, data->name, stageNo);
+        else {
+           printf(YEL "%s performance with Singer %s on Electric Stage %d is finished\n" RESET, data->name, singerName, stageNo);
+        }
         condSignal(&noEStage);
         eStage++;
     } else if (stage == ACOUSTIC) {
-        printf(BLU "%s performance on Acoustic Stage is finished\n" RESET, data->name);
+        removeStageNo(stageNoA, stageNo);
+        if(!singer)
+        printf(BLU "%s performance on Acoustic Stage %d is finished\n" RESET, data->name, stageNo);
+        else {
+        printf(BLU "%s performance with Singer %s on Acoustic Stage %d is finished\n" RESET, data->name, singerName, stageNo);
+        }
         condSignal(&noAStage);
         aStage++;
     }
@@ -218,9 +248,14 @@ void performanceHandler(struct musicianData *data, const int stage) {
     condSignal(&anyStage);
     condSignal(&stageOrPerf);
     mutexUnlock(&stageLock);
-
+    
+    /* collect tShirts */
     collectTShirt(data);
-
+    if(singer){
+      data->name = singerName;
+      collectTShirt(data);
+    }
+    pthread_exit(NULL);
 }
 
 void waitForStage(pthread_cond_t *cv, struct timespec *timeLimit, struct musicianData *data) {
@@ -331,7 +366,6 @@ void *musician(void *arg) {
     struct musicianData *data = arg;
     /* sleep for required time */
     sleep(data->time);
-
     printf(GRN "%s %c has arrived\n" RESET, data->name, data->iCode);
     /* store max wait time in timeLimit */
     struct timespec timeLimit = getTime(waitTime * 1000);
@@ -356,7 +390,7 @@ void *musician(void *arg) {
 int main() {
     srandom(time(0));
     /* input handling and declare some local variables */
-    int numAcoustic, numElectric, cordCount, numberMusician;
+    int cordCount, numberMusician;
     scanf("%d %d %d %d %d %d %d",
           &numberMusician,
           &numAcoustic,

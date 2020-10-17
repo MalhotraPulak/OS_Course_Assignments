@@ -1,11 +1,11 @@
-11 1 1 1 2 10 5
+11 2 2 1 2 10 3 
 Tanvi p 0
 Sudh b 1 
 Manas g 0 
 Sriya v 1 
 Pahun s 1
 A p 2
-B p 2
+B s 2
 C p 2
 D s 3 
 E s 3
