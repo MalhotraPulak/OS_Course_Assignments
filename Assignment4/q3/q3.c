@@ -224,18 +224,18 @@ void performanceHandler(struct musicianData *data, const int stage) {
     if (stage == ELECTRIC) {
         removeStageNo(stageNoE, stageNo);
         if(!singer)
-          printf(YEL "%s performance on Electric Stage %d is finished\n" RESET, data->name, stageNo);
+          printf(YEL "%s's performance on Electric Stage %d is finished\n" RESET, data->name, stageNo);
         else {
-           printf(YEL "%s performance with Singer %s on Electric Stage %d is finished\n" RESET, data->name, singerName, stageNo);
+           printf(YEL "%s's performance with Singer %s on Electric Stage %d is finished\n" RESET, data->name, singerName, stageNo);
         }
         condSignal(&noEStage);
         eStage++;
     } else if (stage == ACOUSTIC) {
         removeStageNo(stageNoA, stageNo);
         if(!singer)
-        printf(BLU "%s performance on Acoustic Stage %d is finished\n" RESET, data->name, stageNo);
+        printf(BLU "%s's performance on Acoustic Stage %d is finished\n" RESET, data->name, stageNo);
         else {
-        printf(BLU "%s performance with Singer %s on Acoustic Stage %d is finished\n" RESET, data->name, singerName, stageNo);
+        printf(BLU "%s's performance with Singer %s on Acoustic Stage %d is finished\n" RESET, data->name, singerName, stageNo);
         }
         condSignal(&noAStage);
         aStage++;
@@ -352,7 +352,7 @@ void singersCase(struct musicianData *data, struct timespec *timeLimit) {
         } else {
             goOnStage(data);
         }
-    } else if (performanceNoSigner >= 0) {
+    } else if (performanceNoSigner > 0) {
         /* only performance available then join it*/
         joinAMusician(data);
     } else {
@@ -365,11 +365,22 @@ void *musician(void *arg) {
     /* get the data */
     struct musicianData *data = arg;
     /* sleep for required time */
+    int stage = data->stage;
+    char stageName[100];
+    if(stage == ACOUSTIC) 
+      strcpy(stageName, "Acoustic");
+    else if(stage == ELECTRIC)
+      strcpy(stageName, "Electric");
+    else 
+      strcpy(stageName, "any");
     sleep(data->time);
-    printf(GRN "%s %c has arrived\n" RESET, data->name, data->iCode);
+    if(data->singer){
+        printf(GRN "Singer %s, has arrived and is waiting for %s stage or performance\n" RESET, data->name, stageName);
+    } else {
+        printf(GRN "%s who plays %c, has arrived and is waiting for %s stage\n" RESET, data->name, data->iCode, stageName);
+    }
     /* store max wait time in timeLimit */
     struct timespec timeLimit = getTime(waitTime * 1000);
-    int stage = data->stage;
 
     /* perform according to stage */
     if (stage == ACOUSTIC) {
