@@ -8,3 +8,4 @@ a fallback to normal mergeSort in such cases. For much larger case n = 1e6, ther
 new array allocations in merge function run out of memory.
 - Multithread mergeSort also tends to fail for cases of n > 10000 on my system, as system cannot allocate more threads.
 I have set a fallback to normal mergeSort in such cases 
+<img src ="./img1.png"/>

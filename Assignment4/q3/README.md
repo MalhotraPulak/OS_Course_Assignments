@@ -14,6 +14,10 @@ pthread_cond_t anyStage // no Stage Available
 pthread_cond_t anySinger // some singer available to join a performance  
 pthread_cond_t stageOrPerf // no Stage or performance going on with no singer
 ```
+#### Why not use more semaphores? 
+- Semaphores while a good theoritical tool are much less used than CVs in practical applications
+- Using Semaphores with mutex is redundant when CV already automatically locks CV
+- Sem_timedwait is not in POSIX, it is not available in all linux distros or even MACOSX (which i use) (Pthread_cond_wait is not) 
 
 #### Threads 
 - All the musicians are different threads, they exhibit all their states in this thread

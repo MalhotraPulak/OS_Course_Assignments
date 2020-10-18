@@ -7,7 +7,22 @@ Constraints are defined in file as follows:
 #define ZONES_MAX 1000
 #define COMPANY_MAX 1000
 #define STUDENT_MAX 10000
+#define BATCH_MAX 5 // number of batches at once
+#define BATCH_MIN 2
+#define TIME_BATCH_MIN 1 // time to make the batches
+#define TIME_BATCH_MAX 5
+#define VACC_MAX 20 // vaccines per batch
+#define VACC_MIN 10
+#define STUDENT_WAIT_TIME 10 // max random time that a student wait before entering gate
+#define TIME_VACCINATE 1 // max time to vaccinate a student
+#define ZONE_REGISTER_TIME 8
 ```
+#### Why not busy waiting?
+- It is slower, as cond variables put thread to sleep while waiting
+- Along with being slower it has much higher CPU consumption
+- Conditional variables have more practical applications
+- Conditional variables have more flexibility with both broadcast and signal functionality
+- More concise and readable code while easier to implement 
 
 #### Global Variables 
 - waitingStudents - Stores the number of currently waiting students

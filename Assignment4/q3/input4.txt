@@ -9,7 +9,7 @@ B s 4
 C p 2
 D v 3 
 E s 5 
-Aa p 2
+Aa p 20
 Bf v 5 
 Cf p 2
 Df s 0 
