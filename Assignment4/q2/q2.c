@@ -284,7 +284,6 @@ int getRegistered(int id) {
             }
         }
         if (zone == -1) {
-
             condWait(&noSlotsAvailable, &slotQueueLock); // wait until slots available
         }
     }
@@ -347,7 +346,7 @@ void *student(void *ptr) {
             printf(RED "Student %d has tested negative for antibodies\n" RESET, studentId);
             if (vaccinations > 3) {
                 /* Max vaccinate 3 times */
-                printf("College gave up on student %d, have fun in online classes!!\n", studentId);
+                printf(RED "College gave up on student %d, have fun in online classes!!\n" RESET, studentId);
                 pthread_exit(NULL);
             }
         }

@@ -1,0 +1,378 @@
+Zone 0 created
+Zone 0 is trying to get some medicines
+Zone 1 created
+Zone 1 is trying to get some medicines
+Zone 2 created
+Zone 2 is trying to get some medicines
+Zone 3 created
+Zone 3 is trying to get some medicines
+Zone 4 created
+Zone 4 is trying to get some medicines
+Zone 5 created
+Zone 5 is trying to get some medicines
+Zone 6 created
+Zone 6 is trying to get some medicines
+Zone 7 created
+Zone 7 is trying to get some medicines
+Zone 8 created
+Zone 8 is trying to get some medicines
+Zone 9 created
+Zone 9 is trying to get some medicines
+Zone 10 created
+Zone 10 is trying to get some medicines
+Zone 11 created
+Zone 11 is trying to get some medicines
+Zone 12 created
+Zone 12 is trying to get some medicines
+Zone 13 created
+Zone 13 is trying to get some medicines
+Zone 14 created
+Zone 14 is trying to get some medicines
+Zone 15 created
+Zone 15 is trying to get some medicines
+Zone 16 created
+Zone 16 is trying to get some medicines
+Zone 17 created
+Zone 17 is trying to get some medicines
+Zone 18 created
+Zone 18 is trying to get some medicines
+Zone 19 created
+Zone 19 is trying to get some medicines
+[32mCompany 0 created with p = 1.00
+[0mPharmaceutical Company 0 is preparing 3 batches of vaccines which have success probability 1.00
+[32mCompany 1 created with p = 1.00
+[0mPharmaceutical Company 1 is preparing 2 batches of vaccines which have success probability 1.00
+[32mCompany 4 created with p = 0.50
+[0mPharmaceutical Company 4 is preparing 1 batches of vaccines which have success probability 0.50
+[32mCompany 3 created with p = 0.40
+[0m[32mCompany 5 created with p = 0.60
+[0mPharmaceutical Company 5 is preparing 1 batches of vaccines which have success probability 0.60
+[32mCompany 2 created with p = 0.30
+[0mPharmaceutical Company 2 is preparing 3 batches of vaccines which have success probability 0.30
+[32mCompany 7 created with p = 0.80
+[0mPharmaceutical Company 3 is preparing 5 batches of vaccines which have success probability 0.40
+[32mCompany 6 created with p = 0.70
+[0m[32mCompany 11 created with p = 0.40
+[0mPharmaceutical Company 6 is preparing 4 batches of vaccines which have success probability 0.70
+[32mCompany 12 created with p = 0.40
+[0mPharmaceutical Company 12 is preparing 1 batches of vaccines which have success probability 0.40
+[32mCompany 10 created with p = 0.40
+[0mPharmaceutical Company 10 is preparing 1 batches of vaccines which have success probability 0.40
+[32mCompany 9 created with p = 1.00
+[0m[32mCompany 13 created with p = 0.40
+[0m[32mCompany 14 created with p = 0.30
+[0mPharmaceutical Company 7 is preparing 5 batches of vaccines which have success probability 0.80
+Pharmaceutical Company 14 is preparing 1 batches of vaccines which have success probability 0.30
+Pharmaceutical Company 13 is preparing 2 batches of vaccines which have success probability 0.40
+Pharmaceutical Company 9 is preparing 3 batches of vaccines which have success probability 1.00
+[32mCompany 15 created with p = 0.20
+[0mPharmaceutical Company 15 is preparing 3 batches of vaccines which have success probability 0.20
+[32mCompany 8 created with p = 0.90
+[0mPharmaceutical Company 8 is preparing 5 batches of vaccines which have success probability 0.90
+Pharmaceutical Company 11 is preparing 1 batches of vaccines which have success probability 0.40
+[32mCompany 18 created with p = 0.20
+[0mPharmaceutical Company 18 is preparing 1 batches of vaccines which have success probability 0.20
+[32mCompany 17 created with p = 0.90
+[0mPharmaceutical Company 17 is preparing 2 batches of vaccines which have success probability 0.90
+[32mCompany 19 created with p = 0.20
+[0mPharmaceutical Company 19 is preparing 1 batches of vaccines which have success probability 0.20
+[32mCompany 16 created with p = 0.80
+[0mPharmaceutical Company 16 is preparing 1 batches of vaccines which have success probability 0.80
+Student 15 has entered the college gate
+Student 3 has entered the college gate
+Student 26 has entered the college gate
+Student 29 has entered the college gate
+Student 59 has entered the college gate
+Student 69 has entered the college gate
+Student 79 has entered the college gate
+Student 47 has entered the college gate
+Student 21 has entered the college gate
+Student 13 has entered the college gate
+Student 83 has entered the college gate
+Student 77 has entered the college gate
+Student 88 has entered the college gate
+Student 100 has entered the college gate
+Student 43 has entered the college gate
+Student 16 has entered the college gate
+Student 99 has entered the college gate
+Student 86 has entered the college gate
+Student 63 has entered the college gate
+Student 45 has entered the college gate
+Student 108 has entered the college gate
+Student 34 has entered the college gate
+Student 67 has entered the college gate
+Student 113 has entered the college gate
+Student 121 has entered the college gate
+Student 133 has entered the college gate
+Student 135 has entered the college gate
+Student 136 has entered the college gate
+Student 141 has entered the college gate
+Student 103 has entered the college gate
+Student 144 has entered the college gate
+Student 151 has entered the college gate
+Student 114 has entered the college gate
+Student 101 has entered the college gate
+Student 159 has entered the college gate
+Student 160 has entered the college gate
+Student 169 has entered the college gate
+Student 172 has entered the college gate
+Student 194 has entered the college gate
+Student 193 has entered the college gate
+Student 195 has entered the college gate
+Student 164 has entered the college gate
+Student 6 has entered the college gate
+Student 10 has entered the college gate
+Student 22 has entered the college gate
+Student 23 has entered the college gate
+Student 36 has entered the college gate
+Student 37 has entered the college gate
+Student 42 has entered the college gate
+Student 53 has entered the college gate
+Student 56 has entered the college gate
+Student 66 has entered the college gate
+Student 68 has entered the college gate
+Student 71 has entered the college gate
+Student 73 has entered the college gate
+Student 74 has entered the college gate
+Student 75 has entered the college gate
+Student 81 has entered the college gate
+Student 91 has entered the college gate
+Student 90 has entered the college gate
+Student 94 has entered the college gate
+Student 98 has entered the college gate
+Student 102 has entered the college gate
+Student 85 has entered the college gate
+Student 120 has entered the college gate
+Student 126 has entered the college gate
+Student 127 has entered the college gate
+Student 134 has entered the college gate
+Student 140 has entered the college gate
+Student 149 has entered the college gate
+Student 170 has entered the college gate
+Student 157 has entered the college gate
+Student 162 has entered the college gate
+Student 180 has entered the college gate
+Student 187 has entered the college gate
+Pharmaceutical Company 0 has prepared 3 batches of vaccines which have success probability 1.00. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 14 has prepared 1 batches of vaccines which have success probability 0.30. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 11 has prepared 1 batches of vaccines which have success probability 0.40. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 0 is delivering a vaccine batch to VZ 13 which has PSuccess of 1.00
+Pharmaceutical Company 0 is delivering a vaccine batch to VZ 17 which has PSuccess of 1.00
+Pharmaceutical Company 0 is delivering a vaccine batch to VZ 19 which has PSuccess of 1.00
+Pharmaceutical Company 1 has prepared 2 batches of vaccines which have success probability 1.00. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 1 is delivering a vaccine batch to VZ 0 which has PSuccess of 1.00
+Pharmaceutical Company 1 is delivering a vaccine batch to VZ 8 which has PSuccess of 1.00
+Pharmaceutical Company 5 has prepared 1 batches of vaccines which have success probability 0.60. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 14 is delivering a vaccine batch to VZ 11 which has PSuccess of 0.30
+Pharmaceutical Company 11 is delivering a vaccine batch to VZ 15 which has PSuccess of 0.40
+Pharmaceutical Company 5 is delivering a vaccine batch to VZ 4 which has PSuccess of 0.60
+[32mStudent 15 has arrived for his 1 round of vaccination
+[0m[32mStudent 15 is waiting to be allocated a vaccination zone
+[0m[32mStudent 69 has arrived for his 1 round of vaccination
+[0m[32mStudent 69 is waiting to be allocated a vaccination zone
+[0m[32mStudent 13 has arrived for his 1 round of vaccination
+[0m[32mStudent 13 is waiting to be allocated a vaccination zone
+[0m[32mStudent 100 has arrived for his 1 round of vaccination
+[0m[32mStudent 100 is waiting to be allocated a vaccination zone
+[0m[32mStudent 86 has arrived for his 1 round of vaccination
+[0m[32mStudent 86 is waiting to be allocated a vaccination zone
+[0m[32mStudent 141 has arrived for his 1 round of vaccination
+[0m[32mStudent 141 is waiting to be allocated a vaccination zone
+[0m[32mStudent 151 has arrived for his 1 round of vaccination
+[0m[32mStudent 151 is waiting to be allocated a vaccination zone
+[0m[32mStudent 169 has arrived for his 1 round of vaccination
+[0m[32mStudent 169 is waiting to be allocated a vaccination zone
+[0mStudent 12 has entered the college gate
+Student 33 has entered the college gate
+Student 19 has entered the college gate
+Student 123 has entered the college gate
+Student 129 has entered the college gate
+Student 142 has entered the college gate
+Student 146 has entered the college gate
+Student 171 has entered the college gate
+Student 179 has entered the college gate
+Student 184 has entered the college gate
+Pharmaceutical Company 2 has prepared 3 batches of vaccines which have success probability 0.30. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 8 has prepared 5 batches of vaccines which have success probability 0.90. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 3 has prepared 5 batches of vaccines which have success probability 0.40. Waiting for all the vaccines to be used to resume production
+[36mZone 19 got 13 vaccine from company 0
+[0mVaccination Zone 19 is ready to vaccinate with 8 newSlots
+Student 9 has entered the college gate
+Student 39 has entered the college gate
+Student 49 has entered the college gate
+Student 30 has entered the college gate
+Student 28 has entered the college gate
+Student 46 has entered the college gate
+Student 58 has entered the college gate
+Student 57 has entered the college gate
+Student 54 has entered the college gate
+[34mStudent 15 got assigned vaccination zone 19
+[0m[34mStudent 13 got assigned vaccination zone 19
+[0m[34mStudent 100 got assigned vaccination zone 19
+[0m[34mStudent 86 got assigned vaccination zone 19
+[0m[34mStudent 169 got assigned vaccination zone 19
+[0mStudent 52 has entered the college gate
+Student 109 has entered the college gate
+[32mStudent 68 has arrived for his 1 round of vaccination
+[0mStudent 139 has entered the college gate
+[32mStudent 68 is waiting to be allocated a vaccination zone
+[0mStudent 124 has entered the college gate
+[32mStudent 126 has arrived for his 1 round of vaccination
+[0m[32mStudent 126 is waiting to be allocated a vaccination zone
+[0mStudent 178 has entered the college gate
+Student 155 has entered the college gate
+Student 181 has entered the college gate
+Pharmaceutical Company 16 has prepared 1 batches of vaccines which have success probability 0.80. Waiting for all the vaccines to be used to resume production
+Student 17 has entered the college gate
+[36mZone 15 got 17 vaccine from company 11
+[0mStudent 156 has entered the college gate
+Student 7 has entered the college gate
+Student 148 has entered the college gate
+Pharmaceutical Company 8 is delivering a vaccine batch to VZ 2 which has PSuccess of 0.90
+Student 197 has entered the college gate
+[36mZone 0 got 16 vaccine from company 1
+[0mStudent 175 has entered the college gate
+[36mZone 17 got 16 vaccine from company 0
+[0mPharmaceutical Company 8 is delivering a vaccine batch to VZ 1 which has PSuccess of 0.90
+Pharmaceutical Company 7 has prepared 5 batches of vaccines which have success probability 0.80. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 8 is delivering a vaccine batch to VZ 12 which has PSuccess of 0.90
+Student 41 has entered the college gate
+Student 143 has entered the college gate
+Pharmaceutical Company 8 is delivering a vaccine batch to VZ 10 which has PSuccess of 0.90
+Student 84 has entered the college gate
+Pharmaceutical Company 8 is delivering a vaccine batch to VZ 18 which has PSuccess of 0.90
+Pharmaceutical Company 10 has prepared 1 batches of vaccines which have success probability 0.40. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 10 is delivering a vaccine batch to VZ 16 which has PSuccess of 0.40
+Student 186 has entered the college gate
+[36mZone 8 got 17 vaccine from company 1
+[0m[32mStudent 42 has arrived for his 1 round of vaccination
+[0m[32mStudent 42 is waiting to be allocated a vaccination zone
+[0mStudent 11 has entered the college gate
+Student 31 has entered the college gate
+Student 2 has entered the college gate
+Student 167 has entered the college gate
+Student 165 has entered the college gate
+[34mStudent 141 got assigned vaccination zone 19
+[0m[32mStudent 98 has arrived for his 1 round of vaccination
+[0m[32mStudent 98 is waiting to be allocated a vaccination zone
+[0m[34mStudent 98 got assigned vaccination zone 19
+[0m[32mStudent 149 has arrived for his 1 round of vaccination
+[0m[32mStudent 149 is waiting to be allocated a vaccination zone
+[0m[34mStudent 151 got assigned vaccination zone 19
+[0mPharmaceutical Company 2 is delivering a vaccine batch to VZ 6 which has PSuccess of 0.30
+Vaccination Zone 0 is ready to vaccinate with 4 newSlots
+Vaccination Zone 15 is ready to vaccinate with 4 newSlots
+[34mStudent 149 got assigned vaccination zone 0
+[0mVaccination Zone 17 is ready to vaccinate with 4 newSlots
+[34mStudent 126 got assigned vaccination zone 0
+[0mPharmaceutical Company 2 is delivering a vaccine batch to VZ 3 which has PSuccess of 0.30
+Vaccination Zone 8 is ready to vaccinate with 3 newSlots
+[34mStudent 42 got assigned vaccination zone 0
+[0m[34mStudent 68 got assigned vaccination zone 0
+[0mPharmaceutical Company 2 is delivering a vaccine batch to VZ 7 which has PSuccess of 0.30
+[34mStudent 69 got assigned vaccination zone 8
+[0mPharmaceutical Company 7 is delivering a vaccine batch to VZ 14 which has PSuccess of 0.80
+Pharmaceutical Company 7 is delivering a vaccine batch to VZ 9 which has PSuccess of 0.80
+Pharmaceutical Company 7 is delivering a vaccine batch to VZ 5 which has PSuccess of 0.80
+[32mStudent 88 has arrived for his 1 round of vaccination
+[0m[32mStudent 88 is waiting to be allocated a vaccination zone
+[0m[34mStudent 88 got assigned vaccination zone 8
+[0mStudent 1 has entered the college gate
+Student 8 has entered the college gate
+Student 0 has entered the college gate
+Student 18 has entered the college gate
+Student 24 has entered the college gate
+Student 32 has entered the college gate
+Student 55 has entered the college gate
+Student 65 has entered the college gate
+Student 78 has entered the college gate
+Student 95 has entered the college gate
+Student 62 has entered the college gate
+Student 50 has entered the college gate
+Student 76 has entered the college gate
+Student 89 has entered the college gate
+Student 80 has entered the college gate
+[32mStudent 36 has arrived for his 1 round of vaccination
+[0m[32mStudent 36 is waiting to be allocated a vaccination zone
+[0m[34mStudent 36 got assigned vaccination zone 8
+[0mStudent 44 has entered the college gate
+Student 40 has entered the college gate
+Student 25 has entered the college gate
+Student 97 has entered the college gate
+Student 72 has entered the college gate
+Student 104 has entered the college gate
+Student 106 has entered the college gate
+Student 111 has entered the college gate
+Student 112 has entered the college gate
+Student 115 has entered the college gate
+Student 116 has entered the college gate
+[32mStudent 94 has arrived for his 1 round of vaccination
+[0m[32mStudent 94 is waiting to be allocated a vaccination zone
+[0m[34mStudent 94 got assigned vaccination zone 15
+[0mStudent 117 has entered the college gate
+Student 131 has entered the college gate
+Student 119 has entered the college gate
+Student 125 has entered the college gate
+Student 128 has entered the college gate
+Student 147 has entered the college gate
+Student 150 has entered the college gate
+Student 152 has entered the college gate
+Student 154 has entered the college gate
+Student 161 has entered the college gate
+Student 168 has entered the college gate
+Student 173 has entered the college gate
+Student 182 has entered the college gate
+[32mStudent 180 has arrived for his 1 round of vaccination
+[0mStudent 189 has entered the college gate
+[32mStudent 180 is waiting to be allocated a vaccination zone
+[0m[34mStudent 180 got assigned vaccination zone 15
+[0mStudent 176 has entered the college gate
+Student 198 has entered the college gate
+Student 185 has entered the college gate
+Student 192 has entered the college gate
+Pharmaceutical Company 17 has prepared 2 batches of vaccines which have success probability 0.90. Waiting for all the vaccines to be used to resume production
+[36mZone 11 got 19 vaccine from company 14
+[0mStudent 177 has entered the college gate
+Pharmaceutical Company 19 has prepared 1 batches of vaccines which have success probability 0.20. Waiting for all the vaccines to be used to resume production
+[36mZone 13 got 11 vaccine from company 0
+[0m[36mZone 4 got 13 vaccine from company 5
+[0mPharmaceutical Company 4 has prepared 1 batches of vaccines which have success probability 0.50. Waiting for all the vaccines to be used to resume production
+Pharmaceutical Company 6 has prepared 4 batches of vaccines which have success probability 0.70. Waiting for all the vaccines to be used to resume production
+[32mStudent 184 has arrived for his 1 round of vaccination
+[0m[32mStudent 184 is waiting to be allocated a vaccination zone
+[0m[36mZone 2 got 10 vaccine from company 8
+[0m[36mZone 18 got 17 vaccine from company 8
+[0m[36mZone 6 got 14 vaccine from company 2
+[0m[36mZone 7 got 20 vaccine from company 2
+[0m[36mZone 14 got 15 vaccine from company 7
+[0m[32mStudent 21 has arrived for his 1 round of vaccination
+[0m[34mStudent 184 got assigned vaccination zone 15
+[0m[32mStudent 193 has arrived for his 1 round of vaccination
+[0m[32mStudent 59 has arrived for his 1 round of vaccination
+[0m[32mStudent 193 is waiting to be allocated a vaccination zone
+[0m[32mStudent 59 is waiting to be allocated a vaccination zone
+[0m[36mZone 12 got 15 vaccine from company 8
+[0mVaccination Zone 12 is ready to vaccinate with 2 newSlots
+[32mStudent 16 has arrived for his 1 round of vaccination
+[0m[36mZone 16 got 17 vaccine from company 10
+[0m[32mStudent 16 is waiting to be allocated a vaccination zone
+[0m[32mStudent 194 has arrived for his 1 round of vaccination
+[0m[32mStudent 194 is waiting to be allocated a vaccination zone
+[0m[32mStudent 148 has arrived for his 1 round of vaccination
+[0m[32mStudent 148 is waiting to be allocated a vaccination zone
+[0m[32mStudent 21 is waiting to be allocated a vaccination zone
+[0m[32mStudent 133 has arrived for his 1 round of vaccination
+[0m[32mStudent 133 is waiting to be allocated a vaccination zone
+[0m[32mStudent 26 has arrived for his 1 round of vaccination
+[0m[32mStudent 26 is waiting to be allocated a vaccination zone
+[0m[34mStudent 59 got assigned vaccination zone 12
+[0mVaccination Zone 6 is ready to vaccinate with 1 newSlots
+[34mStudent 193 got assigned vaccination zone 6
+[0m[34mStudent 16 got assigned vaccination zone 12
+[0m[34mStudent 194 got assigned vaccination zone 15
+[0m[34mStudent 148 got assigned vaccination zone 17
+[0m[34mStudent 26 got assigned vaccination zone 17
+[0mVaccination Zone 18 is ready to vaccinate with 1 newSlots
+[34mStudent 21 got assigned vaccination zone 17
+[0m[34mStudent 133 got assigned vaccination zone 17
+
