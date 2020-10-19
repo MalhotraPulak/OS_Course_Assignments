@@ -417,7 +417,7 @@ int main() {
         names[i] = malloc(NAME_SIZE);
         scanf("%s ", names[i]);
         scanf("%c ", &iCode[i]);
-        scanf("%d ", &time[i]);
+        scanf("%d", &time[i]);
     }
     struct musicianData musicianArgs[numberMusician];
     aStage = numAcoustic;
