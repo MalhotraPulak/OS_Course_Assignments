@@ -35,6 +35,7 @@ idtinit(void)
 //PAGEBREAK: 41
 void
 trap(struct trapframe *tf)
+
 {
   if(tf->trapno == T_SYSCALL){
     if(myproc()->killed)
@@ -51,9 +52,13 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
+      if(myproc() && myproc()->state == RUNNING){
+          myproc()->rtime++;
+      }
       wakeup(&ticks);
       release(&tickslock);
     }
+    
     lapiceoi();
     break;
   case T_IRQ0 + IRQ_IDE:
