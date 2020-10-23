@@ -2,7 +2,7 @@
 #include "stat.h"
 #include "user.h"
 #include "fs.h"
-
+#include "date.h"
 char*
 fmtname(char *path)
 {
@@ -40,7 +40,8 @@ ls(char *path)
     close(fd);
     return;
   }
-
+  struct rtcdate pp;
+  cmostime(pp);
   switch(st.type){
   case T_FILE:
     printf(1, "%s %d %d %d\n", fmtname(path), st.type, st.ino, st.size);
