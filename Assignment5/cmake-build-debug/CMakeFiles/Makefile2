@@ -73,7 +73,13 @@ CMAKE_BINARY_DIR = /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cma
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/MLFQ.dir/all
+all: CMakeFiles/PBS.dir/all
+all: CMakeFiles/sysPriority.dir/all
 all: CMakeFiles/Assignment5.dir/all
+all: CMakeFiles/rrScheduler.dir/all
+all: CMakeFiles/benchmark.dir/all
+all: CMakeFiles/FCFS.dir/all
 
 .PHONY : all
 
@@ -83,9 +89,96 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/MLFQ.dir/clean
+clean: CMakeFiles/PBS.dir/clean
+clean: CMakeFiles/sysPriority.dir/clean
 clean: CMakeFiles/Assignment5.dir/clean
+clean: CMakeFiles/rrScheduler.dir/clean
+clean: CMakeFiles/benchmark.dir/clean
+clean: CMakeFiles/FCFS.dir/clean
 
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/MLFQ.dir
+
+# All Build rule for target.
+CMakeFiles/MLFQ.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles --progress-num=51,52 "Built target MLFQ"
+.PHONY : CMakeFiles/MLFQ.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/MLFQ.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/MLFQ.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/MLFQ.dir/rule
+
+# Convenience name for target.
+MLFQ: CMakeFiles/MLFQ.dir/rule
+
+.PHONY : MLFQ
+
+# clean rule for target.
+CMakeFiles/MLFQ.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/clean
+.PHONY : CMakeFiles/MLFQ.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/PBS.dir
+
+# All Build rule for target.
+CMakeFiles/PBS.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles --progress-num=53,54 "Built target PBS"
+.PHONY : CMakeFiles/PBS.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/PBS.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/PBS.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/PBS.dir/rule
+
+# Convenience name for target.
+PBS: CMakeFiles/PBS.dir/rule
+
+.PHONY : PBS
+
+# clean rule for target.
+CMakeFiles/PBS.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/clean
+.PHONY : CMakeFiles/PBS.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/sysPriority.dir
+
+# All Build rule for target.
+CMakeFiles/sysPriority.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles --progress-num=59,60 "Built target sysPriority"
+.PHONY : CMakeFiles/sysPriority.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/sysPriority.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/sysPriority.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/sysPriority.dir/rule
+
+# Convenience name for target.
+sysPriority: CMakeFiles/sysPriority.dir/rule
+
+.PHONY : sysPriority
+
+# clean rule for target.
+CMakeFiles/sysPriority.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/clean
+.PHONY : CMakeFiles/sysPriority.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/Assignment5.dir
@@ -113,6 +206,87 @@ Assignment5: CMakeFiles/Assignment5.dir/rule
 CMakeFiles/Assignment5.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Assignment5.dir/build.make CMakeFiles/Assignment5.dir/clean
 .PHONY : CMakeFiles/Assignment5.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/rrScheduler.dir
+
+# All Build rule for target.
+CMakeFiles/rrScheduler.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles --progress-num=57,58 "Built target rrScheduler"
+.PHONY : CMakeFiles/rrScheduler.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/rrScheduler.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/rrScheduler.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/rrScheduler.dir/rule
+
+# Convenience name for target.
+rrScheduler: CMakeFiles/rrScheduler.dir/rule
+
+.PHONY : rrScheduler
+
+# clean rule for target.
+CMakeFiles/rrScheduler.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/clean
+.PHONY : CMakeFiles/rrScheduler.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/benchmark.dir
+
+# All Build rule for target.
+CMakeFiles/benchmark.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles --progress-num=55,56 "Built target benchmark"
+.PHONY : CMakeFiles/benchmark.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/benchmark.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/benchmark.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/benchmark.dir/rule
+
+# Convenience name for target.
+benchmark: CMakeFiles/benchmark.dir/rule
+
+.PHONY : benchmark
+
+# clean rule for target.
+CMakeFiles/benchmark.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/clean
+.PHONY : CMakeFiles/benchmark.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/FCFS.dir
+
+# All Build rule for target.
+CMakeFiles/FCFS.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles --progress-num=49,50 "Built target FCFS"
+.PHONY : CMakeFiles/FCFS.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/FCFS.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/FCFS.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/FCFS.dir/rule
+
+# Convenience name for target.
+FCFS: CMakeFiles/FCFS.dir/rule
+
+.PHONY : FCFS
+
+# clean rule for target.
+CMakeFiles/FCFS.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/clean
+.PHONY : CMakeFiles/FCFS.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -131,6 +131,45 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named MLFQ
+
+# Build rule for target.
+MLFQ: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 MLFQ
+.PHONY : MLFQ
+
+# fast build rule for target.
+MLFQ/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/build
+.PHONY : MLFQ/fast
+
+#=============================================================================
+# Target rules for targets named PBS
+
+# Build rule for target.
+PBS: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 PBS
+.PHONY : PBS
+
+# fast build rule for target.
+PBS/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/build
+.PHONY : PBS/fast
+
+#=============================================================================
+# Target rules for targets named sysPriority
+
+# Build rule for target.
+sysPriority: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sysPriority
+.PHONY : sysPriority
+
+# fast build rule for target.
+sysPriority/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/build
+.PHONY : sysPriority/fast
+
+#=============================================================================
 # Target rules for targets named Assignment5
 
 # Build rule for target.
@@ -142,6 +181,180 @@ Assignment5: cmake_check_build_system
 Assignment5/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Assignment5.dir/build.make CMakeFiles/Assignment5.dir/build
 .PHONY : Assignment5/fast
+
+#=============================================================================
+# Target rules for targets named rrScheduler
+
+# Build rule for target.
+rrScheduler: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 rrScheduler
+.PHONY : rrScheduler
+
+# fast build rule for target.
+rrScheduler/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/build
+.PHONY : rrScheduler/fast
+
+#=============================================================================
+# Target rules for targets named benchmark
+
+# Build rule for target.
+benchmark: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark
+.PHONY : benchmark
+
+# fast build rule for target.
+benchmark/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/build
+.PHONY : benchmark/fast
+
+#=============================================================================
+# Target rules for targets named FCFS
+
+# Build rule for target.
+FCFS: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 FCFS
+.PHONY : FCFS
+
+# fast build rule for target.
+FCFS/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/build
+.PHONY : FCFS/fast
+
+xv6/FCFS.o: xv6/FCFS.c.o
+
+.PHONY : xv6/FCFS.o
+
+# target to build an object file
+xv6/FCFS.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/xv6/FCFS.c.o
+.PHONY : xv6/FCFS.c.o
+
+xv6/FCFS.i: xv6/FCFS.c.i
+
+.PHONY : xv6/FCFS.i
+
+# target to preprocess a source file
+xv6/FCFS.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/xv6/FCFS.c.i
+.PHONY : xv6/FCFS.c.i
+
+xv6/FCFS.s: xv6/FCFS.c.s
+
+.PHONY : xv6/FCFS.s
+
+# target to generate assembly for a file
+xv6/FCFS.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FCFS.dir/build.make CMakeFiles/FCFS.dir/xv6/FCFS.c.s
+.PHONY : xv6/FCFS.c.s
+
+xv6/MLFQ.o: xv6/MLFQ.c.o
+
+.PHONY : xv6/MLFQ.o
+
+# target to build an object file
+xv6/MLFQ.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/xv6/MLFQ.c.o
+.PHONY : xv6/MLFQ.c.o
+
+xv6/MLFQ.i: xv6/MLFQ.c.i
+
+.PHONY : xv6/MLFQ.i
+
+# target to preprocess a source file
+xv6/MLFQ.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/xv6/MLFQ.c.i
+.PHONY : xv6/MLFQ.c.i
+
+xv6/MLFQ.s: xv6/MLFQ.c.s
+
+.PHONY : xv6/MLFQ.s
+
+# target to generate assembly for a file
+xv6/MLFQ.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MLFQ.dir/build.make CMakeFiles/MLFQ.dir/xv6/MLFQ.c.s
+.PHONY : xv6/MLFQ.c.s
+
+xv6/PBS.o: xv6/PBS.c.o
+
+.PHONY : xv6/PBS.o
+
+# target to build an object file
+xv6/PBS.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/xv6/PBS.c.o
+.PHONY : xv6/PBS.c.o
+
+xv6/PBS.i: xv6/PBS.c.i
+
+.PHONY : xv6/PBS.i
+
+# target to preprocess a source file
+xv6/PBS.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/xv6/PBS.c.i
+.PHONY : xv6/PBS.c.i
+
+xv6/PBS.s: xv6/PBS.c.s
+
+.PHONY : xv6/PBS.s
+
+# target to generate assembly for a file
+xv6/PBS.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PBS.dir/build.make CMakeFiles/PBS.dir/xv6/PBS.c.s
+.PHONY : xv6/PBS.c.s
+
+xv6/RR.o: xv6/RR.c.o
+
+.PHONY : xv6/RR.o
+
+# target to build an object file
+xv6/RR.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/xv6/RR.c.o
+.PHONY : xv6/RR.c.o
+
+xv6/RR.i: xv6/RR.c.i
+
+.PHONY : xv6/RR.i
+
+# target to preprocess a source file
+xv6/RR.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/xv6/RR.c.i
+.PHONY : xv6/RR.c.i
+
+xv6/RR.s: xv6/RR.c.s
+
+.PHONY : xv6/RR.s
+
+# target to generate assembly for a file
+xv6/RR.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rrScheduler.dir/build.make CMakeFiles/rrScheduler.dir/xv6/RR.c.s
+.PHONY : xv6/RR.c.s
+
+xv6/benchmark.o: xv6/benchmark.c.o
+
+.PHONY : xv6/benchmark.o
+
+# target to build an object file
+xv6/benchmark.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/xv6/benchmark.c.o
+.PHONY : xv6/benchmark.c.o
+
+xv6/benchmark.i: xv6/benchmark.c.i
+
+.PHONY : xv6/benchmark.i
+
+# target to preprocess a source file
+xv6/benchmark.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/xv6/benchmark.c.i
+.PHONY : xv6/benchmark.c.i
+
+xv6/benchmark.s: xv6/benchmark.c.s
+
+.PHONY : xv6/benchmark.s
+
+# target to generate assembly for a file
+xv6/benchmark.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/xv6/benchmark.c.s
+.PHONY : xv6/benchmark.c.s
 
 xv6/bio.o: xv6/bio.c.o
 
@@ -953,6 +1166,33 @@ xv6/rm.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Assignment5.dir/build.make CMakeFiles/Assignment5.dir/xv6/rm.c.s
 .PHONY : xv6/rm.c.s
 
+xv6/setPriority.o: xv6/setPriority.c.o
+
+.PHONY : xv6/setPriority.o
+
+# target to build an object file
+xv6/setPriority.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/xv6/setPriority.c.o
+.PHONY : xv6/setPriority.c.o
+
+xv6/setPriority.i: xv6/setPriority.c.i
+
+.PHONY : xv6/setPriority.i
+
+# target to preprocess a source file
+xv6/setPriority.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/xv6/setPriority.c.i
+.PHONY : xv6/setPriority.c.i
+
+xv6/setPriority.s: xv6/setPriority.c.s
+
+.PHONY : xv6/setPriority.s
+
+# target to generate assembly for a file
+xv6/setPriority.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sysPriority.dir/build.make CMakeFiles/sysPriority.dir/xv6/setPriority.c.s
+.PHONY : xv6/setPriority.c.s
+
 xv6/sh.o: xv6/sh.c.o
 
 .PHONY : xv6/sh.o
@@ -1421,6 +1661,27 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Assignment5"
+	@echo "... FCFS"
+	@echo "... MLFQ"
+	@echo "... PBS"
+	@echo "... benchmark"
+	@echo "... rrScheduler"
+	@echo "... sysPriority"
+	@echo "... xv6/FCFS.o"
+	@echo "... xv6/FCFS.i"
+	@echo "... xv6/FCFS.s"
+	@echo "... xv6/MLFQ.o"
+	@echo "... xv6/MLFQ.i"
+	@echo "... xv6/MLFQ.s"
+	@echo "... xv6/PBS.o"
+	@echo "... xv6/PBS.i"
+	@echo "... xv6/PBS.s"
+	@echo "... xv6/RR.o"
+	@echo "... xv6/RR.i"
+	@echo "... xv6/RR.s"
+	@echo "... xv6/benchmark.o"
+	@echo "... xv6/benchmark.i"
+	@echo "... xv6/benchmark.s"
 	@echo "... xv6/bio.o"
 	@echo "... xv6/bio.i"
 	@echo "... xv6/bio.s"
@@ -1511,6 +1772,9 @@ help:
 	@echo "... xv6/rm.o"
 	@echo "... xv6/rm.i"
 	@echo "... xv6/rm.s"
+	@echo "... xv6/setPriority.o"
+	@echo "... xv6/setPriority.i"
+	@echo "... xv6/setPriority.s"
 	@echo "... xv6/sh.o"
 	@echo "... xv6/sh.i"
 	@echo "... xv6/sh.s"

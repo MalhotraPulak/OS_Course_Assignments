@@ -27,11 +27,143 @@
 					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="MLFQ">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/MLFQ" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 MLFQ"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="MLFQ/fast">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/MLFQ" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 MLFQ/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="edit_cache">
 				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PBS">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/PBS" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 PBS"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PBS/fast">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/PBS" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 PBS/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sysPriority">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/sysPriority" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 sysPriority"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sysPriority/fast">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/sysPriority" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 sysPriority/fast"/>
 					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -81,9 +213,156 @@
 					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="rrScheduler">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/rrScheduler" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 rrScheduler"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rrScheduler/fast">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/rrScheduler" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 rrScheduler/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="benchmark">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/benchmark" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 benchmark"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="benchmark/fast">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/benchmark" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 benchmark/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FCFS">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/FCFS" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 FCFS"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FCFS/fast">
+				<Option output="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/FCFS" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6"/>
+					<Add directory="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6-public"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 FCFS/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 		</Build>
+		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/FCFS.c">
+			<Option target="FCFS"/>
+		</Unit>
+		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/MLFQ.c">
+			<Option target="MLFQ"/>
+		</Unit>
+		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/PBS.c">
+			<Option target="PBS"/>
+		</Unit>
+		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/RR.c">
+			<Option target="rrScheduler"/>
+		</Unit>
 		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/asm.h">
 			<Option target="Assignment5"/>
+		</Unit>
+		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/benchmark.c">
+			<Option target="benchmark"/>
 		</Unit>
 		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/bio.c">
 			<Option target="Assignment5"/>
@@ -213,6 +492,9 @@
 		</Unit>
 		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/rm.c">
 			<Option target="Assignment5"/>
+		</Unit>
+		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/setPriority.c">
+			<Option target="sysPriority"/>
 		</Unit>
 		<Unit filename="/Users/forg1ven/Desktop/OS_Course_Assignments/Assignment5/xv6/sh.c">
 			<Option target="Assignment5"/>

@@ -1,3 +1,4 @@
+
 OBJS = \
 	bio.o\
 	console.o\
@@ -27,6 +28,34 @@ OBJS = \
 	uart.o\
 	vectors.o\
 	vm.o\
+
+
+
+
+ifndef SCHEDULER
+OBJS += RR.o
+endif
+
+ifeq ($(SCHEDULER), FCFS)
+OBJS += FCFS.o
+endif
+
+ifeq ($(SCHEDULER), RR)
+OBJS += RR.o
+endif
+
+
+ifeq ($(SCHEDULER), PBS)
+OBJS += PBS.o
+endif
+
+ifeq ($(SCHEDULER), MLFQ)
+OBJS += MLFQ.o
+endif
+
+
+
+
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf
@@ -70,6 +99,7 @@ QEMU = $(shell if which qemu > /dev/null; \
 	echo "*** or have you tried setting the QEMU variable in Makefile?" 1>&2; \
 	echo "***" 1>&2; exit 1)
 endif
+
 
 CC = $(TOOLPREFIX)gcc
 AS = $(TOOLPREFIX)gas
@@ -182,6 +212,8 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_time\
+	_benchmark\
+	_setPriority\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -218,7 +250,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 	then echo "-gdb tcp::$(GDBPORT)"; \
 	else echo "-s -p $(GDBPORT)"; fi)
 ifndef CPUS
-CPUS := 2
+CPUS := 1
 endif
 QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 

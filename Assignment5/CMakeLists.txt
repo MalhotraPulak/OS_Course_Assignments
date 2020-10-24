@@ -77,3 +77,10 @@ add_executable(Assignment5
         xv6/zombie.c
         xv6/time.c)
 
+
+add_executable(rrScheduler xv6/RR.c)
+add_executable(FCFS xv6/FCFS.c)
+add_executable(benchmark xv6/benchmark.c)
+add_executable(sysPriority xv6/setPriority.c)
+add_executable(PBS xv6/PBS.c)
+add_executable(MLFQ xv6/MLFQ.c)

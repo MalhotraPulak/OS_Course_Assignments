@@ -47,5 +47,11 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/MLFQ.dir/DependInfo.cmake"
+  "CMakeFiles/PBS.dir/DependInfo.cmake"
+  "CMakeFiles/sysPriority.dir/DependInfo.cmake"
   "CMakeFiles/Assignment5.dir/DependInfo.cmake"
+  "CMakeFiles/rrScheduler.dir/DependInfo.cmake"
+  "CMakeFiles/benchmark.dir/DependInfo.cmake"
+  "CMakeFiles/FCFS.dir/DependInfo.cmake"
   )

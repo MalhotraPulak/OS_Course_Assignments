@@ -112,6 +112,16 @@ allocproc(void) {
     p->context->eip = (uint) forkret;
     // adding creation time  to the proc struct
     p->ctime = ticks;
+    // default prio is 60 for PBS
+    p->priority = 60;
+    p->cur_q = 0;
+    p->q0 = 0;
+    p->q1 = 0;
+    p->q2 = 0;
+    p->q3 = 0;
+    p->q4 = 0;
+    p->toe = p->ctime;
+    cprintf("allocing proc %d", p->pid);
     return p;
 }
 
@@ -305,48 +315,6 @@ wait(void) {
     }
 }
 
-//PAGEBREAK: 42
-// Per-CPU process scheduler.
-// Each CPU calls scheduler() after setting itself up.
-// Scheduler never returns.  It loops, doing:
-//  - choose a process to run
-//  - swtch to start running that process
-//  - eventually that process transfers control
-//      via swtch back to the scheduler.
-void
-scheduler(void) {
-    struct proc *p;
-    struct cpu *c = mycpu();
-    c->proc = 0;
-
-    for (;;) {
-        // Enable interrupts on this processor.
-        sti();
-
-        // Loop over process table looking for process to run.
-        acquire(&ptable.lock);
-        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-            if (p->state != RUNNABLE)
-                continue;
-
-            // Switch to chosen process.  It is the process's job
-            // to release ptable.lock and then reacquire it
-            // before jumping back to us.
-            c->proc = p;
-            switchuvm(p);
-            p->state = RUNNING;
-
-            swtch(&(c->scheduler), p->context);
-            switchkvm();
-
-            // Process is done running for now.
-            // It should have changed its p->state before coming back.
-            c->proc = 0;
-        }
-        release(&ptable.lock);
-
-    }
-}
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
@@ -541,12 +509,12 @@ int waitx(int *wtime, int *rtime) {
                 p->name[0] = 0;
                 p->killed = 0;
                 p->state = UNUSED;
-                release(&ptable.lock);
-                *wtime = p->etime - p-> ctime - p->rtime; // who cares about IO
+                *wtime = p->etime - p->ctime - p->rtime; // who cares about waiting for IO time
                 *rtime = p->rtime;
                 p->etime = 0;
                 p->ctime = 0;
                 p->rtime = 0;
+                release(&ptable.lock);
                 return pid;
             }
         }
@@ -558,4 +526,23 @@ int waitx(int *wtime, int *rtime) {
 
         sleep(curproc, &ptable.lock);  //DOC: wait-sleep
     }
+}
+
+int set_priority(int new_priority, int pid) {
+    struct proc *p;
+    int old_prio = 0;
+    acquire(&ptable.lock);
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if(p->pid != pid){
+            continue;
+        }
+        old_prio = p->priority;
+        p-> priority = new_priority;
+
+    }
+    release(&ptable.lock);
+/*    if(new_priority < old_prio)
+        yield();*/
+    cprintf("%d \n", old_prio);
+    return old_prio;
 }
