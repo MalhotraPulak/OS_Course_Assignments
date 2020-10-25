@@ -56,6 +56,7 @@ scheduler(void) {
             c->proc = p;
             switchuvm(p);
             p->state = RUNNING;
+            p->n_run++;
             cprintf("FCFS: process switching to %d\n", p->pid);
             swtch(&(c->scheduler), p->context);
             switchkvm();

@@ -131,6 +131,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named ps
+
+# Build rule for target.
+ps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ps
+.PHONY : ps
+
+# fast build rule for target.
+ps/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ps.dir/build.make CMakeFiles/ps.dir/build
+.PHONY : ps/fast
+
+#=============================================================================
 # Target rules for targets named MLFQ
 
 # Build rule for target.
@@ -1139,6 +1152,33 @@ xv6/proc.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Assignment5.dir/build.make CMakeFiles/Assignment5.dir/xv6/proc.c.s
 .PHONY : xv6/proc.c.s
 
+xv6/ps.o: xv6/ps.c.o
+
+.PHONY : xv6/ps.o
+
+# target to build an object file
+xv6/ps.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ps.dir/build.make CMakeFiles/ps.dir/xv6/ps.c.o
+.PHONY : xv6/ps.c.o
+
+xv6/ps.i: xv6/ps.c.i
+
+.PHONY : xv6/ps.i
+
+# target to preprocess a source file
+xv6/ps.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ps.dir/build.make CMakeFiles/ps.dir/xv6/ps.c.i
+.PHONY : xv6/ps.c.i
+
+xv6/ps.s: xv6/ps.c.s
+
+.PHONY : xv6/ps.s
+
+# target to generate assembly for a file
+xv6/ps.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ps.dir/build.make CMakeFiles/ps.dir/xv6/ps.c.s
+.PHONY : xv6/ps.c.s
+
 xv6/rm.o: xv6/rm.c.o
 
 .PHONY : xv6/rm.o
@@ -1665,6 +1705,7 @@ help:
 	@echo "... MLFQ"
 	@echo "... PBS"
 	@echo "... benchmark"
+	@echo "... ps"
 	@echo "... rrScheduler"
 	@echo "... sysPriority"
 	@echo "... xv6/FCFS.o"
@@ -1769,6 +1810,9 @@ help:
 	@echo "... xv6/proc.o"
 	@echo "... xv6/proc.i"
 	@echo "... xv6/proc.s"
+	@echo "... xv6/ps.o"
+	@echo "... xv6/ps.i"
+	@echo "... xv6/ps.s"
 	@echo "... xv6/rm.o"
 	@echo "... xv6/rm.i"
 	@echo "... xv6/rm.s"

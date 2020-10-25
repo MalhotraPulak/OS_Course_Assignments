@@ -2,7 +2,7 @@
 #include "types.h"
 #include "user.h"
 
-int number_of_processes = 10;
+int number_of_processes = 20;
 
 int main(int argc, char *argv[]) {
     int parent_pid = getpid();

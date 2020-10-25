@@ -67,6 +67,7 @@ scheduler(void) {
                 c->proc = p;
                 switchuvm(p);
                 p->state = RUNNING;
+                p->n_run++;
                 cprintf("PBS: process switching to %d\n", p->pid);
                 swtch(&(c->scheduler), p->context);
                 cprintf("PBS: back to scheduler\n");

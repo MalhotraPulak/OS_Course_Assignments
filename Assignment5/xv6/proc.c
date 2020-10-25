@@ -113,6 +113,7 @@ allocproc(void) {
     // adding creation time  to the proc struct
     p->ctime = ticks;
     // default prio is 60 for PBS
+    // initialzie added fields
     p->priority = 60;
     p->cur_q = 0;
     p->q0 = 0;
@@ -121,7 +122,10 @@ allocproc(void) {
     p->q3 = 0;
     p->q4 = 0;
     p->toe = p->ctime;
-    cprintf("allocing proc %d", p->pid);
+    p->n_run = 0;
+    p->rtime = 0;
+    p->etime = 0;
+    //cprintf("allocing proc %d", p->pid);
     return p;
 }
 
@@ -545,4 +549,50 @@ int set_priority(int new_priority, int pid) {
         yield();*/
     cprintf("%d \n", old_prio);
     return old_prio;
+}
+
+
+int get_ps(){
+    acquire(&ptable.lock);
+    cprintf("%s %s %s %s %s %s  %s  %s  %s  %s  %s  %s\n",
+            "PID", "Prio", "State", "r_time", "w_time", "n_run", "cur_q", "q0", "q1", "q2", "q3", "q4");
+    char state[100];
+    for (struct proc *p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if(p->pid <= 0) continue;
+        switch(p->state){
+            case UNUSED:
+                safestrcpy(state, "UNUSED  ", 10);
+                break;
+            case EMBRYO:
+                safestrcpy(state, "EMBRYO  ", 10);
+                break;
+            case SLEEPING:
+                safestrcpy(state, "SLEEPING", 10);
+                break;
+            case RUNNABLE:
+                safestrcpy(state, "RUNNABLE", 10);
+                break;
+            case RUNNING:
+                safestrcpy(state, "RUNNING ", 10);
+                break;
+            case ZOMBIE:
+                safestrcpy(state, "ZOMBIE  ", 10);
+                break;
+        }
+        cprintf("%d     %d    %s   %d    %d    %d    %d     %d    %d    %d    %d    %d\n",
+                p->pid,
+                p->priority,
+                state,
+                p->rtime,
+                ticks - p->toe,
+                p->n_run,
+                p->cur_q,
+                p->q0,
+                p->q1,
+                p->q2,
+                p->q3,
+                p-> q4);
+    }
+    release(&ptable.lock);
+    return 0;
 }

@@ -61,6 +61,7 @@ struct proc {
   int q4;
   int toe;                     // Time of entry
   int ticks;                   // Ticks the process can do before yielding
+  int n_run;                   // Number of time process was run
 };
 
 // Process memory is laid out contiguously, low addresses first:
