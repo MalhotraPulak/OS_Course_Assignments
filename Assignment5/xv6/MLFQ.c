@@ -83,11 +83,12 @@ scheduler(void) {
             swtch(&(c->scheduler), p->context);
             //cprintf("MLFQ: Back to scd!\n");
             switchkvm();
-
-            if (p->cur_q != 4) {
-                p->cur_q++;
-               // cprintf("MLFQ: Process %d demoted to %d queue\n", p->pid, p->cur_q);
-
+            // if the process uses entire time slice put move it down in prio
+            if (p->ticks == 0) {
+                if (p->cur_q != 4) {
+                    p->cur_q++;
+                    // cprintf("MLFQ: Process %d demoted to %d queue\n", p->pid, p->cur_q);
+                }
             }
             p->toe = ticks;
 
@@ -95,9 +96,9 @@ scheduler(void) {
             // TODO aging depends upon process number to work all the way up
             // dont worry about it
             for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
-                if (aProc->state == RUNNABLE){
+                if (aProc->state == RUNNABLE) {
                     int max_wait_time = 1 << (priorityLevel + 6);
-                    if(ticks - aProc->toe > max_wait_time) {
+                    if (ticks - aProc->toe > max_wait_time) {
                         aProc->cur_q--;
                         if (aProc->cur_q < 0) {
                             aProc->cur_q = 0;
