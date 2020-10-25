@@ -44,7 +44,7 @@ extern void trapret(void);
 
 void
 scheduler(void) {
-    struct proc *p = 0;
+    struct proc *p; // is the process to switch
     struct cpu *c = mycpu();
     c->proc = 0;
     for (;;) {
@@ -54,12 +54,12 @@ scheduler(void) {
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
         //cprintf("HERE 1\n");
-        for (int i = 0; i <= 4;) {
-            //cprintf("Looking in Queue: %d\n", i);
+        for (int priorityLevel = 0; priorityLevel <= 4;) {
+            //cprintf("Looking in Queue: %d\n", priorityLevel);
             int min_toe = 1e9;
             p = 0;
             for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
-                if (aProc->state == RUNNABLE && aProc->cur_q == i) {
+                if (aProc->state == RUNNABLE && aProc->cur_q == priorityLevel) {
                     //cprintf("Found one process in queue %d with pid %d\n", aProc->cur_q, aProc->pid);
                     if (aProc->toe < min_toe) {
                         min_toe = aProc->toe;
@@ -70,52 +70,38 @@ scheduler(void) {
             //cprintf("HERE 4\n");
             // if didnt find any process in the cur prio move to higher prio queue
             if (p == 0) {
-                i++;
+                priorityLevel++;
                 continue;
             }
-
-
-            unsigned int numberTicks = 1u << (unsigned int) i;
-
-            //cprintf("HERE 5\n");
-            for (int r = 0; r < numberTicks; r++) {
-                if(p->state != RUNNABLE){
-                   break;
-                }
-                // Switch to chosen process.  It is the process's job
-                // to release ptable.lock and then reacquire it
-                // before jumping back to us.
-                c->proc = p;
-                switchuvm(p);
-                p->state = RUNNING;
-                //cprintf("MLFQ: Process switching to %d from queue %d\n", p->pid, p->cur_q);
-                swtch(&(c->scheduler), p->context);
-                //cprintf("MLFQ: Back to scd!\n");
-                switchkvm();
-
-                // Process is done running for now.
-                // It should have changed its p->state before coming back.
-                c->proc = 0;
-            }
+            c->proc = p;
+            switchuvm(p);
+            p->ticks = (int) (1u << (unsigned int) priorityLevel); // assign ticks to process based on priority level
+            p->state = RUNNING;
+            cprintf("MLFQ: Process switching to %d in queue %d for %d ticks\n", p->pid, p->cur_q, p->ticks);
+            swtch(&(c->scheduler), p->context);
+            //cprintf("MLFQ: Back to scd!\n");
+            switchkvm();
 
             if (p->cur_q != 4) {
                 p->cur_q++;
+                cprintf("MLFQ: Process %d demoted to %d queue\n", p->pid, p->cur_q);
 
             }
             p->toe = ticks;
 
-            // age
+            // aging
             for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
-               if((ticks - aProc->toe) >  1 << (aProc->cur_q + 4)){
-                  aProc->cur_q--;
-                  if(aProc->cur_q < 0){
-                      aProc->cur_q = 0;
-                  }
-                  aProc->toe = ticks;
-               }
+                if (aProc->state == RUNNABLE && (ticks - aProc->toe) > 500) {
+                    aProc->cur_q--;
+                    if (aProc->cur_q < 0) {
+                        aProc->cur_q = 0;
+                    }
+                    aProc->toe = ticks;
+                    cprintf("MLFQ: Process %d promoted to %d queue\n", aProc->pid, aProc->cur_q);
+                }
             }
             // start from beginning
-            i = 0;
+            priorityLevel = 0;
         }
         release(&ptable.lock);
 
@@ -143,6 +129,7 @@ trap(struct trapframe *tf) {
                 // Updating the run time of the process running currently
                 if (myproc() != 0 && myproc()->state == RUNNING) {
                     myproc()->rtime += 1;
+                    myproc()->ticks -= 1; // reduce the assigned ticks to process by 1
                     if (myproc()->cur_q == 0) {
                         myproc()->q0++;
                     } else if (myproc()->cur_q == 1) {
@@ -207,8 +194,10 @@ trap(struct trapframe *tf) {
     // Force process to give up CPU on clock tick.
     // If interrupts were on while locks held, would need to check nlock.
     if (myproc() && myproc()->state == RUNNING &&
-        tf->trapno == T_IRQ0 + IRQ_TIMER)
-        yield();
+        tf->trapno == T_IRQ0 + IRQ_TIMER) {
+        if (myproc()->ticks <= 0) // only yield when done with given ticks
+            yield();
+    }
 
     // Check if the process has been killed since we yielded
     if (myproc() && myproc()->killed && (tf->cs & 3) == DPL_USER)

@@ -59,8 +59,8 @@ struct proc {
   int q2;
   int q3;
   int q4;
-  int tow;                     // Time of waiting in a queue
   int toe;                     // Time of entry
+  int ticks;                   // Ticks the process can do before yielding
 };
 
 // Process memory is laid out contiguously, low addresses first:
