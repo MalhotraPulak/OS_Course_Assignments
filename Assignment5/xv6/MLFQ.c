@@ -85,15 +85,17 @@ scheduler(void) {
             switchkvm();
             // if the process uses entire time slice put move it down in prio
             if (p->ticks == 0) {
-                if (p->cur_q != 4) {
+                if(p->state == ZOMBIE){
+                    p->cur_q = -1;
+                }
+                else if (p->cur_q != 4) {
                     p->cur_q++;
                     // cprintf("MLFQ: Process %d demoted to %d queue\n", p->pid, p->cur_q);
                 }
             }
-            p->toe = ticks;
+//            p->toe = ticks;
 
             // aging
-            // TODO aging depends upon process number to work all the way up
             // dont worry about it
             for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
                 if (aProc->state == RUNNABLE) {

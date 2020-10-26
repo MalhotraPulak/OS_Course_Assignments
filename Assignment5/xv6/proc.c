@@ -161,6 +161,7 @@ userinit(void) {
     // because the assignment might not be atomic.
     acquire(&ptable.lock);
     p->ctime = 0;
+    p->toe = ticks;
     p->state = RUNNABLE;
 
     release(&ptable.lock);
@@ -224,7 +225,7 @@ fork(void) {
     pid = np->pid;
 
     acquire(&ptable.lock);
-
+    np->toe = ticks;
     np->state = RUNNABLE;
     release(&ptable.lock);
 
@@ -349,6 +350,7 @@ sched(void) {
 void
 yield(void) {
     acquire(&ptable.lock);  //DOC: yieldlock
+    myproc()->toe = ticks;
     myproc()->state = RUNNABLE;
     sched();
     release(&ptable.lock);
@@ -420,8 +422,10 @@ wakeup1(void *chan) {
     struct proc *p;
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-        if (p->state == SLEEPING && p->chan == chan)
+        if (p->state == SLEEPING && p->chan == chan) {
+            p->toe = ticks;
             p->state = RUNNABLE;
+        }
 }
 
 // Wake up all processes sleeping on chan.
