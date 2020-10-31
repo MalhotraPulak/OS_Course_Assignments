@@ -68,9 +68,9 @@ scheduler(void) {
                 switchuvm(p);
                 p->state = RUNNING;
                 p->n_run++;
-                cprintf("PBS: process switching to %d\n", p->pid);
+                //cprintf("PBS: process switching to %d\n", p->pid);
                 swtch(&(c->scheduler), p->context);
-                cprintf("PBS: back to scheduler\n");
+                //cprintf("PBS: back to scheduler\n");
                 switchkvm();
                 // Process is done running for now.
                 // It should have changed its p->state before coming back.

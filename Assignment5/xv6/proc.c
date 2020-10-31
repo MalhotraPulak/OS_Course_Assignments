@@ -551,7 +551,7 @@ int set_priority(int new_priority, int pid) {
     release(&ptable.lock);
 /*    if(new_priority < old_prio)
         yield();*/
-    cprintf("%d \n", old_prio);
+    //cprintf("%d \n", old_prio);
     return old_prio;
 }
 
