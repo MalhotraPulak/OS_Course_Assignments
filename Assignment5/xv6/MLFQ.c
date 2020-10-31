@@ -152,6 +152,9 @@ trap(struct trapframe *tf) {
                         myproc()->q4++;
                     }
                 }
+                else if(myproc() != 0 && myproc()->state == SLEEPING) {
+                    myproc()->iotime += 1;
+                }
                 wakeup(&ticks);
                 release(&tickslock);
             }
