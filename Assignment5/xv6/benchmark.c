@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
                 }
                 sleep(500);
             }
-            printf(2, "Benchmark: %d Exited, Category : %d, Total : %d\n", pNo, pNo % 4, total);
+            printf(1, "Benchmark: %d Exited, Category : %d, Total : %d\n", pNo, pNo % 4, total);
             exit();
         } else {
             set_priority(100 - (20 + pNo) % 2,

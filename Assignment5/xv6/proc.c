@@ -402,7 +402,7 @@ sleep(void *chan, struct spinlock *lk) {
     // Go to sleep.
     p->chan = chan;
     p->state = SLEEPING;
-    p->q_toe = ticks;
+    p->toe = ticks;
     sched();
 
     // Tidy up.

@@ -40,7 +40,7 @@ extern void trapret(void);
 
 
 
-
+int prev_ticks = 0;
 
 void
 scheduler(void) {
@@ -85,19 +85,18 @@ scheduler(void) {
             switchkvm();
             // if the process uses entire time slice put move it down in prio
             if (p->ticks == 0) {
-                if(p->state == ZOMBIE){
+                if (p->state == ZOMBIE) {
                     p->cur_q = -1;
-                }
-                else if (p->cur_q != 4) {
+                } else if (p->cur_q != 4) {
                     p->cur_q++;
                     // cprintf("MLFQ: Process %d demoted to %d queue\n", p->pid, p->cur_q);
                 }
             }
-//            p->toe = ticks;
-
+            //   p->toe = ticks;
             // aging
             // dont worry about it
             for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
+
                 if (aProc->state == RUNNABLE) {
                     int max_wait_time = 1 << (priorityLevel + 6);
                     if (ticks - aProc->toe > max_wait_time) {
@@ -110,6 +109,17 @@ scheduler(void) {
                     }
                 }
             }
+
+
+            // to get data for bonus
+            /* if(ticks - prev_ticks > 100){
+                 cprintf("%d, ", ticks);
+                 for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
+                     cprintf("%d, ", aProc->cur_q);
+                 }
+                 cprintf("\n");
+                 prev_ticks = ticks;
+             }*/
             // start from beginning
             priorityLevel = 0;
         }
@@ -151,10 +161,10 @@ trap(struct trapframe *tf) {
                     } else if (myproc()->cur_q == 4) {
                         myproc()->q4++;
                     }
-                }
-                else if(myproc() != 0 && myproc()->state == SLEEPING) {
+                } else if (myproc() != 0 && myproc()->state == SLEEPING) {
                     myproc()->iotime += 1;
                 }
+
                 wakeup(&ticks);
                 release(&tickslock);
             }
