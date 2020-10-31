@@ -1,0 +1,35 @@
+For RR
+Wait time is 2579
+Run time is 9
+
+For FCFS
+Wait time is 2660
+Run time is 8
+
+For PBS
+Wait time is 2486
+Run time is 6
+
+For MLFQ
+Wait time is 2481
+Run time is 8
+
+
+
+
+For RR
+Wait time is 3122
+Run time is 11
+
+For PBS
+Wait time is 3128
+Run time is 13
+
+For MLFQ
+Wait time is 3107
+Run time is 13
+
+For FCFS
+Wait time is 3783
+Run time is 13
+

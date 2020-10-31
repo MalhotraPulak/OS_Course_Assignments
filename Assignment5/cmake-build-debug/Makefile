@@ -157,6 +157,19 @@ MLFQ/fast:
 .PHONY : MLFQ/fast
 
 #=============================================================================
+# Target rules for targets named gm
+
+# Build rule for target.
+gm: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gm
+.PHONY : gm
+
+# fast build rule for target.
+gm/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gm.dir/build.make CMakeFiles/gm.dir/build
+.PHONY : gm/fast
+
+#=============================================================================
 # Target rules for targets named PBS
 
 # Build rule for target.
@@ -611,6 +624,33 @@ xv6/fs.s: xv6/fs.c.s
 xv6/fs.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Assignment5.dir/build.make CMakeFiles/Assignment5.dir/xv6/fs.c.s
 .PHONY : xv6/fs.c.s
+
+xv6/gm.o: xv6/gm.c.o
+
+.PHONY : xv6/gm.o
+
+# target to build an object file
+xv6/gm.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gm.dir/build.make CMakeFiles/gm.dir/xv6/gm.c.o
+.PHONY : xv6/gm.c.o
+
+xv6/gm.i: xv6/gm.c.i
+
+.PHONY : xv6/gm.i
+
+# target to preprocess a source file
+xv6/gm.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gm.dir/build.make CMakeFiles/gm.dir/xv6/gm.c.i
+.PHONY : xv6/gm.c.i
+
+xv6/gm.s: xv6/gm.c.s
+
+.PHONY : xv6/gm.s
+
+# target to generate assembly for a file
+xv6/gm.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gm.dir/build.make CMakeFiles/gm.dir/xv6/gm.c.s
+.PHONY : xv6/gm.c.s
 
 xv6/grep.o: xv6/grep.c.o
 
@@ -1705,6 +1745,7 @@ help:
 	@echo "... MLFQ"
 	@echo "... PBS"
 	@echo "... benchmark"
+	@echo "... gm"
 	@echo "... ps"
 	@echo "... rrScheduler"
 	@echo "... sysPriority"
@@ -1750,6 +1791,9 @@ help:
 	@echo "... xv6/fs.o"
 	@echo "... xv6/fs.i"
 	@echo "... xv6/fs.s"
+	@echo "... xv6/gm.o"
+	@echo "... xv6/gm.i"
+	@echo "... xv6/gm.s"
 	@echo "... xv6/grep.o"
 	@echo "... xv6/grep.i"
 	@echo "... xv6/grep.s"
