@@ -125,6 +125,7 @@ allocproc(void) {
     p->n_run = 0;
     p->rtime = 0;
     p->etime = 0;
+    p->iotime = 0;
     //cprintf("allocing proc %d", p->pid);
     return p;
 }
@@ -401,7 +402,7 @@ sleep(void *chan, struct spinlock *lk) {
     // Go to sleep.
     p->chan = chan;
     p->state = SLEEPING;
-
+    p->q_toe = ticks;
     sched();
 
     // Tidy up.
@@ -517,11 +518,12 @@ int waitx(int *wtime, int *rtime) {
                 p->name[0] = 0;
                 p->killed = 0;
                 p->state = UNUSED;
-                *wtime = p->etime - p->ctime - p->rtime; // who cares about waiting for IO time
+                *wtime = p->etime - p->rtime - p->iotime - p->ctime;
                 *rtime = p->rtime;
                 p->etime = 0;
                 p->ctime = 0;
                 p->rtime = 0;
+                p->iotime = 0;
                 release(&ptable.lock);
                 return pid;
             }

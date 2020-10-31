@@ -52,6 +52,7 @@ struct proc {
   int ctime;                   // Create Time
   int etime;                   // End Time
   int rtime;                   // Total Time j
+  int iotime;
   int priority;                // Priority in PBS
   int cur_q;                   // Current queue
   int q0;                      // Time spent in 0th queue
