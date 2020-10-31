@@ -21,3 +21,8 @@
 - Multihreading and Multiproccessing
 - Mergesort implementation (multiprocess and multithread) in the first question
 - Two Async models modelled using threads, locks, CVs and semaphores for the other 2 questions
+
+### Assignment 5
+- Modified XV6 kernel proc structure and added system calls to support time command
+- Added 3 schedulers including FCFS, MLFQ, PBS
+- Added ps command and related system calls
