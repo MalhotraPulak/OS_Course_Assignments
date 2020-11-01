@@ -96,9 +96,8 @@ scheduler(void) {
             // aging
             // dont worry about it
             for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
-
                 if (aProc->state == RUNNABLE) {
-                    int max_wait_time = 1 << (priorityLevel + 6);
+                    int max_wait_time = 1 << (aProc->cur_q + 4);
                     if (ticks - aProc->toe > max_wait_time) {
                         aProc->cur_q--;
                         if (aProc->cur_q < 0) {
@@ -112,7 +111,7 @@ scheduler(void) {
 
 
             // to get data for bonus
-            /* if(ticks - prev_ticks > 100){
+      /*       if(ticks - prev_ticks > 100){
                  cprintf("%d, ", ticks);
                  for (struct proc *aProc = ptable.proc; aProc < &ptable.proc[NPROC]; aProc++) {
                      cprintf("%d, ", aProc->cur_q);
