@@ -30,7 +30,7 @@ Pulak Malhotra, 2019101050
     - After it is run and it completed the time slice move it down a queue
     - If it did not complete time slice dont change its queue
     - Also check for aging in all processes
-    - Aging wait time is currently (1 << (level + 6)) for a level
+    - Aging wait time is currently (1 << (level + 4)) for a level
     - In trap only yield if the process has done its alloted ticks
 
 I ran the benchmark.c file for all the schedulers and observed the following in it: 
@@ -51,8 +51,9 @@ For each type of scheduler I have noted down the end time of the different types
 ### FCFS
 - Time 3841 ticks 
 - First CPU bound (in ascending order)
-- Then CPU then IO and IO then CPU (in ascending order)
+- Then mixed CPU then IO and IO then CPU (in ascending order)
 - Lastly Pure IO (in ascending order)
+- There is some interleaving among categories but for each type they follow ascending order strictly
 
 
 ### PBS
