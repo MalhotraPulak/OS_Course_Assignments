@@ -1,3 +1,5 @@
 .DS*
 *.img
 *.vscode/
+*cmake*/
+cmake-build-debug/
