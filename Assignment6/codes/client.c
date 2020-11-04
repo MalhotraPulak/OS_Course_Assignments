@@ -1,12 +1,7 @@
 #include "header.h"
 
 
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "at least one argument required\n");
-        _exit(1);
-    }
+int createClient() {
     // create the socket
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -21,13 +16,25 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Cannot connect to a server \n");
         _exit(1);
     }
-    // printf("Client Socket %d\n", clientSocket);
+    return clientSocket;
+}
+
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "at least one argument required\n");
+        _exit(1);
+    }
+    int clientSocket = createClient();
+
+    /* send number of files */
     sendInt(argc - 1, clientSocket);
-    printf("Sent number %d\n", argc - 1);
-    for(int i = 1; i < argc; i++){
+
+    /* send each file name one by one */
+    for (int i = 1; i < argc; i++) {
         sendString(argv[i], clientSocket);
         int ack = getInt(clientSocket);
-        if(ack == 1){
+        if (ack == 1) {
             fprintf(stderr, "Sent name %d\n", i);
         }
     }

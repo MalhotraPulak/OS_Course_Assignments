@@ -1,10 +1,10 @@
 #include "header.h"
 
 
-int main() {
+int createServer(int *clientSocket) {
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     int true = 1;
-    if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) != 0){
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) != 0) {
         perror("setsockopt");
     }
     struct sockaddr_in address;
@@ -23,12 +23,18 @@ int main() {
         _exit(1);
     }
 
-    int clientSocket = accept(serverSocket, NULL, NULL);
+    *clientSocket = accept(serverSocket, NULL, NULL);
     if (clientSocket <= 0) {
         perror("Server cannot get client");
         _exit(1);
     }
+    return serverSocket;
+}
 
+
+int main() {
+    int serverSocket, clientSocket;
+    serverSocket = createServer(&clientSocket);
     int fileNum = getInt(clientSocket);
     fprintf(stderr, "Got number %d\n", fileNum);
     fflush(stdout);
@@ -44,10 +50,6 @@ int main() {
         else
             printf("Filename %d is null", i);
     }
-     
-
-
-
 
 
     close(clientSocket);
