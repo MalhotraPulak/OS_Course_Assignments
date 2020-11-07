@@ -5,6 +5,27 @@
 #include <assert.h>
 #include "header.h"
 
+int printProgress(double progress, double *prev_progress){
+    if (progress - *prev_progress >= 0.0001) {
+        printf("Progress: %0.2lf%%\r", progress * 100);
+        *prev_progress = progress;
+        fflush(stdout);
+    }
+}
+int sendAck(int socket) {
+    char buff[1] = {1};
+    write(socket, buff, 1);
+}
+
+
+int getAck(int socket) {
+    char buff[1];
+    read(socket, buff, 1);
+    if(buff[0] != 1){
+        perror("Something off\n");
+    }
+    return buff[0];
+}
 
 long long int getInt(int socket) {
     long long int ret;
@@ -14,29 +35,9 @@ long long int getInt(int socket) {
 }
 
 int sendInt(long long int num, int socket) {
-    printf("\r");
-    /*long long int conv = htonl(num);
-    char *data = (char *) &conv;
-    int left = sizeof(conv);
-    int rc;
-    do {
-        rc = write(socket, data, left);
-        if (rc < 0) {
-            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
-                // use select() or epoll() to wait for the socket to be writable again
-            } else if (errno != EINTR) {
-                return -1;
-            }
-        } else {
-            data += rc;
-            left -= rc;
-        }
-    } while (left > 0);
-    return 0;*/
     char str[256];
     sprintf(str, "%lld", num);
-    sendString(str, socket);
-    return 0;
+    return sendString(str, socket);
 }
 
 
@@ -48,11 +49,14 @@ char *getString(int socket) {
         return NULL;
     } else if (bytesRead < 0) {
         perror("Some error in reading a string");
+        return NULL;
     }
+    sendAck(socket);
     return buff;
 }
 
 int sendString(char *str, int socket) {
+//    printf("Sending %s\n", str);
     char *data = str;
     int left = strlen(str);
     int rc;
@@ -70,17 +74,19 @@ int sendString(char *str, int socket) {
             left -= rc;
         }
     } while (left > 0);
-    return 0;
+    // acknowledgement check
+    return getAck(socket);
 }
 
 int sendFile(const char *name, long long int size, int socket) {
-    printf("Sending file %s\n", name);
+    printf("Sending file " GRN "%s\n" RESET, name);
     int fd = open(name, O_RDONLY);
     if (fd == -1) {
         perror("Cannot open file\n");
         return 1;
     }
     double progress;
+    double prev_progress = 0;
     char buff[CHUNK];
     long long int left = size;
     while (left > 0) {
@@ -97,7 +103,7 @@ int sendFile(const char *name, long long int size, int socket) {
         assert(read_bytes == sent_bytes);
         left -= read_bytes;
 
-        if (getInt(socket) != 1) {
+        if (getAck(socket) != 1) {
             perror("Something wrong \n");
             break;
         }
@@ -106,21 +112,22 @@ int sendFile(const char *name, long long int size, int socket) {
         } else {
             progress = 1.0;
         }
-        printf("Progress: %0.2lf%%\r", progress * 100);
+        printProgress(progress, &prev_progress);
         //fprintf(stderr, "Got ack\n");
     }
+    printf("Progress: 100.00%%\n\n");
     return 0;
 }
 
-// TODO long long
 int getFile(const char *name, long long int size, int socket) {
-    printf("Getting file %s\n", name);
+    printf("Ready to receive file "GRN"%s\n"RESET, name);
     int fd = open(name, O_WRONLY | O_CREAT, 0644);
     if (fd == -1) {
         perror("Cannot open file\n");
         return 1;
     }
     double progress;
+    double prev_progress = 0;
     char buff[CHUNK];
     long long int left = size;
     while (left > 0) {
@@ -137,15 +144,21 @@ int getFile(const char *name, long long int size, int socket) {
         assert(read_bytes == sent_bytes);
         left -= read_bytes;
         //fprintf(stderr, "Sending ack \n");
-        sendInt(1LL, socket);
+        sendAck(socket);
         if (size != 0) {
             progress = 1.0 - ((double) left) / (double) size;
         } else {
             progress = 1.0;
         }
-        printf("Progress: %0.2lf%%\r", progress * 100);
+        printProgress(progress, &prev_progress);
+
     }
-    printf("\n");
-    fprintf(stderr, "Written file %s\n", name);
+    printf("Progress: 100.00%%\n");
+    printf("Received file "GRN"%s\n"RESET, name);
     return 0;
 }
+
+// corner cases
+// no read permission
+// file is a dir or something else than a regular file
+// file size is 0
