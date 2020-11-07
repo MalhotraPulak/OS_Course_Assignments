@@ -2,38 +2,25 @@
 // Created by Pulak Malhotra on 04/11/20.
 //
 
+#include <assert.h>
 #include "header.h"
 
 
-int getInt(int socket) {
-    int32_t ret;
-    char *data = (char *) &ret;
-    int left = sizeof(ret);
-    int rc;
-    do {
-        rc = read(socket, data, left);
-        if (rc <= 0) { /* instead of ret */
-            perror("ffff");
-            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
-                // use select() or epoll() to wait for the socket to be readable again
-            } else if (errno != EINTR) {
-                return -1;
-            }
-        } else {
-            data += rc;
-            left -= rc;
-        }
-    } while (left > 0);
-    return ntohl(ret);
+long long int getInt(int socket) {
+    long long int ret;
+    char *data = getString(socket);
+    ret = strtoll(data, NULL, 10);
+    return ret;
 }
 
-int sendInt(int num, int fd) {
-    int32_t conv = htonl(num);
+int sendInt(long long int num, int socket) {
+    printf("\r");
+    /*long long int conv = htonl(num);
     char *data = (char *) &conv;
     int left = sizeof(conv);
     int rc;
     do {
-        rc = write(fd, data, left);
+        rc = write(socket, data, left);
         if (rc < 0) {
             if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
                 // use select() or epoll() to wait for the socket to be writable again
@@ -45,6 +32,10 @@ int sendInt(int num, int fd) {
             left -= rc;
         }
     } while (left > 0);
+    return 0;*/
+    char str[256];
+    sprintf(str, "%lld", num);
+    sendString(str, socket);
     return 0;
 }
 
@@ -58,12 +49,10 @@ char *getString(int socket) {
     } else if (bytesRead < 0) {
         perror("Some error in reading a string");
     }
-    fprintf(stderr, "Got a string\n");
     return buff;
 }
 
-int sendString(char *str, int socket){
-    printf("sending %s\n", str);
+int sendString(char *str, int socket) {
     char *data = str;
     int left = strlen(str);
     int rc;
@@ -81,5 +70,82 @@ int sendString(char *str, int socket){
             left -= rc;
         }
     } while (left > 0);
+    return 0;
+}
+
+int sendFile(const char *name, long long int size, int socket) {
+    printf("Sending file %s\n", name);
+    int fd = open(name, O_RDONLY);
+    if (fd == -1) {
+        perror("Cannot open file\n");
+        return 1;
+    }
+    double progress;
+    char buff[CHUNK];
+    long long int left = size;
+    while (left > 0) {
+        int read_bytes = read(fd, buff, CHUNK);
+        int sent_bytes = 0;
+        if (read_bytes > 0) {
+            sent_bytes = write(socket, buff, read_bytes);
+        } else if (read_bytes == -1) {
+            perror("Error reading");
+            break;
+        }
+        //fprintf(stderr, "Sent chunk \n");
+        //fprintf(stderr, "%d read %d sent \n", read_bytes, sent_bytes);
+        assert(read_bytes == sent_bytes);
+        left -= read_bytes;
+
+        if (getInt(socket) != 1) {
+            perror("Something wrong \n");
+            break;
+        }
+        if (size != 0) {
+            progress = 1.0 - ((double) left) / (double) size;
+        } else {
+            progress = 1.0;
+        }
+        printf("Progress: %0.2lf%%\r", progress * 100);
+        //fprintf(stderr, "Got ack\n");
+    }
+    return 0;
+}
+
+// TODO long long
+int getFile(const char *name, long long int size, int socket) {
+    printf("Getting file %s\n", name);
+    int fd = open(name, O_WRONLY | O_CREAT, 0644);
+    if (fd == -1) {
+        perror("Cannot open file\n");
+        return 1;
+    }
+    double progress;
+    char buff[CHUNK];
+    long long int left = size;
+    while (left > 0) {
+        int read_bytes = read(socket, buff, CHUNK);
+        int sent_bytes = 0;
+        if (read_bytes > 0) {
+            sent_bytes = write(fd, buff, read_bytes);
+        } else if (read_bytes == -1) {
+            perror("Error reading");
+            break;
+        }
+        //fprintf(stderr, "Gpt chunk \n");
+        //fprintf(stderr, "%d read %d sent \n", read_bytes, sent_bytes);
+        assert(read_bytes == sent_bytes);
+        left -= read_bytes;
+        //fprintf(stderr, "Sending ack \n");
+        sendInt(1LL, socket);
+        if (size != 0) {
+            progress = 1.0 - ((double) left) / (double) size;
+        } else {
+            progress = 1.0;
+        }
+        printf("Progress: %0.2lf%%\r", progress * 100);
+    }
+    printf("\n");
+    fprintf(stderr, "Written file %s\n", name);
     return 0;
 }

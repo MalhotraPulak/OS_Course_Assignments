@@ -35,25 +35,42 @@ int createServer(int *clientSocket) {
 int main() {
     int serverSocket, clientSocket;
     serverSocket = createServer(&clientSocket);
-    int fileNum = getInt(clientSocket);
-    fprintf(stderr, "Got number %d\n", fileNum);
+    long long int fileNum = getInt(clientSocket);
+    fprintf(stderr, "Files Requested :%lld\n", fileNum);
     fflush(stdout);
     char *filenames[fileNum];
     for (int i = 0; i < fileNum; i++) {
         filenames[i] = getString(clientSocket);
-        sendInt(1, clientSocket);
+        sendInt(1LL, clientSocket);
     }
     fprintf(stderr, "Got names \n");
     for (int i = 0; i < fileNum; i++) {
         if (filenames[i] != NULL)
             printf("%s\n", filenames[i]);
         else
-            printf("Filename %d is null", i);
+            printf("Filename %d is null\n", i);
     }
-
+    struct stat fileInfo;
+    long long int fileSize[fileNum];
+    for (int i = 0; i < fileNum; i++) {
+        if (lstat(filenames[i], &fileInfo) != -1 && (S_IFREG & fileInfo.st_mode)) {
+            printf("%s exists on server\n", filenames[i]);
+            sendInt(fileInfo.st_size, clientSocket);
+            fileSize[i] = fileInfo.st_size;
+        } else {
+            printf("%s does not exist on server\n", filenames[i]);
+            sendInt(-1, clientSocket);
+            fileSize[i] = -1;
+        }
+    }
+    for (int i = 0; i < fileNum; i++) {
+        if (fileSize[i] >= 0)
+            sendFile(filenames[i], fileSize[i], clientSocket);
+    }
 
     close(clientSocket);
     close(serverSocket);
+
 
     return 0;
 }

@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "header.h"
 
 
@@ -26,19 +27,33 @@ int main(int argc, char *argv[]) {
         _exit(1);
     }
     int clientSocket = createClient();
-
+    int fileNum = argc - 1;
+    char **filename = argv + 1;
     /* send number of files */
     sendInt(argc - 1, clientSocket);
 
     /* send each file name one by one */
     for (int i = 1; i < argc; i++) {
         sendString(argv[i], clientSocket);
-        int ack = getInt(clientSocket);
-        if (ack == 1) {
-            fprintf(stderr, "Sent name %d\n", i);
+        long long int ack = getInt(clientSocket);
+        if (ack != 1LL) {
+            perror("Error sending name");
         }
     }
-    printf("Sent all names\n");
+    long long int fileSize[argc - 1];
+    for (int i = 0; i < argc - 1; i++) {
+        fileSize[i] = getInt(clientSocket);
+        if (fileSize[i] == -1) {
+            printf("%s does not exist on server\n", argv[i + 1]);
+        } else {
+            printf("%s has size %lld\n", filename[i], fileSize[i]);
+        }
+    }
+    for (int i = 0; i < fileNum; i++) {
+        if (fileSize[i] >= 0)
+            getFile(argv[i + 1], fileSize[i], clientSocket);
+    }
     close(clientSocket);
+
     return 0;
 }
