@@ -105,10 +105,7 @@ int sendFile(const char *name, long long int size, int socket) {
         assert(read_bytes == sent_bytes);
         left -= read_bytes;
 
-        if (getAck(socket) != 1) {
-            perror("Something wrong \n");
-            break;
-        }
+
         if (size != 0) {
             progress = 1.0 - ((double) left) / (double) size;
         } else {
@@ -118,6 +115,9 @@ int sendFile(const char *name, long long int size, int socket) {
         //fprintf(stderr, "Got ack\n");
     }
     printf("Progress: 100.00%%\n\n");
+    if (getAck(socket) != 1) {
+        perror("Something wrong \n");
+    }
     close(fd);
     return 0;
 }
@@ -134,6 +134,7 @@ int getFile(const char *name, long long int size, int socket) {
     char buff[CHUNK];
     long long int left = size;
     while (left > 0) {
+
         int read_bytes = read(socket, buff, CHUNK);
         int sent_bytes = 0;
         if (read_bytes > 0) {
@@ -141,13 +142,15 @@ int getFile(const char *name, long long int size, int socket) {
         } else if (read_bytes == -1) {
             perror("Error reading");
             break;
+        } else if(read_bytes == 0){
+            perror("FDFD");
         }
         //fprintf(stderr, "Gpt chunk \n");
         //fprintf(stderr, "%d read %d sent \n", read_bytes, sent_bytes);
         assert(read_bytes == sent_bytes);
         left -= read_bytes;
         //fprintf(stderr, "Sending ack \n");
-        sendAck(socket);
+
         if (size != 0) {
             progress = 1.0 - ((double) left) / (double) size;
         } else {
@@ -156,6 +159,7 @@ int getFile(const char *name, long long int size, int socket) {
         printProgress(progress, &prev_progress);
 
     }
+    sendAck(socket);
     printf("Progress: 100.00%%\n");
     printf("Received file "GRN"%s\n"RESET, name);
     close(fd);

@@ -25,7 +25,7 @@
 #define RESET "\x1B[0m"
 
 #define PORT 9002
-#define CHUNK 10000
+#define CHUNK 100000
 
 
 
