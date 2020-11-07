@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         sendString(argv[i], clientSocket);
     }
+    /* get file size and validity of the file */
     long long int fileSize[argc - 1];
     for (int i = 0; i < argc - 1; i++) {
         fileSize[i] = getInt(clientSocket);
@@ -46,11 +47,13 @@ int main(int argc, char *argv[]) {
             //printf("%s has size %lld\n", filename[i], fileSize[i]);
         }
     }
+    /* receive the valid files one by one */
     printf(BLU "\nReady to receive files \n\n" RESET);
     for (int i = 0; i < fileNum; i++) {
-        if (fileSize[i] >= 0)
+        if (fileSize[i] >= 0) {
             getFile(argv[i + 1], fileSize[i], clientSocket);
-        printf("\n");
+            printf("\n");
+        }
     }
     close(clientSocket);
 

@@ -35,9 +35,13 @@ int createServer(int *clientSocket) {
 int main() {
     int serverSocket, clientSocket;
     serverSocket = createServer(&clientSocket);
+
+    /* get the number of files */
     long long int fileNum = getInt(clientSocket);
     printf("Files Requested: %lld\n", fileNum);
     fflush(stdout);
+
+    /* get the filenames one by one */
     char *filenames[fileNum];
     for (int i = 0; i < fileNum; i++) {
         filenames[i] = getString(clientSocket);
@@ -50,19 +54,33 @@ int main() {
     }
     printf(BLU "Received names of the files\n\n" RESET);
     fflush(stdout);
+
+
+    /*check if the file is valid and send the size accordingly */
     struct stat fileInfo;
     long long int fileSize[fileNum];
     for (int i = 0; i < fileNum; i++) {
-        if (lstat(filenames[i], &fileInfo) != -1 && (S_IFREG & fileInfo.st_mode)) {
+        if (lstat(filenames[i], &fileInfo) != -1
+            && (S_IFREG & fileInfo.st_mode)
+            && access(filenames[i], R_OK) == 0) {
             printf("%s exists on server\n", filenames[i]);
             sendInt(fileInfo.st_size, clientSocket);
             fileSize[i] = fileInfo.st_size;
         } else {
-            printf(RED "%s does not exist on server\n" RESET, filenames[i]);
+            if (errno == ENOENT)
+                fprintf(stderr, RED "%s does not exist on server\n" RESET, filenames[i]);
+            else if(errno == EACCES)
+                fprintf(stderr, RED "%s has access error\n" RESET, filenames[i]);
+            else {
+                fprintf(stderr, "%s", filenames[i]);
+                perror(RED "Some error in opening file" RESET);
+            }
             sendInt(-1, clientSocket);
             fileSize[i] = -1;
         }
     }
+
+    /* send the files one by one */
     printf(BLU "\nReady to send the files to client\n" RESET);
     printf("\n");
     fflush(stdout);
@@ -70,6 +88,7 @@ int main() {
         if (fileSize[i] >= 0)
             sendFile(filenames[i], fileSize[i], clientSocket);
         fflush(stdout);
+        free(filenames[i]);
     }
 
     close(clientSocket);

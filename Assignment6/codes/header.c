@@ -42,8 +42,8 @@ int sendInt(long long int num, int socket) {
 
 
 char *getString(int socket) {
-    char *buff = malloc(CHUNK);
-    int bytesRead = read(socket, buff, CHUNK);
+    char *buff = malloc(FILENAME_MAX);
+    int bytesRead = read(socket, buff, FILENAME_MAX);
     if (bytesRead == 0) {
         perror("Read 0 bytes");
         return NULL;
@@ -82,7 +82,7 @@ int sendFile(const char *name, long long int size, int socket) {
     printf("Sending file " GRN "%s\n" RESET, name);
     int fd = open(name, O_RDONLY);
     if (fd == -1) {
-        perror("Cannot open file\n");
+        perror(RED"Sending Failed"RESET);
         return 1;
     }
     double progress;
@@ -97,6 +97,8 @@ int sendFile(const char *name, long long int size, int socket) {
         } else if (read_bytes == -1) {
             perror("Error reading");
             break;
+        } else if (read_bytes == 0){
+            perror("FDFD");
         }
         //fprintf(stderr, "Sent chunk \n");
         //fprintf(stderr, "%d read %d sent \n", read_bytes, sent_bytes);
@@ -116,6 +118,7 @@ int sendFile(const char *name, long long int size, int socket) {
         //fprintf(stderr, "Got ack\n");
     }
     printf("Progress: 100.00%%\n\n");
+    close(fd);
     return 0;
 }
 
@@ -123,7 +126,7 @@ int getFile(const char *name, long long int size, int socket) {
     printf("Ready to receive file "GRN"%s\n"RESET, name);
     int fd = open(name, O_WRONLY | O_CREAT, 0644);
     if (fd == -1) {
-        perror("Cannot open file\n");
+        perror(RED "Receiving Failed");
         return 1;
     }
     double progress;
@@ -155,10 +158,7 @@ int getFile(const char *name, long long int size, int socket) {
     }
     printf("Progress: 100.00%%\n");
     printf("Received file "GRN"%s\n"RESET, name);
+    close(fd);
     return 0;
 }
 
-// corner cases
-// no read permission
-// file is a dir or something else than a regular file
-// file size is 0
