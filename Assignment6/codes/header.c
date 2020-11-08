@@ -30,6 +30,9 @@ int getAck(int socket) {
 long long int getInt(int socket) {
     long long int ret;
     char *data = getString(socket);
+    if(data == NULL){
+        return -1LL;
+    }
     ret = strtoll(data, NULL, 10);
     return ret;
 }
@@ -45,7 +48,6 @@ char *getString(int socket) {
     char *buff = malloc(FILENAME_MAX);
     int bytesRead = read(socket, buff, FILENAME_MAX);
     if (bytesRead == 0) {
-        perror("Read 0 bytes");
         return NULL;
     } else if (bytesRead < 0) {
         perror("Some error in reading a string");

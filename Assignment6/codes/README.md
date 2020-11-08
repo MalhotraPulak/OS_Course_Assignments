@@ -4,4 +4,5 @@
 ```
 - This will create two executables server and client
 - Call the executables from the folders as required
-- Run Server first then Client 
+- Run server first then client
+- get and exit command as specified

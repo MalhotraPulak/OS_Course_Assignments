@@ -2,6 +2,17 @@
 #include "signal.h"
 
 int t = 0;
+
+void waitForClient(int *clientSocket, int serverSocket){
+    *clientSocket = accept(serverSocket, NULL, NULL);
+    if (*clientSocket <= 0) {
+        perror("Server cannot get client");
+        _exit(1);
+    }
+    printf(YEL "Client found \n" RESET);
+}
+
+
 int createServer(int *clientSocket) {
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     int true = 1;
@@ -18,27 +29,29 @@ int createServer(int *clientSocket) {
         perror("Cannot bind the server to the IP");
         _exit(1);
     }
-
-    if (listen(serverSocket, 3) != 0) {
+    // Max number of waiting clients in the queue
+    if (listen(serverSocket, 100) != 0) {
         perror("Cannot listen on the socket");
         _exit(1);
     }
-    printf("\nWaiting for a new client.... Press CTRL-C to exit\n");
-    *clientSocket = accept(serverSocket, NULL, NULL);
-    if (*clientSocket <= 0) {
-        perror("Server cannot get client");
-        _exit(1);
-    }
-    printf(YEL "Client found \n" RESET);
     return serverSocket;
 }
 
+
 int main() {
     int serverSocket, clientSocket;
+    serverSocket = createServer(&clientSocket);
+    waitForClient(&clientSocket, serverSocket);
     while (1) {
-        serverSocket = createServer(&clientSocket);
         /* get the number of files */
         long long int fileNum = getInt(clientSocket);
+        if(fileNum == -1){
+            // get new client
+            close(clientSocket);
+            printf("\nWaiting for a new client.... Press CTRL-C to exit\n");
+            waitForClient(&clientSocket, serverSocket);
+            continue;
+        }
         printf("Files Requested: %lld\n", fileNum);
         fflush(stdout);
 
@@ -92,10 +105,10 @@ int main() {
             free(filenames[i]);
         }
 
-        close(clientSocket);
-        close(serverSocket);
         if(t == 1){
             break;
         }
+
     }
+    close(serverSocket);
 }
