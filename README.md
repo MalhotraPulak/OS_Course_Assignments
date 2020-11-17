@@ -26,3 +26,7 @@
 - Modified XV6 kernel proc structure and added system calls to support time command
 - Added 3 schedulers including FCFS, MLFQ, PBS
 - Added ps command and related system calls
+
+### Assignment 6
+- Simple networking model of client and server over TCP connection
+- Client can requests file from server which are delivered if they exist on the server
