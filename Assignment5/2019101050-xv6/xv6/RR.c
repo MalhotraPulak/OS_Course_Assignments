@@ -96,6 +96,11 @@ trap(struct trapframe *tf)
                 if(myproc() != 0 && myproc()->state == RUNNING) {
                     myproc()->rtime += 1;
                 }
+                // This is actually wrong
+                // Loop throough all processes in proc table
+                // For all the processes that are sleeping
+                // Increase the iotime by 1 
+                // Also change this in MLFQ.c PBS.c and FCFS.c
                 else if(myproc() != 0 && myproc()->state == SLEEPING) {
                     myproc()->iotime += 1;
                 }
